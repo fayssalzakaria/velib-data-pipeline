@@ -1,7 +1,5 @@
 #!/bin/bash
-
-# Initialiser la base de données Airflow (ignore l'erreur si déjà initialisée)
-airflow db init || true
+airflow db upgrade
 
 # Créer un utilisateur admin si ce n’est pas encore fait (ignore l’erreur si déjà présent)
 airflow users create \
