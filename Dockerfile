@@ -14,4 +14,7 @@ RUN pip install --no-cache-dir -r /opt/airflow/requirements.txt
 
 EXPOSE 8080
 
-CMD ["bash", "-c", "airflow db init && airflow webserver"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+CMD ["/entrypoint.sh"]
+
