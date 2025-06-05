@@ -1,7 +1,9 @@
 #!/bin/bash
+
+# Upgrade la DB
 airflow db upgrade
 
-# Créer un utilisateur admin si ce n’est pas encore fait (ignore l’erreur si déjà présent)
+# Crée l'utilisateur admin (ignore l'erreur si déjà créé)
 airflow users create \
     --username admin \
     --password admin \
@@ -10,5 +12,8 @@ airflow users create \
     --role Admin \
     --email admin@example.com || true
 
-# Lancer le webserver (entrypoint final)
+# Lance le scheduler en arrière-plan
+airflow scheduler &
+
+# Lance le webserver (process principal)
 exec airflow webserver
