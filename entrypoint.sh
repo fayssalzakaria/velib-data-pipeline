@@ -15,5 +15,8 @@ airflow users create \
 echo "🚀 Lancement du scheduler..."
 airflow scheduler &
 
-echo "🌐 Lancement du webserver Gunicorn sur le port 8793 (par défaut)..."
+# 👇 Correction critique ici
+export AIRFLOW__WEBSERVER__WEB_SERVER_PORT=${PORT:-8793}
+
+echo "🌐 Lancement du webserver Gunicorn sur le port ${AIRFLOW__WEBSERVER__WEB_SERVER_PORT}..."
 exec airflow webserver
