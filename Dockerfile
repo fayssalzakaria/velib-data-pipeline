@@ -1,11 +1,11 @@
 FROM apache/airflow:2.9.1-python3.9
 
-USER root  # On passe temporairement root pour l'installation
+USER root  
 
 COPY requirements.txt /requirements.txt
 RUN pip install --no-cache-dir -r /requirements.txt
 
-USER airflow  # Revenir à l'utilisateur non-root officiel
+USER airflow 
 
 ENV AIRFLOW_HOME=/opt/airflow
 
