@@ -1,15 +1,12 @@
 version: "3.7"
 
 services:
-  postgres:
   webserver:
     image: apache/airflow:2.7.2
-    restart: always
-    depends_on:
-      - postgres
+    restart: always 
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__CORE__SQL_ALCHEMY_CONN: ${POSTGRES_URL}
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:XUzbgroqkHzyLjbZPMeiqGOMgMEgqyeG@yamanote.proxy.rlwy.net:30045/railway
       AIRFLOW__WEBSERVER__SECRET_KEY: mysecretkey
       AIRFLOW__CORE__FERNET_KEY: ''
       AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'True'
@@ -20,7 +17,6 @@ services:
       - ./scripts:/opt/airflow/scripts
       - ./data:/opt/airflow/data
       - ./airflow/config:/opt/airflow/config
-
     ports:
       - "8080:8080"
     command: >
@@ -35,12 +31,9 @@ services:
     restart: always
     depends_on:
       - webserver
-      - postgres
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
-
-      AIRFLOW__CORE__SQL_ALCHEMY_CONN: ${POSTGRES_URL}
-
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:XUzbgroqkHzyLjbZPMeiqGOMgMEgqyeG@yamanote.proxy.rlwy.net:30045/railway
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
@@ -48,8 +41,4 @@ services:
       - ./data:/opt/airflow/data
       - ./scripts:/opt/airflow/scripts
       - ./airflow/config:/opt/airflow/config
-
     command: airflow scheduler
-
-volumes:
-  postgres-db-volume:
