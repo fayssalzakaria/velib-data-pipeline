@@ -15,5 +15,5 @@ airflow users create \
 echo "🚀 Lancement du scheduler..."
 airflow scheduler &
 
-echo "🌐 Lancement du webserver sur 0.0.0.0:8080..."
-exec airflow webserver --port 8080 --host 0.0.0.0 >> /opt/airflow/webserver.log 2>&1
+echo "🌐 Lancement du webserver sur 0.0.0.0:$PORT..."
+exec airflow webserver --port "$PORT" --host 0.0.0.0
