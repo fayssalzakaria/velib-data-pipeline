@@ -15,4 +15,11 @@ airflow users create \
 echo "🚀 Lancement du scheduler..."
 airflow scheduler &
 
-exec airflow webserver 
+# Forcer le mode développement (serveur Flask)
+export AIRFLOW__WEBSERVER__WORKERS=1
+export AIRFLOW__WEBSERVER__WEB_SERVER_HOST=0.0.0.0
+export AIRFLOW__WEBSERVER__WEB_SERVER_PORT=8080
+export AIRFLOW__WEBSERVER__WEB_SERVER_WORKER_CLASS=werkzeug
+
+echo "🌐 Lancement du webserver Flask sur le port 8080..."
+exec airflow webserver --debug
