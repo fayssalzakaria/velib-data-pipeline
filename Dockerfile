@@ -15,3 +15,9 @@ COPY requirements.txt /opt/airflow/requirements.txt
 # Installer les dépendances avec l'utilisateur airflow (meilleure pratique)
 USER airflow
 RUN pip install --no-cache-dir -r /opt/airflow/requirements.txt
+
+# Exposer le port 8080 pour le webserver Airflow
+EXPOSE 8080
+
+# Lancer Airflow Webserver au démarrage du conteneur
+CMD ["airflow", "webserver"]
