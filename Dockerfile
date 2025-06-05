@@ -1,10 +1,10 @@
 FROM apache/airflow:2.9.1-python3.9
 
-USER root
+USER airflow  # 👈 installe en tant que user non-root
+
 COPY requirements.txt /requirements.txt
 RUN pip install --no-cache-dir -r /requirements.txt
 
-USER airflow
 ENV AIRFLOW_HOME=/opt/airflow
 
 COPY airflow/dags/ ${AIRFLOW_HOME}/dags/
