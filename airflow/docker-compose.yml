@@ -1,0 +1,59 @@
+version: "3.7"
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+
+  webserver:
+    image: apache/airflow:2.7.2
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__WEBSERVER__SECRET_KEY: mysecretkey
+      AIRFLOW__CORE__FERNET_KEY: ''
+      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'True'
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - ./data:/opt/airflow/data
+      - ./airflow/config:/opt/airflow/config
+
+    ports:
+      - "8888:8080"
+    command: >
+      bash -c "
+      airflow db upgrade &&
+      airflow users create --username admin --password admin --firstname Air --lastname Flow --role Admin --email admin@example.com &&
+      airflow webserver
+      "
+
+  scheduler:
+    image: apache/airflow:2.7.2
+    restart: always
+    depends_on:
+      - webserver
+      - postgres
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - ./data:/opt/airflow/data
+      - ./airflow/config:/opt/airflow/config
+
+    command: airflow scheduler
+
+volumes:
+  postgres-db-volume:
