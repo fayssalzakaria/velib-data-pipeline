@@ -1,31 +1,14 @@
-# Utilise l’image officielle d’Airflow
-FROM apache/airflow:2.7.2
+FROM apache/airflow:2.9.1-python3.9
 
-# Passer en root pour copier et modifier les fichiers
 USER root
+COPY requirements.txt /requirements.txt
+RUN pip install --no-cache-dir -r /requirements.txt
 
-# Définir le dossier de travail
-WORKDIR /opt/airflow
+USER airflow
+ENV AIRFLOW_HOME=/opt/airflow
 
-# Copier les fichiers nécessaires
-COPY airflow/dags /opt/airflow/dags
-
-COPY scripts /opt/airflow/scripts
-COPY requirements.txt /opt/airflow/requirements.txt
+COPY airflow/dags/ ${AIRFLOW_HOME}/dags/
+COPY scripts/ ${AIRFLOW_HOME}/scripts/
 COPY entrypoint.sh /entrypoint.sh
 
-# Rendre le script exécutable
-RUN chmod +x /entrypoint.sh
-
-# Passer à l’utilisateur airflow pour l'exécution
-USER airflow
-
-# Installer les dépendances
-RUN pip install --no-cache-dir -r /opt/airflow/requirements.txt
-
-# Exposer le port pour Railway
-EXPOSE 8793
-
-
-# Spécifier la commande à lancer
-CMD ["bash", "/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]

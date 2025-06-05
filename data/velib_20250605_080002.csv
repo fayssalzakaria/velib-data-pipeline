@@ -1,0 +1,1001 @@
+station_id;name;numbikesavailable;mechanical;ebike;numdocksavailable;timestamp;date;hour;weekday
+40001;Hôpital Mondor;20;11;9;7;2025-06-05 07:03:59;2025-06-05;7;Thursday
+44015;Rouget de L'isle - Watteau;13;4;9;7;2025-06-05 07:03:34;2025-06-05;7;Thursday
+9020;Toudouze - Clauzel;0;0;0;21;2025-06-05 07:04:14;2025-06-05;7;Thursday
+14014;Jourdan - Stade Charléty;11;5;6;47;2025-06-05 07:02:55;2025-06-05;7;Thursday
+11104;Charonne - Robert et Sonia Delaunay;0;0;0;20;2025-06-05 07:00:07;2025-06-05;7;Thursday
+8026;Messine - Place Du Pérou;11;8;3;1;2025-06-05 07:04:16;2025-06-05;7;Thursday
+7002;Vaneau - Sèvres;7;3;4;25;2025-06-05 07:04:14;2025-06-05;7;Thursday
+6108;Saint-Romain - Cherche-Midi;6;5;1;10;2025-06-05 07:03:24;2025-06-05;7;Thursday
+25006;Place Nelson Mandela;1;0;1;20;2025-06-05 06:58:33;2025-06-05;6;Thursday
+32304;Charcot - Benfleet;4;0;4;24;2025-06-05 07:00:23;2025-06-05;7;Thursday
+5016;Thouin - Cardinal Lemoine;4;1;3;12;2025-06-05 07:01:51;2025-06-05;7;Thursday
+11025;Froment - Bréguet;13;10;3;28;2025-06-05 07:04:12;2025-06-05;7;Thursday
+15047;Morillons - Dantzig;0;0;0;52;2025-06-05 07:03:52;2025-06-05;7;Thursday
+17026;Jouffroy d'Abbans - Wagram;5;1;4;35;2025-06-05 07:04:12;2025-06-05;7;Thursday
+6021;Beaux-Arts - Bonaparte;10;6;4;9;2025-06-05 07:04:15;2025-06-05;7;Thursday
+13101;Croulebarde - Corvisart;22;20;2;11;2025-06-05 07:04:03;2025-06-05;7;Thursday
+14108;Le Brix et Mesmin - Jourdan;2;0;2;19;2025-06-05 07:00:21;2025-06-05;7;Thursday
+31024;Romainville - Vaillant-Couturier;3;2;1;35;2025-06-05 07:00:44;2025-06-05;7;Thursday
+40016;Sarrazins - Saussure;0;0;0;22;2025-02-05 10:35:03;2025-02-05;10;Wednesday
+17044;Porte de Saint-Ouen - Bessières;6;4;2;35;2025-06-05 07:03:48;2025-06-05;7;Thursday
+17025;Chazelles - Courcelles;4;2;2;29;2025-06-05 07:03:46;2025-06-05;7;Thursday
+21326;Moulin de Pierre - Abbé Grégoire;0;0;0;20;2025-06-05 07:02:58;2025-06-05;7;Thursday
+20143;Ramponeau - Belleville;2;1;1;42;2025-06-05 07:01:57;2025-06-05;7;Thursday
+43002;Lagny - Victor Basch;20;12;8;5;2025-06-05 07:03:14;2025-06-05;7;Thursday
+16138;Saint-Cloud - Hippodrome;7;5;2;22;2025-06-05 07:01:22;2025-06-05;7;Thursday
+15068;Général Martial Valin - Pont du Garigliano;9;7;2;6;2025-06-05 07:03:24;2025-06-05;7;Thursday
+92002;Théâtre des Amandiers - Palais des sports;5;1;4;18;2025-06-05 07:02:22;2025-06-05;7;Thursday
+17048;De Toqueville - Terrasse;0;0;0;28;2025-06-05 06:55:06;2025-06-05;6;Thursday
+44017;Jules Guesde - Pont du Port à l'Anglais;26;22;4;2;2025-06-05 07:04:12;2025-06-05;7;Thursday
+44010;8 Mai 1945 - 10 Juillet 1940;26;19;7;3;2025-06-05 07:04:07;2025-06-05;7;Thursday
+16118;Michel-Ange - Parent de Rosan;2;2;0;23;2025-06-05 07:02:46;2025-06-05;7;Thursday
+2017;Caire - Dussoubs;3;2;1;37;2025-06-05 07:04:03;2025-06-05;7;Thursday
+8103;Artois - Berri;23;14;9;0;2025-06-05 07:02:03;2025-06-05;7;Thursday
+8048;Marceau - Chaillot;17;5;12;2;2025-06-05 07:03:37;2025-06-05;7;Thursday
+14013;Liard - Amiral Mouchez;8;6;2;18;2025-06-05 07:04:14;2025-06-05;7;Thursday
+13030;Italie - Tolbiac;4;1;3;15;2025-06-05 07:03:15;2025-06-05;7;Thursday
+19027;Serrurier;0;0;0;0;2025-05-21 06:48:59;2025-05-21;6;Wednesday
+18111;Félix Ziem - Armand Gauthier;1;0;1;24;2025-06-05 06:59:08;2025-06-05;6;Thursday
+9002;Abbeville - Faubourg Poissonnière;1;1;0;11;2025-06-05 07:03:27;2025-06-05;7;Thursday
+48003;Youri Gagarine - Karl Marx;1;0;1;20;2025-06-05 07:04:02;2025-06-05;7;Thursday
+9001;Bellefond - Poissonnière;1;1;0;14;2025-06-05 07:04:09;2025-06-05;7;Thursday
+41303;Gare de Nogent-le-Perreux;24;22;2;8;2025-06-05 07:03:33;2025-06-05;7;Thursday
+5022;Boulangers - Cardinal Lemoine;5;4;1;15;2025-06-05 07:01:36;2025-06-05;7;Thursday
+21328;Verger - Colonel Guichard;2;0;2;27;2025-06-05 06:59:16;2025-06-05;6;Thursday
+13104;Gare d'Austerlitz - Quai Saint-Bernard;9;7;2;18;2025-06-05 07:03:34;2025-06-05;7;Thursday
+17040;Pereire - Ternes;4;3;1;44;2025-06-05 07:02:01;2025-06-05;7;Thursday
+9038;Douai - Bruxelles;4;2;2;23;2025-06-05 07:03:16;2025-06-05;7;Thursday
+8009;Gare Saint-Lazare - Isly;2;1;1;24;2025-06-05 07:03:05;2025-06-05;7;Thursday
+9014;Faubourg Montmartre - La Fayette;10;6;4;24;2025-06-05 07:04:08;2025-06-05;7;Thursday
+9022;Rossini - Laffitte;30;15;15;2;2025-06-05 07:04:00;2025-06-05;7;Thursday
+26003;Argenteuil - Voltaire;4;4;0;10;2025-06-05 07:01:36;2025-06-05;7;Thursday
+17004;Legendre - Clichy;1;1;0;39;2025-06-05 07:03:26;2025-06-05;7;Thursday
+19003;Quai de la Seine;3;2;1;19;2025-06-05 07:03:05;2025-06-05;7;Thursday
+92007;Pesaro - Préfecture;11;2;9;11;2025-06-05 07:02:51;2025-06-05;7;Thursday
+16026;Ranelagh - Mozart;2;0;2;6;2025-06-05 07:01:48;2025-06-05;7;Thursday
+17043;Belidor - Gouvion-Saint-Cyr;0;0;0;39;2025-06-05 07:04:13;2025-06-05;7;Thursday
+16039;Exelmans - Versailles;4;3;1;44;2025-06-05 07:03:39;2025-06-05;7;Thursday
+11023;Saint-Maur - Roquette;14;12;2;30;2025-06-05 07:01:37;2025-06-05;7;Thursday
+8034;Berri - Haussmann;34;14;20;0;2025-06-05 07:02:36;2025-06-05;7;Thursday
+11047;Amelot - Saint-Sébastien;7;5;2;21;2025-06-05 07:02:55;2025-06-05;7;Thursday
+19043;Delphine Seyrig - Général Leclerc;8;1;7;43;2025-06-05 07:03:30;2025-06-05;7;Thursday
+5032;Panthéon - Valette;11;3;8;26;2025-06-05 07:03:51;2025-06-05;7;Thursday
+17030;Pereire - Rennequin;2;0;2;20;2025-06-05 07:03:44;2025-06-05;7;Thursday
+11027;Saint-Ambroise - Parmentier;6;4;2;32;2025-06-05 07:04:13;2025-06-05;7;Thursday
+12128;Pyramide - Ecole du Breuil;13;10;3;21;2025-06-05 06:59:40;2025-06-05;6;Thursday
+8010;Liège - Moscou;2;1;1;15;2025-06-05 07:03:37;2025-06-05;7;Thursday
+31022;Mairie de Montreuil;16;15;1;33;2025-06-05 07:02:02;2025-06-05;7;Thursday
+46002;Rouget de Lisle;16;11;5;19;2025-06-05 07:04:12;2025-06-05;7;Thursday
+41302;Charles de Gaulle - Beauté;1;0;1;46;2025-06-05 06:59:22;2025-06-05;6;Thursday
+14020;Cimetière de Montrouge;4;3;1;54;2025-06-05 06:59:56;2025-06-05;6;Thursday
+15042;Henry Farman;14;3;11;2;2025-06-05 07:01:20;2025-06-05;7;Thursday
+18011;Pajol - Place Herbert;2;2;0;36;2025-06-05 07:03:41;2025-06-05;7;Thursday
+21212;Marne - Germain Dardan;3;1;2;15;2025-06-05 07:03:00;2025-06-05;7;Thursday
+19120;Carducci - Place Hannah Arendt;0;0;0;26;2025-06-05 07:04:13;2025-06-05;7;Thursday
+18003;Cimetière de Montmartre;1;1;0;42;2025-06-05 06:59:22;2025-06-05;6;Thursday
+15104;Hôpital Européen Georges Pompidou;61;55;6;1;2025-06-05 07:04:02;2025-06-05;7;Thursday
+5018;Mutualité;2;1;1;32;2025-06-05 07:02:22;2025-06-05;7;Thursday
+19101;Square Simon Bolivar;1;0;1;23;2025-06-05 07:02:04;2025-06-05;7;Thursday
+12114;Victor Hugo - Jeanne Jugan;1;0;1;26;2025-06-05 07:02:09;2025-06-05;7;Thursday
+41209;Cimetière de Fontenay-sous-Bois;0;0;0;15;2025-06-05 07:02:37;2025-06-05;7;Thursday
+21312;Lucie Aubrac - Fort;0;0;0;30;2025-06-05 07:02:24;2025-06-05;7;Thursday
+13001;Port-Royal - Hôpital du Val-de-Grâce;0;0;0;18;2025-06-05 07:03:52;2025-06-05;7;Thursday
+18028;Championnet - Vauvenargues;3;0;3;29;2025-06-05 07:02:13;2025-06-05;7;Thursday
+8017;Rocher - Laborde;11;9;2;54;2025-06-05 07:03:52;2025-06-05;7;Thursday
+15106;Grenelle - Violet;12;7;5;20;2025-06-05 07:02:23;2025-06-05;7;Thursday
+5124;Erasme - Ulm;5;0;5;19;2025-06-05 07:04:14;2025-06-05;7;Thursday
+18046;Etienne Jodelle - Saint Ouen;0;0;0;33;2025-06-05 06:57:01;2025-06-05;6;Thursday
+2111;Chabanais - Petits Champs;8;6;2;22;2025-06-05 07:03:41;2025-06-05;7;Thursday
+18022;Marcadet - Barbès;3;0;3;33;2025-06-05 07:02:27;2025-06-05;7;Thursday
+8054;Bertie Albrecht - Hoche;19;10;9;13;2025-06-05 07:04:13;2025-06-05;7;Thursday
+10042;Enghien - Faubourg Poissonnière;3;1;2;28;2025-06-05 07:04:15;2025-06-05;7;Thursday
+17203;Place de la Porte de Champeret;1;1;0;26;2025-06-05 07:04:01;2025-06-05;7;Thursday
+42014;Place Marcel Cachin;23;22;1;9;2025-06-05 07:03:21;2025-06-05;7;Thursday
+46003;Conservatoire de Musique;0;0;0;25;2025-06-05 07:00:34;2025-06-05;7;Thursday
+15110;Place Robert Guillemard;18;16;2;5;2025-06-05 07:02:58;2025-06-05;7;Thursday
+16202;Commandant Schloesing - Pétrarque;0;0;0;30;2025-05-23 15:36:48;2025-05-23;15;Friday
+44003;Gabriel Péri - Danielle Casanova;13;12;1;7;2025-06-05 06:57:50;2025-06-05;6;Thursday
+22203;Tertres - Fontaine;10;9;1;18;2025-06-05 07:04:13;2025-06-05;7;Thursday
+41202;Gare Rer de Fontenay sous Bois;34;30;4;23;2025-06-05 07:01:55;2025-06-05;7;Thursday
+42021;Raspail - Manufacture des Oeillets;27;24;3;5;2025-06-05 07:04:16;2025-06-05;7;Thursday
+1119;Cossonnerie - Sébastopol;10;4;6;15;2025-06-05 07:02:27;2025-06-05;7;Thursday
+35020;Marcelle - Thalie;1;0;1;18;2025-06-05 06:59:54;2025-06-05;6;Thursday
+31003;Paris - Emile Zola;10;7;3;20;2025-06-05 07:04:14;2025-06-05;7;Thursday
+6025;Assas - Rennes;4;2;2;28;2025-06-05 07:03:54;2025-06-05;7;Thursday
+11030;Oberkampf - République;2;1;1;22;2025-06-05 07:04:08;2025-06-05;7;Thursday
+17013;Legendre - Dulong;0;0;0;23;2025-06-05 07:03:52;2025-06-05;7;Thursday
+32604;Square du Théâtre du Garde-Chasse;1;0;1;48;2025-06-05 07:02:07;2025-06-05;7;Thursday
+19024;Botzaris - Parc des Buttes Chaumont;0;0;0;20;2025-06-05 07:02:28;2025-06-05;7;Thursday
+23006;Jules Guesde - Alsace;17;10;7;8;2025-06-05 07:04:09;2025-06-05;7;Thursday
+17105;Place Madeleine Daniélou;7;7;0;34;2025-06-05 07:04:01;2025-06-05;7;Thursday
+11105;Parmentier - République;2;1;1;20;2025-06-05 07:04:07;2025-06-05;7;Thursday
+16108;Sablons - Georges Mandel;1;1;0;37;2025-06-05 07:02:41;2025-06-05;7;Thursday
+19032;Villette - Belleville;10;4;6;29;2025-06-05 07:04:12;2025-06-05;7;Thursday
+21701;Larmeroux - Baudelaire;4;2;2;25;2025-06-05 07:03:09;2025-06-05;7;Thursday
+16008;Galilée - Kléber;16;4;12;14;2025-06-05 07:01:24;2025-06-05;7;Thursday
+11024;Mairie du 11ème;12;8;4;39;2025-06-05 07:03:20;2025-06-05;7;Thursday
+19022;Marché Secrétan;7;1;6;18;2025-06-05 07:04:07;2025-06-05;7;Thursday
+13050;Quai Panhard et Levassor;52;45;7;4;2025-06-05 06:57:58;2025-06-05;6;Thursday
+24001;Arche - Léonard de Vinci;14;9;5;10;2025-06-05 07:03:20;2025-06-05;7;Thursday
+14136;Auguste Cain - Jean Moulin;3;0;3;36;2025-06-05 07:02:52;2025-06-05;7;Thursday
+17028;Reims - Raymond Pitet;4;1;3;32;2025-06-05 07:01:07;2025-06-05;7;Thursday
+21301;Saint-Vincent - Verdun;27;26;1;4;2025-06-05 07:03:41;2025-06-05;7;Thursday
+19029;Seine - Flandre;1;1;0;17;2025-06-05 07:03:01;2025-06-05;7;Thursday
+19016;Hautpoul - Jean Jaurès;7;5;2;22;2025-06-05 07:02:03;2025-06-05;7;Thursday
+32003;Wilson - Métallurgie;17;15;2;10;2025-06-05 07:02:55;2025-06-05;7;Thursday
+11042;Grand Prieuré - Crussol;19;18;1;28;2025-06-05 07:03:11;2025-06-05;7;Thursday
+7102;Mairie du 7ème;32;20;12;16;2025-06-05 07:04:06;2025-06-05;7;Thursday
+19013;Laumière - Petit;1;1;0;33;2025-06-05 07:04:10;2025-06-05;7;Thursday
+43003;Hôpital Bégin;6;4;2;18;2025-06-05 07:02:20;2025-06-05;7;Thursday
+20111;Villiers de l'Isle Adam - Pyrénées;1;0;1;18;2025-06-05 07:04:17;2025-06-05;7;Thursday
+20043;Charonne - Avron;2;1;1;23;2025-06-05 07:01:09;2025-06-05;7;Thursday
+31010;Stalingrad - Désiré Chevalier;3;1;2;39;2025-06-05 07:01:31;2025-06-05;7;Thursday
+19008;Flandre - Alphonse Karr;1;0;1;22;2025-06-05 07:03:08;2025-06-05;7;Thursday
+11004;Charonne - Faubourg Saint-Antoine;23;18;5;9;2025-06-05 07:03:49;2025-06-05;7;Thursday
+18201;Tristan Tzara -  Tchaïkovski;3;2;1;28;2025-06-05 07:03:05;2025-06-05;7;Thursday
+41402;Victor Hugo - Ecoles;9;8;1;15;2025-06-05 07:03:22;2025-06-05;7;Thursday
+18012;Stephenson - Doudeauville;0;0;0;36;2025-06-05 07:03:29;2025-06-05;7;Thursday
+14036;Boulard - Daguerre;2;0;2;42;2025-06-05 07:04:14;2025-06-05;7;Thursday
+12009;Charenton - Diderot;16;13;3;0;2025-06-05 07:03:05;2025-06-05;7;Thursday
+19205;Simon Bolivar - Henri Turot;1;0;1;22;2025-06-05 07:03:45;2025-06-05;7;Thursday
+9021;Saint Georges - d'Aumale;2;1;1;21;2025-06-05 07:01:16;2025-06-05;7;Thursday
+23009;Anatole France - Louise Michel;6;3;3;43;2025-06-05 07:02:51;2025-06-05;7;Thursday
+12027;Montgallet - Charenton;2;1;1;14;2025-06-05 06:59:29;2025-06-05;6;Thursday
+8035;Bienfaisance - Place de Narvik;34;17;17;2;2025-06-05 07:02:36;2025-06-05;7;Thursday
+28001;Richard Wallace - Place du 8 Mai 1945;17;12;5;13;2025-06-05 07:01:20;2025-06-05;7;Thursday
+26007;Square Gilbert Thomain;12;7;5;7;2025-06-05 06:58:41;2025-06-05;6;Thursday
+16111;Faustin Hélie - Desbordes-Valmore;3;0;3;30;2025-06-05 06:55:21;2025-06-05;6;Thursday
+15025;Dupleix - du Guesclin;26;24;2;20;2025-06-05 07:04:05;2025-06-05;7;Thursday
+19005;Flandre - Riquet;2;1;1;19;2025-06-05 06:59:53;2025-06-05;6;Thursday
+41606;Pasteur - Gambetta;14;11;3;4;2025-06-05 07:02:02;2025-06-05;7;Thursday
+43402;Place de Verdun;34;34;0;6;2025-06-05 07:02:26;2025-06-05;7;Thursday
+12013;Montgallet - Reuilly;12;9;3;3;2025-06-05 07:03:29;2025-06-05;7;Thursday
+11115;Montreuil - Gonnet;2;0;2;22;2025-06-05 07:04:11;2025-06-05;7;Thursday
+5021;Jussieu - Fossés Saint-Bernard;18;16;2;16;2025-06-05 07:04:15;2025-06-05;7;Thursday
+6013;Jacques Callot - Mazarine;13;10;3;15;2025-06-05 07:02:28;2025-06-05;7;Thursday
+32303;Gaston Roussel - Commune de Paris;0;0;0;0;2018-08-13 06:11:15;2018-08-13;6;Monday
+16121;Jardin d'Acclimatation;13;8;5;18;2025-06-05 07:03:01;2025-06-05;7;Thursday
+23001;Paul Vaillant Couturier - Chaptal;35;28;7;1;2025-06-05 07:03:25;2025-06-05;7;Thursday
+18141;Clignancourt - Sofia;1;0;1;16;2025-06-05 07:01:46;2025-06-05;7;Thursday
+16124;Route de Sèvres - Porte de Bagatelle;21;15;6;41;2025-06-05 07:04:07;2025-06-05;7;Thursday
+25005;18 juin 1940 - Buzenval;5;2;3;19;2025-06-05 07:00:30;2025-06-05;7;Thursday
+22505;Mairie de La Garenne Colombes;5;4;1;15;2025-06-05 07:00:08;2025-06-05;7;Thursday
+19115;Porte de la Villette;3;3;0;24;2025-06-05 07:04:16;2025-06-05;7;Thursday
+14034;Ouest - Château;2;0;2;21;2025-06-05 06:55:32;2025-06-05;6;Thursday
+16018;Flandrin - Henri Martin;1;1;0;17;2025-06-05 07:01:33;2025-06-05;7;Thursday
+12034;Pirogues de Bercy - Libourne;24;13;11;24;2025-06-05 07:03:52;2025-06-05;7;Thursday
+15033;Place Violet;15;12;3;15;2025-06-05 07:04:14;2025-06-05;7;Thursday
+25008;Place du 8 Mai 1945;3;1;2;15;2025-06-05 07:00:30;2025-06-05;7;Thursday
+24002;Gare de Courbevoie;7;3;4;27;2025-06-05 07:03:03;2025-06-05;7;Thursday
+41404;Carnot - Pâquerettes;23;20;3;2;2025-06-05 07:03:32;2025-06-05;7;Thursday
+7009;Assemblée Nationale;39;25;14;36;2025-06-05 07:04:16;2025-06-05;7;Thursday
+42707;Place Jean-Baptiste Clément;1;0;1;23;2025-06-05 07:00:55;2025-06-05;7;Thursday
+92003;Chanzy - Sud-Est;12;10;2;13;2025-06-05 07:03:07;2025-06-05;7;Thursday
+5119;Jussieu - Guy de la Brosse;26;21;5;12;2025-06-05 07:03:45;2025-06-05;7;Thursday
+27002;Parc Pierre Lagravère;18;18;0;9;2025-06-05 07:04:07;2025-06-05;7;Thursday
+21109;Guichet - Jean Jaurès;5;3;2;22;2025-06-05 07:03:51;2025-06-05;7;Thursday
+23701;Parvis Robert Schuman - Roger Salengro;11;6;5;11;2025-06-05 06:58:34;2025-06-05;6;Thursday
+17007;Navier - Epinettes;0;0;0;54;2025-06-05 06:59:40;2025-06-05;6;Thursday
+12024;Gare de Bercy;14;9;5;21;2025-06-05 07:03:46;2025-06-05;7;Thursday
+16129;Ceinture du Lac Inferieure - Saint-Cloud;2;1;1;38;2025-06-05 07:04:16;2025-06-05;7;Thursday
+20119;Square des Saint-Simoniens;1;0;1;24;2025-06-05 07:04:09;2025-06-05;7;Thursday
+31705;Champeaux - Gallieni;9;3;6;41;2025-06-05 07:01:25;2025-06-05;7;Thursday
+6030;Assas - Vaugirard;5;3;2;30;2025-06-05 07:03:54;2025-06-05;7;Thursday
+23802;Raymond Poincaré - Allée de la Marche;7;1;6;16;2025-06-05 06:55:01;2025-06-05;6;Thursday
+19019;Petit - Manin;6;1;5;13;2025-06-05 06:59:02;2025-06-05;6;Thursday
+15017;Place Falguière;1;0;1;22;2025-06-05 06:59:52;2025-06-05;6;Thursday
+17018;Parc Monceau;8;5;3;9;2025-06-05 07:00:10;2025-06-05;7;Thursday
+18005;Tardieu - Chappe;0;0;0;18;2025-06-05 07:03:18;2025-06-05;7;Thursday
+92004;Nanterre - Université;2;2;0;18;2025-06-05 06:59:44;2025-06-05;6;Thursday
+20136;Henri Chevreau - Couronnes;1;0;1;26;2025-06-05 07:04:00;2025-06-05;7;Thursday
+5026;Pascal - Claude Bernard;8;6;2;40;2025-06-05 07:01:49;2025-06-05;7;Thursday
+43006;Vignerons - Minimes;19;13;6;10;2025-06-05 07:02:36;2025-06-05;7;Thursday
+5002;Sommerard - Saint-Jacques;24;21;3;9;2025-06-05 07:03:39;2025-06-05;7;Thursday
+15028;Grenelle - Dr Finlay;45;42;3;25;2025-06-05 07:03:18;2025-06-05;7;Thursday
+8102;Lamennais - Washington;25;9;16;0;2025-06-05 07:03:34;2025-06-05;7;Thursday
+31702;Pierre et Marie Curie - Julien Grimau;1;0;1;17;2025-06-05 07:02:59;2025-06-05;7;Thursday
+21013;Pierre Grenier - Pont de Billancourt;2;2;0;19;2025-06-05 07:04:16;2025-06-05;7;Thursday
+42503;Vladimir Ilitch Lénine - Andrée Chedid;2;1;1;29;2025-06-05 07:02:24;2025-06-05;7;Thursday
+11114;Ledru-Rollin - Charonne;23;19;4;7;2025-06-05 07:01:28;2025-06-05;7;Thursday
+8012;Batignolles - Place de Clichy;4;1;3;41;2025-06-05 07:04:17;2025-06-05;7;Thursday
+10023;Gare de l'Est - Verdun;0;0;0;13;2025-06-05 07:01:04;2025-06-05;7;Thursday
+13026;Place Jean Delay;1;0;1;31;2025-06-05 07:00:40;2025-06-05;7;Thursday
+23002;Pont de Levallois-bécon;44;30;14;6;2025-06-05 07:04:16;2025-06-05;7;Thursday
+13102;Pitié-Salpêtrière;30;16;14;21;2025-06-05 07:03:24;2025-06-05;7;Thursday
+11101;Charles Delescluze;27;23;4;21;2025-06-05 07:04:04;2025-06-05;7;Thursday
+14130;Jonquoy - Didot;4;1;3;25;2025-06-05 07:01:58;2025-06-05;7;Thursday
+10015;Lucien Sampaix - Récollets;9;8;1;36;2025-06-05 07:00:49;2025-06-05;7;Thursday
+41207;Place du Général de Gaulle;19;4;15;7;2025-06-05 07:03:45;2025-06-05;7;Thursday
+12011;Charenton - Place du Col Bourgoin;1;1;0;34;2025-06-05 07:02:13;2025-06-05;7;Thursday
+21308;Bara - Henri Farman;42;29;13;16;2025-06-05 07:03:44;2025-06-05;7;Thursday
+19037;Belleville - Porte des Lilas;0;0;0;29;2025-06-05 06:54:16;2025-06-05;6;Thursday
+6103;Mézières - Rennes;6;4;2;47;2025-06-05 07:03:13;2025-06-05;7;Thursday
+15038;Place Adolphe Cherioux - Vaugirard;5;1;4;58;2025-06-05 07:02:59;2025-06-05;7;Thursday
+21032;Sèvres-Gallieni;26;16;10;0;2025-06-05 07:04:09;2025-06-05;7;Thursday
+19109;Tanger - Place du Maroc;2;1;1;17;2025-06-05 07:03:21;2025-06-05;7;Thursday
+18032;Porte de Clignancourt.;3;2;1;52;2025-06-05 07:01:54;2025-06-05;7;Thursday
+17124;Porte de Saint-Ouen - Henri Huchard;11;11;0;14;2025-06-05 07:03:43;2025-06-05;7;Thursday
+44012;Génie - Mozart;0;0;0;19;2025-06-05 07:00:48;2025-06-05;7;Thursday
+31016;Lucie Aubrac - Franklin;10;9;1;26;2025-06-05 07:03:18;2025-06-05;7;Thursday
+22101;Gare Routière de Saint Cloud;26;22;4;3;2025-06-05 07:04:08;2025-06-05;7;Thursday
+13016;Primo Levi - Frigos;13;8;5;21;2025-06-05 06:56:59;2025-06-05;6;Thursday
+8051;Batignolles - Rome;3;0;3;10;2025-06-05 07:00:20;2025-06-05;7;Thursday
+2009;Filles Saint-Thomas - Place de la Bourse;57;32;25;0;2025-06-05 07:02:08;2025-06-05;7;Thursday
+44102;Verdun - Adrien Damalix;14;8;6;9;2025-06-05 07:03:45;2025-06-05;7;Thursday
+19039;Edouard Pailleron - Simon Bolivar;0;0;0;24;2025-06-05 07:04:11;2025-06-05;7;Thursday
+21003;Jean Jaurès - Jean Baptiste Clément;14;13;1;22;2025-06-05 07:03:46;2025-06-05;7;Thursday
+20027;Porte de Ménilmontant;1;0;1;14;2025-06-05 07:00:37;2025-06-05;7;Thursday
+9023;Laffitte - Italiens;32;18;14;1;2025-06-05 07:03:48;2025-06-05;7;Thursday
+14122;Colonel Monteil - Brune;7;4;3;11;2025-06-05 06:59:31;2025-06-05;6;Thursday
+31007;Paris - Désiré Préaux;3;2;1;44;2025-06-05 06:59:02;2025-06-05;6;Thursday
+17046;Mac-Mahon - Brey;2;2;0;23;2025-06-05 07:03:11;2025-06-05;7;Thursday
+19038;Lassus - Delouvain;1;0;1;19;2025-06-05 07:00:35;2025-06-05;7;Thursday
+18029;Emile Blemont - Poteau;2;0;2;37;2025-06-05 07:03:38;2025-06-05;7;Thursday
+20118;Orteaux - Mouraud;2;0;2;22;2025-06-05 07:00:50;2025-06-05;7;Thursday
+16021;François Ponsard - La Muette;5;1;4;18;2025-06-05 07:03:45;2025-06-05;7;Thursday
+9031;Provence - Chaussée d'Antin;14;10;4;11;2025-06-05 07:04:09;2025-06-05;7;Thursday
+9117;Bellefond - Maubeuge;0;0;0;30;2025-06-05 07:02:10;2025-06-05;7;Thursday
+20023;Pelleport - Belgrand;1;0;1;13;2025-06-05 07:01:24;2025-06-05;7;Thursday
+14002;Edgar Quinet - Raspail;1;1;0;45;2025-06-05 06:58:42;2025-06-05;6;Thursday
+15035;Place Etienne Pernet;26;24;2;16;2025-06-05 07:04:02;2025-06-05;7;Thursday
+10020;Chabrol - d'Hauteville;4;0;4;6;2025-06-05 07:04:15;2025-06-05;7;Thursday
+18113;Lepic - Armée d'Orient;0;0;0;24;2025-06-05 06:56:35;2025-06-05;6;Thursday
+34010;Hôtel de Ville de Saint-Ouen;42;41;1;5;2025-06-05 07:01:01;2025-06-05;7;Thursday
+11041;Square Saint-Ambroise;13;7;6;28;2025-06-05 07:04:17;2025-06-05;7;Thursday
+31703;Sadi Carnot - François Mitterrand;1;0;1;26;2025-06-05 07:03:06;2025-06-05;7;Thursday
+35003;Gabrielle Josserand - Edouard Vaillant;3;1;2;21;2025-06-05 07:03:01;2025-06-05;7;Thursday
+5121;Square René Viviani - Montebello;4;2;2;29;2025-06-05 07:03:44;2025-06-05;7;Thursday
+11006;Ledru-Rollin - Place du Père Chaillet;5;1;4;30;2025-06-05 07:01:09;2025-06-05;7;Thursday
+47005;Ecole Vétérinaire;31;30;1;4;2025-06-05 07:02:15;2025-06-05;7;Thursday
+47004;Stade Auguste Delaune;17;17;0;4;2025-06-05 07:04:14;2025-06-05;7;Thursday
+9026;Jean-Baptiste Pigalle - La Bruyere;1;0;1;16;2025-06-05 07:02:41;2025-06-05;7;Thursday
+21001;Transvaal - Charles de Gaulle;21;20;1;6;2025-06-05 07:01:48;2025-06-05;7;Thursday
+15002;Maine - Antoine Bourdelle;1;0;1;16;2025-06-05 07:04:15;2025-06-05;7;Thursday
+21310;Kléber - Gouverneur Général Eboué;23;22;1;1;2025-06-05 07:02:47;2025-06-05;7;Thursday
+23007;Président Wilson - Jean Jaures;1;1;0;25;2025-06-05 07:04:06;2025-06-05;7;Thursday
+20016;Pyrénées - Maraîchers;2;1;1;31;2025-06-05 07:03:05;2025-06-05;7;Thursday
+32015;Gare RER de Saint-Denis;12;8;4;23;2025-06-05 07:02:15;2025-06-05;7;Thursday
+9017;Lallier - Trudaine;5;2;3;24;2025-06-05 07:01:28;2025-06-05;7;Thursday
+7008;Villersexel - Saint-Germain;9;3;6;6;2025-06-05 07:02:04;2025-06-05;7;Thursday
+14030;Pernety - Raymond Losserand;1;0;1;31;2025-06-05 07:03:19;2025-06-05;7;Thursday
+20201;Eugène Reisz - Davout;7;4;3;13;2025-06-05 07:03:51;2025-06-05;7;Thursday
+13046;Eugène Oudiné - Dessous Des Berges;37;34;3;7;2025-06-05 07:04:05;2025-06-05;7;Thursday
+17022;Pereire - Place de Wagram;5;3;2;40;2025-06-05 07:03:43;2025-06-05;7;Thursday
+7020;Champ de Mars - Cler;6;4;2;33;2025-06-05 07:04:03;2025-06-05;7;Thursday
+6017;Sénat - Condé;28;19;9;4;2025-06-05 07:03:53;2025-06-05;7;Thursday
+19041;Belleville - Pyrénées;2;0;2;38;2025-06-05 07:00:55;2025-06-05;7;Thursday
+1117;Pont Neuf - Rivoli;21;10;11;5;2025-06-05 07:03:01;2025-06-05;7;Thursday
+13103;Hôpital Pitié Salpêtrière;24;18;6;24;2025-06-05 07:02:35;2025-06-05;7;Thursday
+23903;Stade Gaston Bouillant;19;15;4;10;2025-06-05 07:04:10;2025-06-05;7;Thursday
+31704;Jeanne Hornet - Girardot;0;0;0;27;2025-06-05 07:02:49;2025-06-05;7;Thursday
+32603;Calmette;1;0;1;31;2025-06-05 07:03:48;2025-06-05;7;Thursday
+23403;Chateau;1;0;1;21;2025-06-05 07:03:00;2025-06-05;7;Thursday
+4013;Vieille du Temple - Francs Bourgeois;8;4;4;21;2025-06-05 07:03:35;2025-06-05;7;Thursday
+9118;Faubourg Poissonniere - Delta;2;1;1;34;2025-06-05 07:02:02;2025-06-05;7;Thursday
+21024;Billancourt - Général Leclerc;17;8;9;4;2025-06-05 07:01:59;2025-06-05;7;Thursday
+2001;Greneta - Sebastopol;6;4;2;24;2025-06-05 06:57:19;2025-06-05;6;Thursday
+19023;Manin - Simon Bolivar;0;0;0;22;2025-06-05 07:02:43;2025-06-05;7;Thursday
+17116;Reims - Porte d'Asnières;7;6;1;17;2025-06-05 07:03:41;2025-06-05;7;Thursday
+4011;Hôtel de Ville - Pont-Marie;11;6;5;24;2025-06-05 07:00:52;2025-06-05;7;Thursday
+12041;Bois de Vincennes.;38;27;11;21;2025-06-05 07:03:46;2025-06-05;7;Thursday
+14006;Saint-Jacques - Tombe Issoire;6;0;6;16;2025-06-05 07:02:50;2025-06-05;7;Thursday
+21311;Parvis Corentin Celton;44;38;6;11;2025-06-05 07:02:43;2025-06-05;7;Thursday
+21114;Gustave Eiffel - Parc des Impressionnistes;2;1;1;27;2025-06-05 07:03:21;2025-06-05;7;Thursday
+31013;Centenaire - Sorins;6;1;5;39;2025-06-05 07:02:23;2025-06-05;7;Thursday
+32018;Franciade - Gabriel Péri;14;13;1;11;2025-06-05 07:04:02;2025-06-05;7;Thursday
+18019;Square Raymond Souplex;2;0;2;50;2025-06-05 06:58:40;2025-06-05;6;Thursday
+9012;Rougemont - Poissonnière;20;13;7;22;2025-06-05 07:04:06;2025-06-05;7;Thursday
+15020;Mairie du 15ème;3;3;0;27;2025-06-05 07:03:35;2025-06-05;7;Thursday
+41206;Place des Larris;4;3;1;30;2025-06-05 07:03:31;2025-06-05;7;Thursday
+11019;Charonne - Philippe-Auguste;1;0;1;31;2025-06-05 07:04:15;2025-06-05;7;Thursday
+31018;Gambetta - Michelet;3;1;2;28;2025-06-05 07:02:37;2025-06-05;7;Thursday
+2110;Jeûneurs - Mulhouse;24;10;14;4;2025-06-05 07:04:16;2025-06-05;7;Thursday
+5019;Poissy - Saint-Germain;5;1;4;18;2025-06-05 07:02:34;2025-06-05;7;Thursday
+14007;Ferrus - Saint-Jacques;17;11;6;17;2025-06-05 07:01:58;2025-06-05;7;Thursday
+10164;Claude Vellefaux - Sambre et Meuse;3;0;3;31;2025-06-05 07:03:22;2025-06-05;7;Thursday
+3101;Porte Saint-Martin;7;3;4;26;2025-06-05 07:03:49;2025-06-05;7;Thursday
+8049;Georges V - François 1er;17;9;8;5;2025-06-05 07:04:15;2025-06-05;7;Thursday
+12154;Square Georges Melies;35;30;5;2;2025-06-05 07:04:00;2025-06-05;7;Thursday
+22017;Charles de Gaulle - Louis Philippe;20;10;10;7;2025-06-05 07:03:53;2025-06-05;7;Thursday
+19021;Mairie du 19ème;1;0;1;23;2025-06-05 07:01:47;2025-06-05;7;Thursday
+17104;Jardin Marguerite Long;9;8;1;12;2025-06-05 07:01:48;2025-06-05;7;Thursday
+22002;Argenson - Château;19;11;8;6;2025-06-05 07:04:07;2025-06-05;7;Thursday
+13022;Butte aux Cailles - Esperance;2;0;2;31;2025-06-05 07:04:10;2025-06-05;7;Thursday
+20045;Louis Ganne - Davout;0;0;0;30;2025-06-05 06:59:38;2025-06-05;6;Thursday
+13019;Fernand Braudel - Vincent Auriol;12;9;3;23;2025-06-05 07:03:12;2025-06-05;7;Thursday
+11044;Square du Bataclan;9;6;3;9;2025-06-05 07:04:12;2025-06-05;7;Thursday
+16041;Versailles - Claude Terrasse;6;5;1;37;2025-06-05 07:02:55;2025-06-05;7;Thursday
+21952;Place Tony de Graaff;28;28;0;13;2025-06-05 07:02:31;2025-06-05;7;Thursday
+11110;Roquette - Folie Regnault;15;13;2;35;2025-06-05 07:03:43;2025-06-05;7;Thursday
+14016;René Coty - Parc Montsouris;1;0;1;54;2025-06-05 06:57:10;2025-06-05;6;Thursday
+12033;François Truffaut - Saint Emilion;61;58;3;2;2025-06-05 07:01:03;2025-06-05;7;Thursday
+18142;Jessaint - Marx Dormoy;4;0;4;24;2025-06-05 07:03:09;2025-06-05;7;Thursday
+13110;Moulin de la Pointe;1;0;1;21;2025-06-05 07:01:15;2025-06-05;7;Thursday
+23005;Gare de Clichy-Levallois;9;2;7;16;2025-06-05 07:04:16;2025-06-05;7;Thursday
+20117;Saint-Fargeau - Mortier;0;0;0;31;2025-06-05 07:01:25;2025-06-05;7;Thursday
+48009;République - Auguste Perret;4;2;2;25;2025-06-05 07:03:57;2025-06-05;7;Thursday
+13047;Boutroux - Porte de Vitry;41;40;1;8;2025-06-05 07:01:36;2025-06-05;7;Thursday
+18114;Véron - Lepic;0;0;0;23;2025-06-05 06:59:04;2025-06-05;6;Thursday
+44103;Pont De Charenton;9;9;0;8;2025-06-05 07:04:07;2025-06-05;7;Thursday
+42011;Quai Marcel Boyer - Victor Hugo;23;19;4;4;2025-06-05 07:04:14;2025-06-05;7;Thursday
+20047;Cours de Vincennes - Davout;26;6;20;19;2025-06-05 07:03:50;2025-06-05;7;Thursday
+92005;Gare de Nanterre Ville;32;32;0;10;2025-06-05 07:03:10;2025-06-05;7;Thursday
+10039;Sambre et Meuse - Villette;3;1;2;19;2025-06-05 07:03:31;2025-06-05;7;Thursday
+31101;Jules Guesde - Laennec;7;0;7;12;2025-06-05 06:58:56;2025-06-05;6;Thursday
+31026;Demi-Lune - Aristide Briand;1;0;1;18;2025-06-05 07:02:23;2025-06-05;7;Thursday
+12129;Bois de Vincennes - Porte Jaune;7;7;0;27;2025-06-05 07:01:10;2025-06-05;7;Thursday
+35004;Place du Président Salvador Allende;21;8;13;36;2025-06-05 07:03:55;2025-06-05;7;Thursday
+31707;Edouard Vaillant - Galliéni;8;4;4;41;2025-06-05 07:02:10;2025-06-05;7;Thursday
+8011;Clapeyron - Moscou;2;1;1;13;2025-06-05 07:03:12;2025-06-05;7;Thursday
+19124;Alexander Fleming - Belvédère;4;0;4;27;2025-06-05 07:01:07;2025-06-05;7;Thursday
+14113;Santé - Arago;7;6;1;30;2025-06-05 07:01:52;2025-06-05;7;Thursday
+35015;Averroès - Aimé Césaire;15;10;5;3;2025-06-05 07:02:18;2025-06-05;7;Thursday
+15019;Paul Barruel - Vaugirard;7;2;5;30;2025-06-05 07:04:00;2025-06-05;7;Thursday
+12150;Bastille - Quai de la Rapée;22;20;2;5;2025-06-05 07:02:17;2025-06-05;7;Thursday
+11031;Jacquard - Ternaux;6;5;1;32;2025-06-05 07:03:55;2025-06-05;7;Thursday
+12125;Pyramide - Parc Floral;27;15;12;22;2025-06-05 07:01:37;2025-06-05;7;Thursday
+13515;Auguste Blanqui - Glacière;14;10;4;44;2025-06-05 07:04:06;2025-06-05;7;Thursday
+10152;Gare du Nord - Place de Valenciennes;2;0;2;20;2025-06-05 07:03:29;2025-06-05;7;Thursday
+15131;Charles Lecocq - Lecourbe;15;14;1;14;2025-06-05 07:03:54;2025-06-05;7;Thursday
+10037;Quai de Valmy;1;0;1;23;2025-06-05 07:03:18;2025-06-05;7;Thursday
+9036;Athènes - Clichy;4;2;2;16;2025-06-05 07:03:17;2025-06-05;7;Thursday
+13117;Stade Georges Carpentier;2;1;1;38;2025-06-05 07:02:25;2025-06-05;7;Thursday
+17029;Pierre Demours - Laugier;1;0;1;36;2025-06-05 07:03:25;2025-06-05;7;Thursday
+21118;Neuilly - Petit;5;0;5;10;2025-06-05 07:03:57;2025-06-05;7;Thursday
+11103;Pelée - Alphonse Baudin;22;22;0;15;2025-06-05 07:03:03;2025-06-05;7;Thursday
+20039;Belleville - Couronnes;0;0;0;48;2025-06-05 07:01:55;2025-06-05;7;Thursday
+21203;Place Jules Ferry;7;3;4;21;2025-06-05 07:03:26;2025-06-05;7;Thursday
+5034;Censier - Santeuil;6;1;5;63;2025-06-05 07:02:12;2025-06-05;7;Thursday
+21316;Cimetière d'Issy-les-Moulineaux;1;0;1;23;2025-06-05 06:59:39;2025-06-05;6;Thursday
+19025;Botzaris - Crimée;0;0;0;21;2025-06-05 07:04:07;2025-06-05;7;Thursday
+16009;Saint-Didier - Raymond Poincaré;3;0;3;13;2025-06-05 06:54:23;2025-06-05;6;Thursday
+21029;Cours de l'Ile Seguin - Parc Billancourt;23;8;15;4;2025-06-05 07:04:16;2025-06-05;7;Thursday
+10153;Gare du Nord - Denain;1;0;1;18;2025-06-05 07:00:43;2025-06-05;7;Thursday
+16003;André Maurois - Joseph et Marie Hackin;3;2;1;25;2025-06-05 07:02:23;2025-06-05;7;Thursday
+15072;Place Fernand Forest;29;26;3;4;2025-06-05 07:03:40;2025-06-05;7;Thursday
+16014;Eylau - Trocadéro;10;1;9;11;2025-06-05 07:03:40;2025-06-05;7;Thursday
+16007;Longchamp - Place d'Iéna;22;6;16;17;2025-06-05 07:03:20;2025-06-05;7;Thursday
+10110;Louis Blanc - Jemmapes;5;2;3;23;2025-06-05 07:02:15;2025-06-05;7;Thursday
+21115;Chancé Milly - Cimetière Communal Sud;2;1;1;29;2025-06-05 06:59:41;2025-06-05;6;Thursday
+21708;Marcel Yol - Jullien;10;7;3;20;2025-06-05 07:01:42;2025-06-05;7;Thursday
+21307;Victor Cresson - Telles de la Poterie;12;12;0;17;2025-06-05 07:04:06;2025-06-05;7;Thursday
+21702;Gare SNCF Vanves-Malakoff;3;2;1;46;2025-06-05 07:02:18;2025-06-05;7;Thursday
+42304;Marc Sangnier - Division Leclerc;19;18;1;4;2025-06-05 07:02:24;2025-06-05;7;Thursday
+15052;Convention - Vaugirard;13;12;1;33;2025-06-05 07:03:57;2025-06-05;7;Thursday
+44002;Paul Vaillant-Couturier - Gare RER;12;11;1;13;2025-06-05 07:01:19;2025-06-05;7;Thursday
+16115;Raffet - Montmorency;12;5;7;28;2025-06-05 07:01:59;2025-06-05;7;Thursday
+13039;Ivry - Simone Weil;2;1;1;16;2025-06-05 07:03:56;2025-06-05;7;Thursday
+21030;Fessart - Château;3;3;0;17;2025-06-05 06:58:16;2025-06-05;6;Thursday
+21031;Cimetière de Boulogne-Billancourt;30;23;7;7;2025-06-05 07:04:15;2025-06-05;7;Thursday
+15043;Brancion - Lefebvre;1;0;1;10;2025-06-05 07:02:55;2025-06-05;7;Thursday
+22604;Hôtel de Ville de Fontenay-aux-Roses;0;0;0;33;2025-06-05 07:00:29;2025-06-05;7;Thursday
+42305;Vanne - Saussaies;18;9;9;1;2025-06-05 07:03:14;2025-06-05;7;Thursday
+16101;Malakoff - Place de la Porte Maillot;13;7;6;13;2025-06-05 07:04:15;2025-06-05;7;Thursday
+13121;Bruneseau - Quai d'Ivry;39;38;1;7;2025-06-05 07:04:01;2025-06-05;7;Thursday
+13048;Wurtz - Tolbiac;4;4;0;22;2025-06-05 07:03:52;2025-06-05;7;Thursday
+21028;Pierre Lefaucheux - Traversière;23;23;0;12;2025-06-05 07:02:39;2025-06-05;7;Thursday
+32301;Mairie de Romainville;1;0;1;16;2025-06-05 06:56:57;2025-06-05;6;Thursday
+20108;Jardin de l'Hospice Debrousse;0;0;0;23;2025-06-05 06:54:34;2025-06-05;6;Thursday
+4001;Arcole - Notre-Dame;14;10;4;17;2025-06-05 07:03:34;2025-06-05;7;Thursday
+5014;Jean Calvin - Tournefort;7;0;7;21;2025-06-05 06:56:53;2025-06-05;6;Thursday
+42701;Charles Gide - Fort de Bicêtre;4;0;4;26;2025-06-05 07:02:51;2025-06-05;7;Thursday
+13126;Place Nationale - Château-des-Rentiers;6;5;1;12;2025-06-05 07:02:17;2025-06-05;7;Thursday
+8020;Batignolles - Beudant;2;0;2;41;2025-06-05 06:59:00;2025-06-05;6;Thursday
+15023;La Motte-Picquet - Grenelle;8;6;2;25;2025-06-05 06:59:56;2025-06-05;6;Thursday
+40009;Lycée Saint Exupéry - Juliette Savar;14;5;9;16;2025-06-05 07:00:36;2025-06-05;7;Thursday
+12043;Daumesnil - Hébrard;14;13;1;26;2025-06-05 07:03:25;2025-06-05;7;Thursday
+8549;George V - Christophe Colomb;19;7;12;5;2025-06-05 07:04:15;2025-06-05;7;Thursday
+4002;Marché aux fleurs;23;20;3;0;2025-06-05 07:02:59;2025-06-05;7;Thursday
+42501;Raspail - Albert Schweitzer;26;21;5;1;2025-06-05 07:03:11;2025-06-05;7;Thursday
+6008;Assas - Luxembourg;15;8;7;18;2025-06-05 07:01:46;2025-06-05;7;Thursday
+21204;Estienne d'Orves - Henri Ginoux;2;0;2;29;2025-06-05 07:04:09;2025-06-05;7;Thursday
+11021;Charonne - Pierre Bayle;1;0;1;21;2025-06-05 07:02:53;2025-06-05;7;Thursday
+16011;Victor Hugo - La Pompe;11;5;6;28;2025-06-05 07:03:21;2025-06-05;7;Thursday
+25001;Colmar - Victor Hugo;20;15;5;11;2025-06-05 06:59:38;2025-06-05;6;Thursday
+44101;Place Mongolfier;38;35;3;0;2025-06-05 07:03:12;2025-06-05;7;Thursday
+10165;Gare de l'Est - Place du 11 Novembre 1918;1;0;1;38;2025-06-05 07:04:04;2025-06-05;7;Thursday
+15064;Javel - André Citroën;42;41;1;1;2025-06-05 07:04:16;2025-06-05;7;Thursday
+43001;Paris - Laitières;0;0;0;0;2025-06-05 07:01:14;2025-06-05;7;Thursday
+13128;Quai de la Gare - Pont de Bercy;5;3;2;25;2025-06-05 07:03:58;2025-06-05;7;Thursday
+22303;Lucien Lanternier - Le Luth;23;21;2;4;2025-06-05 07:02:17;2025-06-05;7;Thursday
+17107;Berthier - Place Stuart Merril;1;1;0;35;2025-06-05 07:04:12;2025-06-05;7;Thursday
+15057;Lucien Bossoutrot - Général Martial Vallin;38;28;10;0;2025-06-05 07:02:30;2025-06-05;7;Thursday
+15004;Vaugirard - Pasteur;0;0;0;21;2025-06-05 07:03:27;2025-06-05;7;Thursday
+6027;Blaise-Desgoffe - Vaugirard;14;10;4;16;2025-06-05 07:04:12;2025-06-05;7;Thursday
+18006;Square Louise Michel;1;0;1;35;2025-06-05 07:02:35;2025-06-05;7;Thursday
+21401;Mairie de Clamart;1;0;1;27;2025-06-05 07:03:10;2025-06-05;7;Thursday
+9027;Douai - Pierre Fontaine;2;1;1;23;2025-06-05 07:01:59;2025-06-05;7;Thursday
+17108;Bessières - Porte de Clichy;8;4;4;24;2025-06-05 06:56:52;2025-06-05;6;Thursday
+4020;Place Edmond Michelet;0;0;0;22;2025-06-05 06:55:29;2025-06-05;6;Thursday
+23004;Paul Vaillant-Couturier - Victor Hugo;16;9;7;18;2025-06-05 07:04:12;2025-06-05;7;Thursday
+8037;Monceau - Malesherbes;12;4;8;24;2025-06-05 07:04:03;2025-06-05;7;Thursday
+1021;Halles - Bourdonnais;9;6;3;11;2025-06-05 07:02:54;2025-06-05;7;Thursday
+33015;Charles Tillon - Cimetière Communal;7;5;2;22;2025-06-05 07:04:17;2025-06-05;7;Thursday
+41205;Maréchal Joffre - Verdun;1;0;1;19;2025-06-05 06:55:20;2025-06-05;6;Thursday
+12018;Saint-Mandé - Fabre d'Eglantine;11;7;4;23;2025-06-05 07:04:12;2025-06-05;7;Thursday
+44016;Balzac - Olympes de Gouges;24;14;10;4;2025-06-05 06:57:12;2025-06-05;6;Thursday
+44005;Place Saint-Just;13;13;0;8;2025-06-05 07:04:17;2025-06-05;7;Thursday
+51002;Placette Grégoire Collas;18;17;1;5;2025-06-05 07:02:30;2025-06-05;7;Thursday
+32601;Porte des Lilas - Faidherbe;2;0;2;37;2025-06-05 07:00:11;2025-06-05;7;Thursday
+12026;Place Ginette Hamelin;35;28;7;16;2025-06-05 07:02:51;2025-06-05;7;Thursday
+10162;Alexandre Parodi - Quai de Valmy;4;0;4;20;2025-06-05 07:03:59;2025-06-05;7;Thursday
+6012;Saint-Germain - Ciseaux;2;1;1;15;2025-06-05 06:59:41;2025-06-05;6;Thursday
+13009;Auguste Blanqui - Corvisart;6;5;1;20;2025-06-05 07:03:45;2025-06-05;7;Thursday
+27005;Gare du Stade;12;8;4;8;2025-06-05 06:59:56;2025-06-05;6;Thursday
+15071;Suffren - Champ de Mars;9;8;1;13;2025-06-05 07:02:06;2025-06-05;7;Thursday
+9024;Taitbout - La Fayette;40;23;17;12;2025-06-05 07:04:17;2025-06-05;7;Thursday
+8201;Arsène Houssaye - Friedland;6;0;6;23;2025-06-05 06:50:44;2025-06-05;6;Thursday
+17111;Lemercier - Cardinet;1;0;1;20;2025-06-05 07:03:29;2025-06-05;7;Thursday
+9102;Londres - Place d'Estienne d'Orves;11;8;3;13;2025-06-05 07:03:56;2025-06-05;7;Thursday
+18030;Joseph Dijon - Ornano;1;1;0;35;2025-06-05 07:03:51;2025-06-05;7;Thursday
+92006;Place Nelson Mandela;13;2;11;17;2025-06-05 07:03:33;2025-06-05;7;Thursday
+5024;Place Monge;3;0;3;18;2025-06-05 07:03:52;2025-06-05;7;Thursday
+12005;Crozatier - Faubourg Saint-Antoine;23;19;4;16;2025-06-05 07:01:59;2025-06-05;7;Thursday
+12155;Rottembourg - Général Michel Bizot;16;12;4;24;2025-06-05 07:00:16;2025-06-05;7;Thursday
+9011;Geoffroy - Marie;16;12;4;4;2025-06-05 07:03:30;2025-06-05;7;Thursday
+12035;Madagascar - Meuniers;0;0;0;46;2025-06-05 07:03:47;2025-06-05;7;Thursday
+44011;Lebrun - Colonel Fabien;1;0;1;26;2025-06-05 06:55:12;2025-06-05;6;Thursday
+2108;Vivienne - Montmartre;36;22;14;1;2025-06-05 07:02:11;2025-06-05;7;Thursday
+12101;Charenton - Prague;16;10;6;8;2025-06-05 07:04:03;2025-06-05;7;Thursday
+21707;Square Etienne Jarousse;1;0;1;21;2025-06-05 06:59:08;2025-06-05;6;Thursday
+3102;Bourg l'Abbé - Saint-Martin;4;1;3;56;2025-06-05 06:59:49;2025-06-05;6;Thursday
+51001;Gare d'Argenteuil;11;3;8;29;2025-06-05 07:03:11;2025-06-05;7;Thursday
+15039;Abbé Groult - Convention;0;0;0;12;2025-06-05 07:03:57;2025-06-05;7;Thursday
+21315;Jules Guesdes - Général de Gaulle;2;1;1;22;2025-06-05 06:56:51;2025-06-05;6;Thursday
+23102;Hôtel de Ville de Sèvres;23;17;6;7;2025-06-05 07:01:42;2025-06-05;7;Thursday
+15006;Cherche-Midi - Hôpital Necker;4;3;1;34;2025-06-05 07:03:11;2025-06-05;7;Thursday
+21402;Place Aimé Césaire;2;0;2;24;2025-06-05 06:56:03;2025-06-05;6;Thursday
+15036;Croix Nivert - Square Saint-Lambert;1;0;1;46;2025-03-03 09:03:43;2025-03-03;9;Monday
+17024;Villiers - Batignolles;3;1;2;20;2025-06-05 07:04:17;2025-06-05;7;Thursday
+20105;Benoît Frachon - République;17;7;10;13;2025-06-05 07:03:45;2025-06-05;7;Thursday
+33103;Jean Jaurès - Jules Jacquemin;0;0;0;23;2025-06-05 07:03:12;2025-06-05;7;Thursday
+14032;Mairie du 14ème;2;0;2;30;2025-06-05 07:02:38;2025-06-05;7;Thursday
+41401;Marne - Charles de Gaulle;1;1;0;26;2025-06-05 07:04:00;2025-06-05;7;Thursday
+14031;Didot - Place de Moro-Giafferi;1;0;1;21;2025-06-05 07:00:39;2025-06-05;7;Thursday
+20044;Davout - Volga;16;8;8;10;2025-06-05 07:03:27;2025-06-05;7;Thursday
+33012;Landy - Heurtault;9;6;3;20;2025-06-05 07:02:08;2025-06-05;7;Thursday
+15070;Balard - Montagne de la Fage;0;0;0;36;2025-06-05 06:56:34;2025-06-05;6;Thursday
+10019;Paradis - Hauteville;9;5;4;22;2025-06-05 07:03:12;2025-06-05;7;Thursday
+11033;Bréguet - Sabin;28;25;3;5;2025-06-05 07:04:14;2025-06-05;7;Thursday
+10033;Gare du Nord - Saint-Vincent de Paul;0;0;0;24;2025-06-05 06:56:59;2025-06-05;6;Thursday
+40006;Université Paris Est Créteil;2;1;1;41;2025-06-05 06:56:18;2025-06-05;6;Thursday
+18039;Jardins d'Eole;1;0;1;19;2025-06-05 07:04:05;2025-06-05;7;Thursday
+20022;Porte de Bagnolet;2;0;2;30;2025-06-05 07:01:32;2025-06-05;7;Thursday
+12036;Reuilly - Place Felix Eboue;1;1;0;38;2025-06-05 07:04:16;2025-06-05;7;Thursday
+10032;Claude Vellefaux - Hôpital Saint-Louis;5;1;4;26;2025-06-05 07:03:59;2025-06-05;7;Thursday
+26004;Gare RER les Grésillons;13;10;3;7;2025-06-05 07:02:47;2025-06-05;7;Thursday
+18139;Poissonniers - Championnet;15;11;4;11;2025-06-05 07:03:29;2025-06-05;7;Thursday
+1006;Grande Truanderie - Saint-Denis;2;0;2;31;2025-06-05 07:00:59;2025-06-05;7;Thursday
+15008;Sèvres - Lecourbe;13;12;1;45;2025-06-05 07:04:16;2025-06-05;7;Thursday
+11112;Jules Vallès - Charonne;7;4;3;15;2025-06-05 07:03:48;2025-06-05;7;Thursday
+5007;Ecoles - Carmes;6;3;3;28;2025-06-05 07:03:54;2025-06-05;7;Thursday
+4006;Bourdon - Pont Morland;13;12;1;38;2025-06-05 07:03:29;2025-06-05;7;Thursday
+18202;Diane Arbus;1;1;0;37;2025-06-05 07:04:11;2025-06-05;7;Thursday
+3008;Perle - Vieille du Temple;13;7;6;22;2025-06-05 07:03:44;2025-06-05;7;Thursday
+45002;Roger Salengro - Général de Gaulle;18;14;4;9;2025-06-05 07:03:28;2025-06-05;7;Thursday
+15128;Cadix - Hameau;4;1;3;33;2025-06-05 07:02:55;2025-06-05;7;Thursday
+44014;Camille Risch - Paul Armangot;10;2;8;15;2025-06-05 07:04:14;2025-06-05;7;Thursday
+1007;Turbigo - Française;2;0;2;13;2025-06-05 07:04:08;2025-06-05;7;Thursday
+21309;Mairie d'Issy;29;25;4;12;2025-06-05 07:04:17;2025-06-05;7;Thursday
+7012;Cité Vaneau;21;16;5;5;2025-06-05 07:02:19;2025-06-05;7;Thursday
+20008;Pyrénées - Avron;2;0;2;29;2025-06-05 07:02:32;2025-06-05;7;Thursday
+14135;Jourdan - Cité Universitaire;5;3;2;32;2025-06-05 07:02:57;2025-06-05;7;Thursday
+8110;Gare Saint-Lazare - Stockholm;3;2;1;28;2025-06-05 07:04:07;2025-06-05;7;Thursday
+20024;Gambetta - Père Lachaise;3;1;2;26;2025-06-05 07:03:03;2025-06-05;7;Thursday
+3010;Beaubourg - Michel-le-Comte;3;1;2;10;2025-06-05 07:04:01;2025-06-05;7;Thursday
+12156;Niger - Soult;9;8;1;15;2025-06-05 07:03:30;2025-06-05;7;Thursday
+18140;Porte de Clignancourt - Ney;1;1;0;38;2025-06-05 07:04:14;2025-06-05;7;Thursday
+19002;Centquatre;4;0;4;37;2025-06-05 07:03:26;2025-06-05;7;Thursday
+9009;Square Montholon;6;1;5;13;2025-06-05 07:00:18;2025-06-05;7;Thursday
+10034;Louis Blanc - La Chapelle;3;2;1;18;2025-06-05 06:58:31;2025-06-05;6;Thursday
+16102;Pergolèse - Marbeau;3;1;2;24;2025-06-05 07:03:38;2025-06-05;7;Thursday
+20034;Sorbier - Ménilmontant;0;0;0;23;2025-06-05 06:57:08;2025-06-05;6;Thursday
+13005;Cordelières - Arago;12;10;2;34;2025-06-05 07:03:47;2025-06-05;7;Thursday
+16037;Molitor - Michel-Ange;0;0;0;0;2018-03-20 09:09:28;2018-03-20;9;Tuesday
+17019;Phalsbourg - Villiers;8;5;3;10;2025-06-05 07:02:44;2025-06-05;7;Thursday
+19201;Petit - Georges Thill;3;2;1;20;2025-06-05 06:59:22;2025-06-05;6;Thursday
+19010;Emile Reynaud - Porte de la Villette;2;1;1;19;2025-06-05 07:03:11;2025-06-05;7;Thursday
+41405;Place de l'Europe - Alfortville;17;14;3;5;2025-06-05 07:03:35;2025-06-05;7;Thursday
+14019;Sarrette - Général Leclerc;0;0;0;22;2025-06-05 06:57:26;2025-06-05;6;Thursday
+3011;Turbigo - Réaumur;5;3;2;24;2025-06-05 07:02:55;2025-06-05;7;Thursday
+31709;Place de la Fraternité;3;0;3;18;2025-06-05 07:03:55;2025-06-05;7;Thursday
+10006;Petites Ecuries - Faubourg Saint-Denis;11;3;8;14;2025-06-05 07:03:33;2025-06-05;7;Thursday
+22401;Charles de Gaulle - Plateau de Vanves;2;2;0;30;2025-06-05 07:02:52;2025-06-05;7;Thursday
+14103;Maine - Liancourt;1;0;1;26;2025-06-05 07:00:59;2025-06-05;7;Thursday
+2015;Louis le Grand - Italiens;33;16;17;0;2025-06-05 07:03:47;2025-06-05;7;Thursday
+21026;Sèvres - Général Leclerc;22;16;6;7;2025-06-05 07:04:09;2025-06-05;7;Thursday
+22503;Joffre - Aigle;3;2;1;17;2025-06-05 07:00:31;2025-06-05;7;Thursday
+12020;Cours de Vincennes - Soult;18;8;10;27;2025-06-05 07:04:01;2025-06-05;7;Thursday
+2021;Cléry - Montmartre;34;15;19;22;2025-06-05 07:04:02;2025-06-05;7;Thursday
+4014;Blancs-Manteaux - Archives;11;8;3;16;2025-06-05 07:02:21;2025-06-05;7;Thursday
+3005;Sainte-Elisabeth - Turbigo;0;0;0;33;2024-06-02 06:46:29;2024-06-02;6;Sunday
+3012;Square Emile - Chautemps;15;12;3;9;2025-06-05 07:02:42;2025-06-05;7;Thursday
+23702;Hôtel de Ville de Chaville;7;4;3;13;2025-06-05 07:00:40;2025-06-05;7;Thursday
+2002;Etienne Marcel - Montorgueil;2;1;1;26;2025-06-05 07:00:02;2025-06-05;7;Thursday
+14023;Adolphe Pinard - Victor Hugo;0;0;0;52;2025-06-05 06:57:36;2025-06-05;6;Thursday
+3003;Fille du Calvaire - Turenne;19;13;6;9;2025-06-05 07:03:44;2025-06-05;7;Thursday
+19111;Cesaria Evora - Rosa Parks;16;12;4;22;2025-06-05 07:04:15;2025-06-05;7;Thursday
+9111;Victoire - Laffitte;19;15;4;1;2025-06-05 07:03:52;2025-06-05;7;Thursday
+13125;Gare d'Austerlitz - Pont Charles de Gaulle;51;31;20;4;2025-06-05 07:04:08;2025-06-05;7;Thursday
+8036;Lisbonne - Monceau;46;23;23;1;2025-06-05 07:03:51;2025-06-05;7;Thursday
+6031;Pierre Sarrazin - Saint-Michel;21;18;3;12;2025-06-05 07:00:42;2025-06-05;7;Thursday
+21215;Verdier - Jean Jaurès;5;3;2;27;2025-06-05 07:03:22;2025-06-05;7;Thursday
+41208;Alouettes - Maréchal de Lattre de Tassigny;7;2;5;13;2025-06-05 07:00:48;2025-06-05;7;Thursday
+1014;Rivoli - Musée du Louvre;22;14;8;0;2025-06-05 07:01:34;2025-06-05;7;Thursday
+26006;Bas - Gabriel Péri;17;15;2;9;2025-06-05 07:03:40;2025-06-05;7;Thursday
+42026;Barbès - Monique Maunoury;1;1;0;38;2025-06-05 07:04:14;2025-06-05;7;Thursday
+13054;Pau Casals - Neuve Tolbiac;39;31;8;12;2025-06-05 07:04:09;2025-06-05;7;Thursday
+1012;Jean-Jacques Rousseau - Deux Ecus;9;5;4;13;2025-06-05 06:59:46;2025-06-05;6;Thursday
+2004;Square Pierre Lazareff;8;3;5;8;2025-06-05 07:02:33;2025-06-05;7;Thursday
+35012;Candale - Mehul;7;6;1;17;2025-06-05 07:03:50;2025-06-05;7;Thursday
+21505;Édouard Vaillant - Place Jean Jaurès;0;0;0;24;2025-06-05 06:55:42;2025-06-05;6;Thursday
+2016;Aboukir - Alexandrie;5;4;1;16;2025-06-05 07:03:42;2025-06-05;7;Thursday
+4018;Saint-Bon - Rivoli;6;3;3;25;2025-06-05 07:04:10;2025-06-05;7;Thursday
+16044;Porte de Saint Cloud - Parc des Princes;7;4;3;23;2025-06-05 07:00:28;2025-06-05;7;Thursday
+44001;Quai Jules Guesde - Saint-Simon;28;19;9;1;2025-06-05 07:02:01;2025-06-05;7;Thursday
+4007;Place de la Bastille - Bourdon;22;20;2;13;2025-06-05 07:04:07;2025-06-05;7;Thursday
+5004;Saint-Jacques - Val de Grâce;4;2;2;14;2025-06-05 07:04:14;2025-06-05;7;Thursday
+4009;Village Saint-Paul;12;8;4;16;2025-06-05 07:00:51;2025-06-05;7;Thursday
+10041;Gare du Nord - La Chapelle;1;0;1;15;2025-06-05 07:02:13;2025-06-05;7;Thursday
+9039;Chaussée d'Antin - Haussmann;27;10;17;1;2025-06-05 07:01:12;2025-06-05;7;Thursday
+1018;Alger - Rivoli;17;13;4;4;2025-06-05 07:04:01;2025-06-05;7;Thursday
+17106;Berthier - Porte de Clichy;13;10;3;10;2025-06-05 07:04:12;2025-06-05;7;Thursday
+1116;Ventadour - Opéra;14;7;7;12;2025-06-05 07:04:03;2025-06-05;7;Thursday
+32024;Port - Confluence;9;8;1;15;2025-06-05 07:03:07;2025-06-05;7;Thursday
+15040;Saint-Amand - Labrouste;2;0;2;33;2025-06-05 07:02:30;2025-06-05;7;Thursday
+22601;Marx Dormoy - Château Sainte-Barbe;3;2;1;19;2025-06-05 07:02:40;2025-06-05;7;Thursday
+48008;Guy Môquet - Parvis Georges Marchais;10;2;8;20;2025-06-05 07:02:58;2025-06-05;7;Thursday
+14201;Decrès - Alésia;3;2;1;25;2025-06-05 07:03:50;2025-06-05;7;Thursday
+27001;Square Victor Basch;6;4;2;14;2025-06-05 07:03:44;2025-06-05;7;Thursday
+12164;Stade Pershing;1;0;1;24;2025-06-05 06:56:51;2025-06-05;6;Thursday
+3007;Archives - Pastourelle;21;17;4;7;2025-06-05 07:04:16;2025-06-05;7;Thursday
+35005;Quai de l'Aisne - Général Leclerc;10;4;6;14;2025-06-05 07:04:12;2025-06-05;7;Thursday
+42028;Verdun - Carnot;8;5;3;18;2025-06-05 07:03:05;2025-06-05;7;Thursday
+12166;Parc Floral du Bel Air;11;4;7;13;2025-06-05 07:04:06;2025-06-05;7;Thursday
+23042;André Theuriet - Blagis;23;15;8;7;2025-06-05 07:02:47;2025-06-05;7;Thursday
+32022;Henri Barbusse - Marcel Cachin;0;0;0;0;2025-02-24 10:20:03;2025-02-24;10;Monday
+27006;Victor Hugo - Gare;18;13;5;5;2025-06-05 07:01:41;2025-06-05;7;Thursday
+1015;Place André Malraux;32;15;17;4;2025-06-05 07:03:56;2025-06-05;7;Thursday
+2102;Saint-Marc - Feydeau;30;12;18;5;2025-06-05 07:03:54;2025-06-05;7;Thursday
+2020;Danielle Casanova - Opéra;12;7;5;8;2025-06-05 07:04:10;2025-06-05;7;Thursday
+12016;Saint-Mande - Picpus;3;2;1;32;2025-06-05 07:04:09;2025-06-05;7;Thursday
+42210;Victor Hugo - Paul Eluard;19;13;6;10;2025-06-05 07:04:18;2025-06-05;7;Thursday
+23104;Quai de Sèvres - Manufacture Nationale;22;18;4;4;2025-06-05 07:01:34;2025-06-05;7;Thursday
+21011;Silly - Louis Blériot;8;7;1;15;2025-06-05 07:02:53;2025-06-05;7;Thursday
+20140;Paganini - Davout;5;5;0;17;2025-06-05 07:03:47;2025-06-05;7;Thursday
+23303;Gare de Robinson;10;7;3;20;2025-06-05 07:02:02;2025-06-05;7;Thursday
+42022;Gare RER - Maurice Grandcoing;36;34;2;0;2025-06-05 07:03:54;2025-06-05;7;Thursday
+20048;Bagnolet - Place Saint-Blaise;1;0;1;27;2025-06-05 06:55:29;2025-06-05;6;Thursday
+10166;Strasbourg - Saint-Denis;10;2;8;5;2025-06-05 07:04:15;2025-06-05;7;Thursday
+13049;Vincent Auriol - Louise Weiss;19;12;7;3;2025-06-05 07:02:17;2025-06-05;7;Thursday
+6015;André Mazet - Saint-André des Arts;8;4;4;47;2025-06-05 07:01:46;2025-06-05;7;Thursday
+17202;Mariotte - Batignolles;2;0;2;18;2025-06-05 06:55:14;2025-06-05;6;Thursday
+8202;Londres - Europe;8;3;5;18;2025-06-05 07:04:10;2025-06-05;7;Thursday
+12202;Charenton - Wattignies;1;0;1;39;2025-06-05 06:54:05;2025-06-05;6;Thursday
+42030;Stéphanie Bouvard - Gambetta;13;12;1;15;2025-06-05 07:04:14;2025-06-05;7;Thursday
+8018;Saint-Augustin;26;15;11;17;2025-06-05 07:03:30;2025-06-05;7;Thursday
+24004;Paix - Verdun;0;0;0;0;2025-05-15 10:55:31;2025-05-15;10;Thursday
+51008;Martyrs de Châteaubriant - Jean Grandel;20;8;12;16;2025-06-05 07:04:05;2025-06-05;7;Thursday
+24101;Place Charles de Gaulle;0;0;0;23;2025-06-05 06:59:31;2025-06-05;6;Thursday
+21329;Gare - Aristide Briand;25;24;1;2;2025-06-05 07:03:40;2025-06-05;7;Thursday
+21704;Place du Maréchal de Lattre de Tassigny;6;3;3;21;2025-06-05 07:02:12;2025-06-05;7;Thursday
+25007;Bons Raisins - Voltaire;1;0;1;22;2025-06-05 07:03:17;2025-06-05;7;Thursday
+19114;Manin - Secrétan;0;0;0;20;2025-06-05 07:02:44;2025-06-05;7;Thursday
+12123;Château de Vincennes;13;10;3;39;2025-06-05 07:04:06;2025-06-05;7;Thursday
+19006;Mathis - Flandre;0;0;0;0;2024-09-05 10:54:01;2024-09-05;10;Thursday
+31104;Mairie de Rosny-sous-Bois;14;5;9;15;2025-06-05 07:03:52;2025-06-05;7;Thursday
+42024;Danielle Casanova - Ledru-Rollin;4;4;0;24;2025-06-05 07:03:49;2025-06-05;7;Thursday
+5027;Gobelins - Port-Royal;13;11;2;24;2025-06-05 07:00:26;2025-06-05;7;Thursday
+15203;Porte de Versailles;19;18;1;9;2025-06-05 07:02:36;2025-06-05;7;Thursday
+11111;Léon Frot - Charonne;4;1;3;14;2025-06-05 07:03:21;2025-06-05;7;Thursday
+48006;Maxime Gorki - Paul Vaillant-Couturier;2;0;2;18;2025-06-05 07:02:55;2025-06-05;7;Thursday
+18016;Francoeur - Caulaincourt;0;0;0;33;2025-06-05 07:03:50;2025-06-05;7;Thursday
+41103;Place de la vache noire;13;4;9;12;2025-06-05 07:04:16;2025-06-05;7;Thursday
+41602;Place Charles Digeon;13;9;4;17;2025-06-05 07:03:51;2025-06-05;7;Thursday
+13028;Gouthière - Poterne des Peupliers;26;22;4;4;2025-06-05 07:03:01;2025-06-05;7;Thursday
+15069;Félix Faure - Convention;39;34;5;4;2025-06-05 07:03:23;2025-06-05;7;Thursday
+14004;Port Royal - Hôpital Cochin;1;0;1;21;2025-06-05 07:01:10;2025-06-05;7;Thursday
+42303;Place Eustache Deschamps;10;7;3;8;2025-06-05 07:01:23;2025-06-05;7;Thursday
+48002;LCL Campus - Place Oscar Niemeyer;0;0;0;36;2025-06-05 07:00:43;2025-06-05;7;Thursday
+35013;Guillaume Tell - Parc Henri Barbusse;7;3;4;11;2025-06-05 07:00:41;2025-06-05;7;Thursday
+12102;Bercy - Traversiére;24;12;12;3;2025-06-05 07:03:12;2025-06-05;7;Thursday
+13120;Pierre Joseph Desault;13;10;3;5;2025-06-05 07:03:32;2025-06-05;7;Thursday
+10009;Mairie du 10ème;3;2;1;16;2025-06-05 07:04:13;2025-06-05;7;Thursday
+13006;Duméril - Jeanne d'Arc;8;6;2;31;2025-06-05 07:03:53;2025-06-05;7;Thursday
+43007;Hôtel de Ville de Vincennes;15;11;4;12;2025-06-05 07:04:01;2025-06-05;7;Thursday
+15050;Dominique Pado - Croix Nivert;0;0;0;21;2025-06-05 07:00:39;2025-06-05;7;Thursday
+16025;Jean de la Fontaine - Boulainvilliers;11;10;1;57;2025-06-05 07:04:13;2025-06-05;7;Thursday
+13036;Olympiades;4;4;0;31;2025-06-05 07:03:58;2025-06-05;7;Thursday
+14009;Tombe Issoire - René Coty;2;0;2;34;2025-06-05 07:00:16;2025-06-05;7;Thursday
+18021;Marcadet - Ramey;0;0;0;39;2025-06-05 07:03:43;2025-06-05;7;Thursday
+20013;Alexandre Dumas - Place de la Réunion;1;1;0;43;2025-06-05 07:03:02;2025-06-05;7;Thursday
+25004;Marcel Pourtout - Édouard Manet;5;2;3;16;2025-06-05 07:03:02;2025-06-05;7;Thursday
+12022;Sahel - Général Michel Bizot;15;8;7;30;2025-06-03 22:03:29;2025-06-03;22;Tuesday
+22701;Général Leclerc - République;21;21;0;9;2025-06-05 07:02:41;2025-06-05;7;Thursday
+22404;Pierre Brossolette - 12 Février 1934;16;11;5;8;2025-06-05 07:03:31;2025-06-05;7;Thursday
+14035;Maine - Jean Zay;10;6;4;38;2025-06-05 07:02:56;2025-06-05;7;Thursday
+8046;Marceau - Président Wilson;23;13;10;8;2025-06-05 07:04:10;2025-06-05;7;Thursday
+20110;Gambetta - Tourelles;0;0;0;20;2025-06-05 06:55:39;2025-06-05;6;Thursday
+14005;René Coty - Place Denfert-Rochereau;1;1;0;35;2025-06-05 07:04:14;2025-06-05;7;Thursday
+18101;Championnet.;2;0;2;18;2025-06-05 07:03:58;2025-06-05;7;Thursday
+6028;Quatre Vents - Carrefour de l'Odéon;10;4;6;26;2025-06-05 07:03:41;2025-06-05;7;Thursday
+21207;Verdier - République;2;2;0;26;2025-06-05 07:02:08;2025-06-05;7;Thursday
+12122;Bois de Vincennes - Polygone;5;4;1;45;2025-06-05 07:03:43;2025-06-05;7;Thursday
+16023;Passy - Place du Costa Rica;8;1;7;25;2025-06-05 07:03:55;2025-06-05;7;Thursday
+6004;Regard - Rennes;15;8;7;31;2025-06-05 07:04:05;2025-06-05;7;Thursday
+11029;Ménilmontant - Oberkampf;2;0;2;36;2025-06-05 07:03:14;2025-06-05;7;Thursday
+19014;Lorraine - Jean Jaurès;2;2;0;10;2025-06-05 07:00:22;2025-06-05;7;Thursday
+15014;Volontaires - Vaugirard;4;2;2;30;2025-06-05 07:01:05;2025-06-05;7;Thursday
+13055;M.- A. Lagroua Weill-Hallé -  F. Dolto;26;15;11;34;2025-06-05 07:03:15;2025-06-05;7;Thursday
+22014;Victor Hugo - Bineau;9;6;3;15;2025-06-05 07:02:24;2025-06-05;7;Thursday
+21027;Fief - République;24;23;1;1;2025-06-05 07:03:44;2025-06-05;7;Thursday
+6005;Montparnasse -  Square Ozanam;19;13;6;30;2025-06-05 07:03:05;2025-06-05;7;Thursday
+20011;Pyrénées - Dagorno;0;0;0;18;2025-06-05 07:01:11;2025-06-05;7;Thursday
+15044;Dantzig - Lefebvre;1;0;1;32;2025-06-05 07:03:08;2025-06-05;7;Thursday
+13023;Bobillot - Moulin des Prés;0;0;0;28;2025-06-05 07:04:13;2025-06-05;7;Thursday
+20106;Mairie du 20ème;1;1;0;26;2025-06-05 07:02:50;2025-06-05;7;Thursday
+21007;Rond-Point Rhin et Danube;49;47;2;0;2025-06-05 07:03:17;2025-06-05;7;Thursday
+21016;Point du Jour - Jean Jaurès;23;21;2;17;2025-06-05 07:04:12;2025-06-05;7;Thursday
+11018;Saint-Maur - République;3;2;1;33;2025-06-05 07:03:05;2025-06-05;7;Thursday
+21107;Bertrand Sincholle - Henri Barbusse;14;9;5;7;2025-06-05 07:04:13;2025-06-05;7;Thursday
+22007;Commandant Charcot - Bretteville;0;0;0;36;2025-06-05 06:56:59;2025-06-05;6;Thursday
+13037;Ivry - Baudricourt;2;2;0;18;2025-06-05 07:01:19;2025-06-05;7;Thursday
+14025;Jacquier - Didot;1;1;0;29;2025-06-05 06:57:01;2025-06-05;6;Thursday
+6009;Guynemer - Jardin du Luxembourg;4;2;2;32;2025-06-05 07:01:51;2025-06-05;7;Thursday
+30007;Pablo Picasso - Maurice Thorez;0;0;0;0;2025-06-05 06:56:16;2025-06-05;6;Thursday
+17050;Batignolles - Abel Truchet;2;1;1;25;2025-06-05 07:01:59;2025-06-05;7;Thursday
+1201;Perrault - Place du Louvre;13;3;10;13;2025-06-05 07:04:15;2025-06-05;7;Thursday
+21510;Fontaine du Tertre - Calvaire;10;9;1;14;2025-06-05 06:57:19;2025-06-05;6;Thursday
+13008;Place d'Italie - Soeur Rosalie;0;0;0;49;2025-06-05 07:03:27;2025-06-05;7;Thursday
+11038;Temple - Charlot;3;1;2;41;2025-06-05 07:03:13;2025-06-05;7;Thursday
+22703;Place Jean Mermoz;7;5;2;20;2025-06-05 07:02:32;2025-06-05;7;Thursday
+24010;Charles de Gaulle - Rue de l'Alma;9;5;4;18;2025-06-05 07:01:10;2025-06-05;7;Thursday
+25009;Place des Arts - Jean Mermoz;15;14;1;5;2025-06-05 07:03:35;2025-06-05;7;Thursday
+8031;Jean Mermoz - Champs-Elysées;49;23;26;0;2025-06-05 07:02:39;2025-06-05;7;Thursday
+26010;Louis Armand - Bernard Palissy;10;8;2;10;2025-06-05 07:03:03;2025-06-05;7;Thursday
+20030;Ménilmontant - Père Lachaise;7;1;6;30;2025-06-05 07:03:40;2025-06-05;7;Thursday
+23106;Pavé des Gardes - Charles Vaillant;9;8;1;10;2025-06-05 06:58:33;2025-06-05;6;Thursday
+21508;Georges Pompidou - Verdun;21;19;2;3;2025-06-05 07:04:07;2025-06-05;7;Thursday
+20037;Gambetta - Saint Fargeau;1;0;1;23;2025-06-05 07:04:02;2025-06-05;7;Thursday
+48011;Epi d'Or - Chevilly;11;6;5;7;2025-06-05 07:01:57;2025-06-05;7;Thursday
+41212;Nungesser - Santé;1;0;1;19;2025-06-05 07:00:33;2025-06-05;7;Thursday
+41304;Port - Maurice Chevalier;16;15;1;14;2025-06-05 07:02:35;2025-06-05;7;Thursday
+10151;Gare du Nord - Faubourg Saint-Denis;3;0;3;24;2025-06-05 07:01:43;2025-06-05;7;Thursday
+7007;Musée d'Orsay;22;21;1;43;2025-06-05 07:03:40;2025-06-05;7;Thursday
+45005;Stalingrad - Général de Gaulle;21;20;1;4;2025-06-05 06:59:51;2025-06-05;6;Thursday
+35021;Cartier Bresson - Denis Papin;16;11;5;14;2025-06-05 06:58:22;2025-06-05;6;Thursday
+18018;Carpeaux - Place Jacques Froment;1;0;1;18;2025-06-05 07:01:12;2025-06-05;7;Thursday
+10025;Jemmapes - Ecluses Saint-Martin;0;0;0;12;2025-06-05 07:04:06;2025-06-05;7;Thursday
+32305;Saint-Germain - Verdun;1;0;1;28;2025-06-05 07:02:45;2025-06-05;7;Thursday
+11201;Faubourg St-Antoine - Place de la Nation;3;2;1;13;2025-06-05 07:04:12;2025-06-05;7;Thursday
+23205;Parc des Pierrettes;1;0;1;22;2025-06-05 06:55:50;2025-06-05;6;Thursday
+23201;Avenir;16;8;8;27;2025-06-05 07:04:14;2025-06-05;7;Thursday
+12165;Champs de Manoeuvre - Cartoucherie;17;7;10;17;2025-06-05 07:04:17;2025-06-05;7;Thursday
+22018;Charles de Gaulle - Les Sablons;18;8;10;16;2025-06-05 07:04:08;2025-06-05;7;Thursday
+11001;Richard Lenoir - Place de la Bastille;29;21;8;24;2025-06-05 07:01:48;2025-06-05;7;Thursday
+21327;Jean Bouin - Gouverneur Général Eboué;24;23;1;7;2025-06-05 07:04:13;2025-06-05;7;Thursday
+23203;Division Leclerc - Kléber;0;0;0;25;2025-06-05 07:02:53;2025-06-05;7;Thursday
+34005;Adrien Lesesne - Docteur Bauer;2;2;0;25;2025-06-05 07:01:33;2025-06-05;7;Thursday
+26009;Marceau Delorme - Pierre Brossolette;6;4;2;22;2025-06-05 07:01:58;2025-06-05;7;Thursday
+21514;Place de la Paix - Abbé Saint-Pierre;0;0;0;23;2025-06-05 06:55:20;2025-06-05;6;Thursday
+31303;Simone Signoret - Paris;19;9;10;7;2025-06-05 06:58:30;2025-06-05;6;Thursday
+5107;Pontoise - La Tournelle;7;5;2;14;2025-06-05 07:01:47;2025-06-05;7;Thursday
+10026;Gare de l'Est - Chateau Landon;4;1;3;51;2025-06-05 07:04:05;2025-06-05;7;Thursday
+17010;Jonquière - Docteur Paul Brousse;4;2;2;34;2025-06-05 07:04:12;2025-06-05;7;Thursday
+18024;Clignancourt - Ordener;1;1;0;34;2025-06-05 06:59:25;2025-06-05;6;Thursday
+16006;Lauriston - Copernic;5;1;4;14;2025-06-05 07:01:58;2025-06-05;7;Thursday
+8008;Joseph Sansboeuf - Saint Lazare;15;11;4;17;2025-06-05 07:04:18;2025-06-05;7;Thursday
+13205;Choisy - Pointe d'Ivry;1;1;0;22;2025-06-05 07:02:22;2025-06-05;7;Thursday
+31202;Gabriel Péri - Jules Ferry;25;14;11;0;2025-06-05 07:01:41;2025-06-05;7;Thursday
+7201;Place De Fontenoy - Saxe;15;8;7;2;2025-06-05 07:04:17;2025-06-05;7;Thursday
+13204;Tolbiac - Boussingault;6;3;3;34;2025-06-05 07:00:58;2025-06-05;7;Thursday
+13035;Choisy - Tolbiac;0;0;0;19;2025-06-05 07:03:35;2025-06-05;7;Thursday
+10114;Granges aux Belles - Hôpital Saint-Louis;3;2;1;57;2025-06-05 07:01:22;2025-06-05;7;Thursday
+47007;Liberté - Vert-de-Maisons;17;13;4;3;2025-06-05 07:03:45;2025-06-05;7;Thursday
+13202;Place Farhat Hached;27;15;12;1;2025-06-05 07:03:32;2025-06-05;7;Thursday
+21501;Pont de Suresnes;10;9;1;5;2025-06-05 07:02:13;2025-06-05;7;Thursday
+8038;François 1er - Montaigne;49;29;20;3;2025-06-05 07:03:16;2025-06-05;7;Thursday
+18042;Place Pigalle;0;0;0;19;2025-06-05 07:01:22;2025-06-05;7;Thursday
+18041;Rochechouart - Martyrs;4;0;4;13;2025-06-05 07:04:11;2025-06-05;7;Thursday
+11020;Belfort - Voltaire;6;4;2;31;2025-06-05 07:03:59;2025-06-05;7;Thursday
+11102;Alexandre Dumas - Voltaire;19;18;1;39;2025-06-05 07:00:25;2025-06-05;7;Thursday
+18044;Clichy - Douai;0;0;0;31;2025-06-05 07:02:04;2025-06-05;7;Thursday
+16103;Traktir - Foch;3;0;3;19;2025-06-05 07:02:43;2025-06-05;7;Thursday
+21213;Vanne - Général de Gaulle;3;1;2;22;2025-06-05 07:03:54;2025-06-05;7;Thursday
+3004;Place de la République - Temple;12;2;10;5;2025-06-05 07:01:46;2025-06-05;7;Thursday
+11014;Place de la Nation - Taillebourg;20;16;4;27;2025-06-05 07:01:00;2025-06-05;7;Thursday
+11046;Place de la République - Voltaire;15;11;4;1;2025-06-05 07:04:00;2025-06-05;7;Thursday
+11009;Boulets - Voltaire;10;3;7;13;2025-06-05 07:04:18;2025-06-05;7;Thursday
+15105;Fédération - Suffren;2;0;2;23;2025-06-05 07:04:08;2025-06-05;7;Thursday
+7025;Octave Gréard - Tour Eiffel;18;15;3;13;2025-06-05 07:01:50;2025-06-05;7;Thursday
+4108;Quai de Béthune - Pont de la Tournelle;2;2;0;23;2025-06-05 07:00:13;2025-06-05;7;Thursday
+40010;Haut du Mont-Mesly;17;3;14;4;2025-06-05 07:04:16;2025-06-05;7;Thursday
+40013;Hôtel de Ville de Créteil;8;6;2;30;2025-06-05 06:55:24;2025-06-05;6;Thursday
+40014;Créteil Pointe du Lac;23;10;13;6;2025-06-05 06:58:24;2025-06-05;6;Thursday
+23011;Bineau - Louise Michel;6;5;1;19;2025-06-05 07:03:16;2025-06-05;7;Thursday
+16005;Raymond Poincaré - Place Victor Hugo;5;1;4;19;2025-06-05 07:00:20;2025-06-05;7;Thursday
+26005;Hôtel de Ville d'Asnières sur Seine;16;14;2;11;2025-06-05 07:02:40;2025-06-05;7;Thursday
+40003;Centre Hospitalier Intercommunal de Créteil;9;6;3;7;2025-06-05 07:03:08;2025-06-05;7;Thursday
+23801;Place de la Gare;0;0;0;18;2025-06-05 06:57:52;2025-06-05;6;Thursday
+22504;Château - République;0;0;0;0;2024-07-30 07:44:13;2024-07-30;7;Tuesday
+23703;Gare de Chaville Rive Gauche;10;0;10;7;2025-06-05 07:02:56;2025-06-05;7;Thursday
+40008;Créteil Pompadour;25;8;17;18;2025-06-05 07:04:16;2025-06-05;7;Thursday
+14021;Place de la Porte de Châtillon;7;1;6;51;2025-06-05 07:03:45;2025-06-05;7;Thursday
+40015;Iles de Loisirs de Créteil;18;6;12;8;2025-06-05 07:03:52;2025-06-05;7;Thursday
+10031;Louis Blanc - Aqueduc;3;1;2;33;2025-06-05 07:00:01;2025-06-05;7;Thursday
+32004;Wilson - Landy;16;11;5;22;2025-06-05 07:02:57;2025-06-05;7;Thursday
+20137;Borrégo - Gambetta;0;0;0;25;2025-06-05 07:02:52;2025-06-05;7;Thursday
+31708;Noisy le Sec - Jean-Baptiste Clément;0;0;0;21;2025-06-05 06:55:09;2025-06-05;6;Thursday
+10013;Alibert - Jemmapes;10;6;4;46;2025-06-05 07:02:46;2025-06-05;7;Thursday
+15103;Cauchy - Cévennes;47;44;3;4;2025-06-05 07:03:50;2025-06-05;7;Thursday
+15026;Bir Hakeim;29;25;4;3;2025-06-05 07:04:17;2025-06-05;7;Thursday
+27004;Gare de la Garenne-Colombes;22;15;7;5;2025-06-05 07:02:43;2025-06-05;7;Thursday
+21404;Jean Jaurès - Gare de Clamart;1;1;0;17;2025-06-05 07:04:17;2025-06-05;7;Thursday
+6001;Institut de France;11;8;3;6;2025-06-05 07:04:13;2025-06-05;7;Thursday
+1002;Victoria - Place du Chatelet;7;2;5;13;2025-06-05 07:02:58;2025-06-05;7;Thursday
+19018;Cité de la Musique;19;9;10;40;2025-06-05 07:03:36;2025-06-05;7;Thursday
+4010;Saint-Antoine Sévigné;12;4;8;12;2025-06-05 07:02:57;2025-06-05;7;Thursday
+13123;BNF - Bibliothèque Nationale de France;16;13;3;21;2025-06-05 07:03:20;2025-06-05;7;Thursday
+21021;Enfants du Paradis - Peupliers;52;32;20;2;2025-06-05 07:03:38;2025-06-05;7;Thursday
+32012;Carrefour Pleyel;43;22;21;24;2025-06-05 07:04:15;2025-06-05;7;Thursday
+12010;Daumesnil - Picpus;10;8;2;12;2025-06-05 07:02:42;2025-06-05;7;Thursday
+42004;Westermeyer - Paul Vaillant-Couturier;36;27;9;2;2025-06-05 07:03:02;2025-06-05;7;Thursday
+15122;Place Charles Vallin;3;2;1;21;2025-06-05 07:03:56;2025-06-05;7;Thursday
+18014;Léon - Doudeauville;2;1;1;9;2025-06-05 07:02:35;2025-06-05;7;Thursday
+15058;Place du Moulin de Javel;51;35;16;0;2025-06-05 07:03:21;2025-06-05;7;Thursday
+12615;Welovegreen;0;0;0;599;2025-06-04 12:41:45;2025-06-04;12;Wednesday
+18043;Clichy - Place Blanche;2;0;2;15;2025-06-05 07:02:43;2025-06-05;7;Thursday
+8004;Malesherbes - Place de la Madeleine;52;26;26;15;2025-06-05 07:03:06;2025-06-05;7;Thursday
+15056;Place Balard;29;25;4;0;2025-06-05 07:03:56;2025-06-05;7;Thursday
+4005;Quai des Célestins - Henri IV;0;0;0;0;2018-10-16 04:53:12;2018-10-16;4;Tuesday
+16107;Benjamin Godard - Victor Hugo;3;0;3;32;2025-06-05 07:02:29;2025-06-05;7;Thursday
+14111;Cassini - Denfert-Rochereau;7;3;4;18;2025-06-05 07:00:25;2025-06-05;7;Thursday
+32017;Basilique;3;2;1;19;2025-06-05 06:59:36;2025-06-05;6;Thursday
+13007;Le Brun - Gobelins;6;6;0;39;2025-06-05 07:04:01;2025-06-05;7;Thursday
+6003;Saint-Sulpice;3;3;0;16;2025-06-05 07:00:01;2025-06-05;7;Thursday
+5110;Lacépède - Monge;1;0;1;22;2025-06-05 07:02:08;2025-06-05;7;Thursday
+33006;André Karman - République;16;10;6;12;2025-06-05 07:02:21;2025-06-05;7;Thursday
+42016;Pierre et Marie Curie - Maurice Thorez;4;2;2;23;2025-06-05 07:01:13;2025-06-05;7;Thursday
+40011;Bas du Mont-Mesly;27;16;11;0;2025-06-05 07:03:42;2025-06-05;7;Thursday
+21010;Silly - Galliéni;24;16;8;0;2025-06-05 06:58:58;2025-06-05;6;Thursday
+30002;Jean Rostand - Paul Vaillant Couturier;16;3;13;18;2025-06-05 07:03:25;2025-06-05;7;Thursday
+7003;Square Boucicaut;26;11;15;33;2025-06-05 07:02:17;2025-06-05;7;Thursday
+17041;Guersant - Gouvion-Saint-Cyr;9;3;6;24;2025-06-05 07:01:25;2025-06-05;7;Thursday
+15202;Bracion - Périphérique;2;0;2;27;2025-06-05 06:59:15;2025-06-05;6;Thursday
+12109;Mairie du 12ème;2;2;0;28;2025-06-05 06:57:44;2025-06-05;6;Thursday
+8050;Boétie - Ponthieu;30;17;13;13;2025-06-05 07:03:32;2025-06-05;7;Thursday
+2022;Saint-Fiacre - Poissonière;30;19;11;4;2025-06-05 07:04:06;2025-06-05;7;Thursday
+19033;Cambrai - Benjamin Constant;15;7;8;27;2025-06-05 06:56:01;2025-06-05;6;Thursday
+21216;Louis Lejeune - Barbès;4;0;4;21;2025-06-05 07:03:49;2025-06-05;7;Thursday
+22207;Rond-point du Dr Albert Schweitzer;2;0;2;20;2025-06-05 06:59:06;2025-06-05;6;Thursday
+31028;Raspail Barbès;8;6;2;20;2025-06-05 07:03:53;2025-06-05;7;Thursday
+9008;Tour d'Auvergne - Rodier;1;0;1;15;2025-06-05 07:02:03;2025-06-05;7;Thursday
+13118;Regnault - Patay;60;52;8;1;2025-06-05 07:02:56;2025-06-05;7;Thursday
+15112;Vigée-Lebrun - Anselme Payen;4;2;2;19;2025-06-05 06:57:59;2025-06-05;6;Thursday
+16110;Octave Feuillet - Albéric Magnard;7;4;3;14;2025-06-05 06:59:04;2025-06-05;6;Thursday
+43009;Place Jean-Spire-Lemaître;4;3;1;46;2025-06-05 07:01:18;2025-06-05;7;Thursday
+17032;Jean Oestreicher - Porte de Champerret;7;5;2;14;2025-06-05 07:02:32;2025-06-05;7;Thursday
+8016;Square Louis XVI;20;13;7;6;2025-06-05 07:00:23;2025-06-05;7;Thursday
+10115;Granges aux Belles;2;0;2;25;2025-06-05 07:01:51;2025-06-05;7;Thursday
+10029;Dunkerque - Rocroy;1;0;1;22;2025-06-05 07:00:08;2025-06-05;7;Thursday
+10161;Gare de l'Est - Faubourg-Saint-Martin;1;1;0;31;2025-06-05 07:02:52;2025-06-05;7;Thursday
+12031;Gabriel Lamé;25;24;1;8;2025-06-05 07:04:17;2025-06-05;7;Thursday
+1001;Quai de l'Horloge - Pont Neuf;9;3;6;8;2025-06-05 07:03:15;2025-06-05;7;Thursday
+31103;Gare Rosny-Bois-Perrier;17;8;9;17;2025-06-05 06:59:52;2025-06-05;6;Thursday
+17008;Porte Pouchet-Bessières;2;1;1;20;2025-06-05 07:02:52;2025-06-05;7;Thursday
+7018;Ségur - d'Estrées;17;13;4;2;2025-06-05 07:04:04;2025-06-05;7;Thursday
+5005;Gay Lussac - Saint-Jacques;3;2;1;21;2025-06-05 07:03:28;2025-06-05;7;Thursday
+21323;Charlot - Stade Gabriel Voisin;29;27;2;2;2025-06-05 07:03:47;2025-06-05;7;Thursday
+8053;Place Georges Guillaumin;20;8;12;9;2025-06-05 07:03:38;2025-06-05;7;Thursday
+9106;Boudreau - Auber;23;17;6;4;2025-06-05 07:03:42;2025-06-05;7;Thursday
+19105;Ambroise Rendu - Porte Brunet;3;0;3;13;2025-06-05 06:59:44;2025-06-05;6;Thursday
+31706;Château - République;16;3;13;8;2025-06-05 07:03:12;2025-06-05;7;Thursday
+22409;Henri Barbusse - Stalingrad;2;0;2;12;2025-06-05 06:59:45;2025-06-05;6;Thursday
+19015;Thionville - Ourcq;3;1;2;20;2025-06-05 07:02:57;2025-06-05;7;Thursday
+12151;Gare de Lyon - Place Louis Armand;56;39;17;4;2025-06-05 07:04:13;2025-06-05;7;Thursday
+5020;Institut du Monde Arabe - Saint-Germain;20;14;6;19;2025-06-05 07:04:17;2025-06-05;7;Thursday
+9028;Moncey - Blanche;1;0;1;16;2025-06-05 07:01:00;2025-06-05;7;Thursday
+10107;Gare du Nord - Hôpital Lariboisière;3;2;1;45;2025-06-05 07:03:30;2025-06-05;7;Thursday
+26002;Redoute - Les Courtilles;25;24;1;12;2025-06-05 07:04:07;2025-06-05;7;Thursday
+19026;Place de Rhin et Danube;3;0;3;12;2025-06-05 06:57:22;2025-06-05;6;Thursday
+45003;11 Novembre 1918 - 8 Mai 1945;8;7;1;28;2025-06-05 07:00:36;2025-06-05;7;Thursday
+11002;Roquette - Thiéré;6;3;3;16;2025-06-05 07:03:24;2025-06-05;7;Thursday
+12111;Claude Decaen - Cannebière;6;4;2;39;2025-06-05 07:01:46;2025-06-05;7;Thursday
+18107;Chartres - La Charbonnière;0;0;0;34;2025-06-05 07:03:52;2025-06-05;7;Thursday
+20042;Pyrénées - Emmery;0;0;0;39;2025-06-05 07:03:40;2025-06-05;7;Thursday
+15067;Desaix - Edgar Faure;5;2;3;6;2025-06-05 07:02:26;2025-06-05;7;Thursday
+6006;Notre-Dame-des-Champs - Stanislas;17;13;4;2;2025-06-05 07:03:42;2025-06-05;7;Thursday
+10016;Récollets - Square Villemin;0;0;0;17;2025-06-05 07:02:53;2025-06-05;7;Thursday
+31009;Place Du Général De Gaulle;4;1;3;22;2025-06-05 06:54:50;2025-06-05;6;Thursday
+33017;Anatole France - President Roosevelt;4;2;2;24;2025-06-05 07:04:14;2025-06-05;7;Thursday
+33102;Gabriel Péri - Francisco Ferrer;0;0;0;17;2025-06-05 06:58:52;2025-06-05;6;Thursday
+42706;Roger Salengro - Fontainebleau;3;2;1;20;2025-06-05 07:03:42;2025-06-05;7;Thursday
+44006;Concorde - Stalingrad;10;8;2;23;2025-06-05 07:01:29;2025-06-05;7;Thursday
+11113;Richard Lenoir - Republique;6;5;1;52;2025-06-05 07:03:49;2025-06-05;7;Thursday
+14003;Schoelcher - Raspail;4;3;1;46;2025-06-05 07:04:13;2025-06-05;7;Thursday
+43008;Fontenay - Libération;2;1;1;23;2025-06-05 07:03:55;2025-06-05;7;Thursday
+17204;Paul Bodin - Clichy;0;0;0;33;2024-10-08 08:49:38;2024-10-08;8;Tuesday
+4016;Lobau - Hôtel de Ville;9;2;7;50;2025-06-05 07:02:33;2025-06-05;7;Thursday
+14138;Porte de Vanves;3;2;1;27;2025-06-05 07:03:54;2025-06-05;7;Thursday
+14008;Mouton Duvernet - Général Leclerc;0;0;0;28;2025-06-05 06:58:52;2025-06-05;6;Thursday
+35010;Hoche - Jean Lolive;1;1;0;23;2025-06-05 06:54:42;2025-06-05;6;Thursday
+15054;Lecourbe - Jean Maridor;2;1;1;16;2025-06-05 07:03:34;2025-06-05;7;Thursday
+14106;Marc Sangnier - Porte de Vanves;4;1;3;17;2025-06-05 07:04:09;2025-06-05;7;Thursday
+22406;Guy Môquet - Etienne Dolet;3;0;3;19;2025-06-05 07:04:08;2025-06-05;7;Thursday
+31102;Boissière - Etienne Dolet;5;2;3;16;2025-06-05 07:02:17;2025-06-05;7;Thursday
+15109;Cevennes - Bergers;3;2;1;26;2025-06-05 07:03:58;2025-06-05;7;Thursday
+21209;Molière - République;1;0;1;29;2025-06-05 07:03:43;2025-06-05;7;Thursday
+14012;Sibelle - Alésia;0;0;0;37;2025-06-05 07:03:57;2025-06-05;7;Thursday
+21005;Hôtel de Ville de Boulogne Billancourt;23;14;9;3;2025-06-05 07:03:55;2025-06-05;7;Thursday
+19103;Manin - Carrières d'Amérique;1;0;1;17;2025-06-05 06:54:25;2025-06-05;6;Thursday
+8045;Place de la Reine Astrid;45;26;19;12;2025-06-05 07:03:06;2025-06-05;7;Thursday
+14124;David Weill - Parc Montsouris;3;1;2;19;2025-06-05 07:04:09;2025-06-05;7;Thursday
+15133;Saint Lambert - Blomet;5;3;2;21;2025-06-05 07:03:33;2025-06-05;7;Thursday
+21006;Marcelin Berthelot;22;21;1;3;2025-06-05 07:04:15;2025-06-05;7;Thursday
+44013;Edouard Tremblay - Julian Grimaux;13;9;4;14;2025-06-05 07:03:03;2025-06-05;7;Thursday
+20131;Repos - Cimetière du Père Lachaise;0;0;0;33;2025-06-05 07:04:02;2025-06-05;7;Thursday
+21015;Nationale - Place Jules Guesde;23;19;4;0;2025-06-05 07:03:33;2025-06-05;7;Thursday
+15034;Lakanal - Commerce;37;37;0;10;2025-06-05 07:02:56;2025-06-05;7;Thursday
+5028;Censier - Jardin des Plantes;16;16;0;10;2025-06-05 07:01:13;2025-06-05;7;Thursday
+48010;Karl Marx;1;1;0;15;2025-06-05 07:03:59;2025-06-05;7;Thursday
+1020;Cambon - Rivoli;34;19;15;3;2025-06-05 07:03:55;2025-06-05;7;Thursday
+25003;Henri Ste-Claire Déville - Paul Héroult;8;5;3;15;2025-06-05 06:57:45;2025-06-05;6;Thursday
+20115;Louis Lumière - Porte de Bagnolet;1;1;0;18;2025-06-04 18:03:15;2025-06-04;18;Wednesday
+22402;Jean Jaurès - Salvador Allende;4;2;2;39;2025-06-05 07:00:25;2025-06-05;7;Thursday
+9116;Victoire - Chaussée d'Antin;20;12;8;3;2025-06-05 07:03:34;2025-06-05;7;Thursday
+11039;Richard Lenoir - Jean-Pierre Timbaud;3;3;0;32;2025-06-05 07:03:50;2025-06-05;7;Thursday
+11026;Chemin Vert - Saint-Maur;7;3;4;37;2025-06-05 07:04:15;2025-06-05;7;Thursday
+41601;Général De Gaulle - Alouette;13;12;1;11;2025-06-05 07:03:43;2025-06-05;7;Thursday
+15021;Joseph Liouville - Croix Nivert;28;28;0;36;2025-06-05 07:04:17;2025-06-05;7;Thursday
+9010;Rochechouart lamartine;2;1;1;21;2025-06-05 06:58:29;2025-06-05;6;Thursday
+18009;Jean-François Lépine - Stephenson;3;1;2;18;2025-06-05 07:01:05;2025-06-05;7;Thursday
+17125;Marie-Georges Picquart - Pereire;5;0;5;27;2025-06-05 07:03:36;2025-06-05;7;Thursday
+43005;Gare RER de Vincennes;35;23;12;12;2025-06-05 07:03:59;2025-06-05;7;Thursday
+16136;Théophile Gautier - François Millet;9;9;0;19;2025-06-05 06:58:52;2025-06-05;6;Thursday
+22003;Beffroy;21;4;17;3;2025-06-05 07:00:40;2025-06-05;7;Thursday
+21008;Victor Hugo - Galliéni;8;3;5;24;2025-06-05 07:03:20;2025-06-05;7;Thursday
+20134;Lieutenant Chauré - Etienne Marey;2;0;2;18;2025-06-05 07:04:14;2025-06-05;7;Thursday
+22016;Charles de Gaulle - Sablonville;4;3;1;22;2025-06-05 07:01:48;2025-06-05;7;Thursday
+32302;Chemin Vert - Fraternité;4;0;4;16;2025-06-05 06:57:53;2025-06-05;6;Thursday
+10014;Marseille - Beaurepaire;19;17;2;33;2025-06-05 07:03:42;2025-06-05;7;Thursday
+11035;Parmentier - Abel Rabaud;1;0;1;47;2025-06-05 07:02:08;2025-06-05;7;Thursday
+42010;Mairie d'Ivry-sur-Seine;35;34;1;17;2025-06-05 07:04:10;2025-06-05;7;Thursday
+15046;Parc Georges Brassens - Brancion;0;0;0;28;2025-06-05 07:02:38;2025-06-05;7;Thursday
+46001;Place Paul Eluard;11;8;3;7;2025-06-05 07:02:51;2025-06-05;7;Thursday
+16040;Exelmans - Michel-Ange;3;1;2;30;2025-06-05 07:02:14;2025-06-05;7;Thursday
+22006;Pierret - Madrid;22;11;11;6;2025-06-05 07:03:43;2025-06-05;7;Thursday
+42302;Aristide Briand - Gare de Bagneux;11;7;4;11;2025-06-05 07:04:16;2025-06-05;7;Thursday
+9032;Mathurins - Auber;15;11;4;17;2025-06-05 07:03:53;2025-06-05;7;Thursday
+21104;Madame de Sanzillon - Mozart;18;14;4;4;2025-06-05 07:03:57;2025-06-05;7;Thursday
+32026;Leroy des Barres - Médiathèque;16;12;4;9;2025-06-05 07:04:13;2025-06-05;7;Thursday
+9005;Square d'Anvers;0;0;0;32;2025-06-05 07:02:59;2025-06-05;7;Thursday
+1013;Place du Palais Royal;38;27;11;29;2025-06-05 07:04:01;2025-06-05;7;Thursday
+8025;Miromesnil - La Boétie;33;21;12;1;2025-06-05 07:04:15;2025-06-05;7;Thursday
+13002;Arago - Glacière;1;0;1;25;2025-06-05 07:03:32;2025-06-05;7;Thursday
+12204;Prague - Théophile Roussel;6;3;3;16;2025-06-05 07:04:03;2025-06-05;7;Thursday
+20121;Boyer - Ménilmontant;3;0;3;16;2025-06-05 06:54:52;2025-06-05;6;Thursday
+42301;Gare Arcueil - Cachan;16;5;11;9;2025-06-05 07:03:53;2025-06-05;7;Thursday
+42504;Gare RER de Gentilly;3;1;2;27;2025-06-05 07:01:08;2025-06-05;7;Thursday
+26013;Quai du docteur Dervaux;19;19;0;7;2025-06-05 07:03:42;2025-06-05;7;Thursday
+42015;Place Jean Ferrat;2;2;0;23;2025-06-05 07:02:46;2025-06-05;7;Thursday
+32016;Place de la Porte de Paris;16;11;5;17;2025-06-05 07:00:45;2025-06-05;7;Thursday
+15201;Place Amédée Gordini - Lefebvre;28;7;21;10;2025-06-05 06:59:48;2025-06-05;6;Thursday
+92008;Hôtel de Ville de Nanterre;9;9;0;28;2025-06-05 06:59:09;2025-06-05;6;Thursday
+51004;Général Delambre - Prebuard;16;6;10;13;2025-06-05 06:58:42;2025-06-05;6;Thursday
+19125;Place de l'Édit de Nantes;4;2;2;20;2025-06-05 07:03:31;2025-06-05;7;Thursday
+5123;Saint-Germain - Thenard;3;3;0;28;2025-06-05 06:59:14;2025-06-05;6;Thursday
+11036;Jules Ferry - Faubourg du Temple Paris;19;17;2;35;2025-06-05 07:04:10;2025-06-05;7;Thursday
+42029;Stalingrad - Germaine Tailleferre;10;9;1;17;2025-06-05 07:04:04;2025-06-05;7;Thursday
+21313;Guynemer - Séverine;23;21;2;2;2025-06-05 07:03:13;2025-06-05;7;Thursday
+17102;Alfred Roll - Berthier;2;1;1;26;2025-06-05 07:02:38;2025-06-05;7;Thursday
+11007;Jean Macé - Faidherbe;33;26;7;27;2025-06-05 07:02:09;2025-06-05;7;Thursday
+35018;Ancien Canal - Hélène Brion;14;12;2;8;2025-06-05 07:03:37;2025-06-05;7;Thursday
+18110;Departement - Pajol;3;1;2;17;2025-06-05 07:03:34;2025-06-05;7;Thursday
+10113;Parmentier - Hôpital Saint-Louis;4;0;4;37;2025-06-05 07:03:59;2025-06-05;7;Thursday
+17011;Fragonard - Porte de Clichy;24;21;3;28;2025-06-05 07:04:08;2025-06-05;7;Thursday
+17045;Place des Ternes.;8;5;3;38;2025-06-05 07:02:01;2025-06-05;7;Thursday
+33018;Edouard Poisson - Victor Hugo;14;14;0;15;2025-06-05 07:04:05;2025-06-05;7;Thursday
+7015;Varenne;21;14;7;25;2025-06-05 07:03:21;2025-06-05;7;Thursday
+12115;Porte de Vincennes;4;4;0;29;2025-06-05 06:59:18;2025-06-05;6;Thursday
+21305;Place Jacques Madaule;16;15;1;7;2025-06-05 07:03:44;2025-06-05;7;Thursday
+8033;Commandant Rivière;40;29;11;2;2025-06-05 07:04:16;2025-06-05;7;Thursday
+15010;Square Cambronne;24;20;4;5;2025-06-05 07:01:37;2025-06-05;7;Thursday
+41102;Gare de Laplace;3;2;1;40;2025-06-05 07:00:54;2025-06-05;7;Thursday
+17037;Bayen - Pereire;2;1;1;19;2025-06-05 07:00:59;2025-06-05;7;Thursday
+33003;Bordier - Félix Faure;15;14;1;33;2025-06-05 07:03:02;2025-06-05;7;Thursday
+33009;Félix Faure - Sadi Carnot;20;18;2;12;2025-06-05 07:03:46;2025-06-05;7;Thursday
+5106;Cujas - Saint-Michel;9;4;5;10;2025-06-05 07:01:15;2025-06-05;7;Thursday
+13045;Jean Colly - Tolbiac;3;3;0;31;2025-06-05 07:03:00;2025-06-05;7;Thursday
+32010;Place aux Étoiles;39;7;32;1;2025-06-05 07:04:16;2025-06-05;7;Thursday
+19044;Grands Moulins de Pantin;18;3;15;32;2025-06-05 07:03:51;2025-06-05;7;Thursday
+33001;Victor Hugo - Magasins Généraux;11;0;11;22;2025-06-05 07:01:48;2025-06-05;7;Thursday
+16034;Porte d'Auteuil;2;1;1;31;2025-06-05 06:59:41;2025-06-05;6;Thursday
+20132;Réunion - Avron;2;0;2;24;2025-06-05 06:59:47;2025-06-05;6;Thursday
+35009;Jean Lolive - Parc Stalingrad;5;1;4;14;2025-06-05 07:02:58;2025-06-05;7;Thursday
+8055;Courcelles - Place des Ternes;6;2;4;25;2025-06-04 15:13:27;2025-06-04;15;Wednesday
+21502;Verdun - Place Henri IV;24;21;3;1;2025-06-05 07:04:17;2025-06-05;7;Thursday
+31012;Place Carnot;2;0;2;21;2025-06-05 07:01:19;2025-06-05;7;Thursday
+35019;Anatole France - Jean Lolive;23;9;14;4;2025-06-05 07:03:56;2025-06-05;7;Thursday
+14104;Boyer-Barret - Raymond Losserand;1;1;0;22;2025-06-05 07:00:44;2025-06-05;7;Thursday
+20113;Piat - Parc de Belleville;0;0;0;21;2025-06-05 07:03:26;2025-06-05;7;Thursday
+12126;Gravelle - Route du Bac;9;4;5;41;2025-06-05 07:02:46;2025-06-05;7;Thursday
+20036;Ménilmontant - Pelleport;0;0;0;32;2025-06-05 07:04:09;2025-06-05;7;Thursday
+41604;Lagny - Joffre;28;18;10;0;2025-06-05 07:03:36;2025-06-05;7;Thursday
+15029;Emeriau - Place de Brazzaville;49;46;3;0;2025-06-05 07:04:03;2025-06-05;7;Thursday
+10005;Petites Ecuries - Faubourg Poissonnière;8;8;0;9;2025-06-05 07:04:06;2025-06-05;7;Thursday
+26001;Gare d'Asnières sur Seine;17;14;3;6;2025-06-05 07:04:07;2025-06-05;7;Thursday
+18020;Francoeur - Marcadet;2;0;2;18;2025-06-05 07:04:04;2025-06-05;7;Thursday
+14018;Porte d'Orléans;5;0;5;41;2025-06-05 07:04:00;2025-06-05;7;Thursday
+7004;Raspail - Varenne;13;10;3;5;2025-06-05 07:01:24;2025-06-05;7;Thursday
+21111;Professeur René Leriche - Général Leclerc;48;45;3;2;2025-06-05 07:03:05;2025-06-05;7;Thursday
+2010;Uzès - Montmartre;16;10;6;13;2025-06-05 07:03:08;2025-06-05;7;Thursday
+5116;Place Valhubert;15;11;4;35;2025-06-05 07:03:53;2025-06-05;7;Thursday
+7006;Quai Voltaire;24;19;5;7;2025-06-05 07:02:51;2025-06-05;7;Thursday
+7014;Saint-François-Xavier;39;34;5;2;2025-06-05 07:03:35;2025-06-05;7;Thursday
+20040;Parc de Belleville - Julien Lacroix;1;0;1;25;2025-06-05 07:02:23;2025-06-05;7;Thursday
+17017;Gare de Pont-Cardinet;1;1;0;32;2025-06-05 07:04:15;2025-06-05;7;Thursday
+34002;Capitaine Glarner - Gabriel Péri;6;4;2;18;2025-06-05 07:03:34;2025-06-05;7;Thursday
+14139;Pierre Larousse - Raymond Losserand;1;0;1;28;2025-06-05 07:04:13;2025-06-05;7;Thursday
+15055;Vasco de Gama;39;36;3;15;2025-06-05 07:04:05;2025-06-05;7;Thursday
+12032;Porte Dorée;34;30;4;2;2025-06-05 07:02:13;2025-06-05;7;Thursday
+20021;Indre - Prairies;0;0;0;36;2025-06-05 06:56:15;2025-06-05;6;Thursday
+7005;Raspail - Bac;23;9;14;28;2025-06-05 06:59:59;2025-06-05;6;Thursday
+6018;Michelet - Assas;3;2;1;15;2025-06-05 07:03:26;2025-06-05;7;Thursday
+21019;Edouard Vaillant - Paul-Adolphe Souriau;17;12;5;10;2025-06-05 07:01:16;2025-06-05;7;Thursday
+21105;Morice - Général Leclerc;7;4;3;15;2025-06-05 07:04:12;2025-06-05;7;Thursday
+31019;Vincennes - Douy-Delcupe;3;1;2;35;2025-06-05 07:03:41;2025-06-05;7;Thursday
+32014;Place du Cornillon - Stade de France;25;12;13;8;2025-06-05 07:03:21;2025-06-05;7;Thursday
+17027;Place du Maréchal Juin - Péreire;8;4;4;37;2025-06-05 07:03:16;2025-06-05;7;Thursday
+51003;Hôtel de Ville d'Argenteuil;22;8;14;6;2025-06-05 07:04:17;2025-06-05;7;Thursday
+13043;Dunois - Clisson;6;2;4;44;2025-06-05 07:01:44;2025-06-05;7;Thursday
+9115;Milton - Manuel;2;1;1;20;2025-06-05 06:55:56;2025-06-05;6;Thursday
+16032;Eglise d'Auteuil;4;2;2;16;2025-06-05 07:03:03;2025-06-05;7;Thursday
+22001;Château - Bineau;4;1;3;19;2025-06-05 07:03:34;2025-06-05;7;Thursday
+18025;Mairie du 18ème;0;0;0;40;2025-06-05 07:00:36;2025-06-05;7;Thursday
+17122;Bridaine - Lamandé;1;0;1;28;2025-06-05 07:00:09;2025-06-05;7;Thursday
+16123;Mahatma Gandhi;14;7;7;12;2025-06-05 06:55:09;2025-06-05;6;Thursday
+15108;Lourmel - Marie Skobtsov;9;7;2;12;2025-06-05 07:01:39;2025-06-05;7;Thursday
+19040;Belleville - Télégraphe;1;1;0;40;2025-06-05 06:59:49;2025-06-05;6;Thursday
+17047;Courcelles - Pierre Demours;20;11;9;6;2025-06-05 07:03:45;2025-06-05;7;Thursday
+6016;Danton - Serpente;7;5;2;14;2025-06-05 06:59:19;2025-06-05;6;Thursday
+41204;République - Danton;2;0;2;16;2025-06-05 06:50:59;2025-06-05;6;Thursday
+17121;Square des Epinettes;2;0;2;18;2025-06-05 06:59:09;2025-06-05;6;Thursday
+19009;Cité des Sciences et de l'Industrie;12;7;5;14;2025-06-05 07:01:32;2025-06-05;7;Thursday
+18109;Pajol - Riquet;3;0;3;41;2025-06-05 07:00:11;2025-06-05;7;Thursday
+21703;Square du Carrefour de l'Insurrection;3;2;1;19;2025-06-05 07:01:07;2025-06-05;7;Thursday
+35017;Toffier Decaux - Cartier Bresson;3;2;1;12;2025-06-05 07:02:03;2025-06-05;7;Thursday
+18049;Porte d'Aubervilliers;8;6;2;46;2025-06-05 07:01:04;2025-06-05;7;Thursday
+15031;Théâtre - Lourmel;26;24;2;26;2025-06-05 07:04:11;2025-06-05;7;Thursday
+21014;Hameau Fleuri - Marché;13;12;1;8;2025-06-05 07:02:43;2025-06-05;7;Thursday
+19127;Aubervilliers - Curial;5;0;5;17;2025-06-05 07:03:06;2025-06-05;7;Thursday
+16015;Bassano -  Iéna;15;6;9;0;2025-06-05 07:04:01;2025-06-05;7;Thursday
+1120;Lavandieres Sainte Opportune - Rivoli;4;2;2;23;2025-06-05 07:02:49;2025-06-05;7;Thursday
+14112;Méchain - Faubourg Saint-Jacques;8;5;3;6;2025-06-05 07:03:59;2025-06-05;7;Thursday
+18033;Belliard - Damrémont;1;0;1;31;2025-06-05 07:03:22;2025-06-05;7;Thursday
+11010;Boulets - Faubourg Saint-Antoine;2;1;1;40;2025-06-05 07:02:51;2025-06-05;7;Thursday
+16122;Route de la Muette - Porte de Neuilly;5;2;3;42;2025-06-05 07:04:09;2025-06-05;7;Thursday
+10010;Place Jacques Bonsergent;10;6;4;19;2025-06-05 07:04:17;2025-06-05;7;Thursday
+16043;Place de Passy;3;0;3;12;2025-06-05 06:57:14;2025-06-05;6;Thursday
+16027;Mozart - Jasmin;1;1;0;61;2025-06-05 07:00:07;2025-06-05;7;Thursday
+20116;Haies - Réunion;1;1;0;21;2025-06-05 07:00:43;2025-06-05;7;Thursday
+6107;Place Alphonse Deville;11;1;10;11;2025-06-05 07:03:55;2025-06-05;7;Thursday
+16029;Maison de Radio - France;18;13;5;29;2025-06-05 07:03:37;2025-06-05;7;Thursday
+8019;Naples - Rome;3;1;2;23;2025-06-05 07:02:34;2025-06-05;7;Thursday
+18008;Square Léon;2;0;2;31;2025-06-05 06:57:41;2025-06-05;6;Thursday
+16112;Chernoviz - Raynouard;1;1;0;36;2025-06-05 06:54:48;2025-06-05;6;Thursday
+42703;Fontainebleau - Edmond Michelet;0;0;0;45;2025-06-05 07:00:59;2025-06-05;7;Thursday
+22102;Mont Valérien - Michel Salles;2;1;1;21;2025-06-05 07:02:23;2025-06-05;7;Thursday
+15003;Gare Montparnasse - Vaugirard;4;2;2;61;2025-06-05 07:03:59;2025-06-05;7;Thursday
+4110;Neuve Saint-Pierre - Beautreillis;19;15;4;1;2025-06-05 07:02:47;2025-06-05;7;Thursday
+6032;Sabot - Rennes;8;5;3;18;2025-06-05 07:04:10;2025-06-05;7;Thursday
+10036;Aqueduc - Villette;1;1;0;23;2025-06-05 07:01:28;2025-06-05;7;Thursday
+23304;Mairie de Sceaux;6;5;1;26;2025-06-05 07:01:58;2025-06-05;7;Thursday
+12161;Diderot - Reuilly;10;5;5;33;2025-06-05 07:03:13;2025-06-05;7;Thursday
+15107;Palais des Sports;20;18;2;2;2025-06-05 07:04:00;2025-06-05;7;Thursday
+9101;Cadet - La Fayette;7;6;1;12;2025-06-05 07:03:12;2025-06-05;7;Thursday
+18017;Caulaincourt - Place Constantin Pecqueur;1;0;1;43;2025-06-05 06:59:06;2025-06-05;6;Thursday
+11043;Place Pasdeloup;8;5;3;12;2025-06-05 07:02:17;2025-06-05;7;Thursday
+13010;Place d'Italie - Vincent Auriol;3;1;2;35;2025-06-05 07:03:15;2025-06-05;7;Thursday
+17201;Porte Maillot - Perreire;12;10;2;37;2025-06-05 07:04:11;2025-06-05;7;Thursday
+45001;Hôtel de Ville de Champigny sur Marne;19;12;7;2;2025-06-05 06:59:40;2025-06-05;6;Thursday
