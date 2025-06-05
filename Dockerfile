@@ -18,5 +18,5 @@ RUN chmod +x /entrypoint.sh
 
 # Revenir à l'utilisateur airflow
 USER airflow
-
-ENTRYPOINT ["/entrypoint.sh"]
+EXPOSE 8793
+CMD ["/entrypoint.sh"]

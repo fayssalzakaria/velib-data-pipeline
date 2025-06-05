@@ -1,15 +1,16 @@
 #!/bin/bash
 
+# Appliquer les migrations (une seule fois, idempotent)
+airflow db upgrade || true
 
-airflow db upgrade
-
+# Créer un utilisateur admin si besoin (ignore les erreurs si déjà créé)
 airflow users create \
-    --username admin \
-    --password admin \
-    --firstname admin \
-    --lastname admin \
-    --role Admin \
-    --email admin@example.com
+  --username admin \
+  --password admin \
+  --firstname admin \
+  --lastname admin \
+  --role Admin \
+  --email admin@example.com || true
 
-# Utilise le port Railway si défini, sinon 8080
-exec airflow webserver --port "${PORT:-8080}" --host 0.0.0.0
+# Lancer le webserver sur le port Railway
+exec airflow webserver --port "${PORT:-8793}" --host 0.0.0.0
