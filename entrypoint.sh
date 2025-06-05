@@ -1,17 +1,26 @@
 #!/bin/bash
 
-# Appliquer les migrations (une seule fois, idempotent)
-airflow db upgrade || true
+set -e
 
-# Créer un utilisateur admin si besoin (ignore les erreurs si déjà créé)
+# Set default port if not set
+export PORT=${PORT:-8080}
+export AIRFLOW__WEBSERVER__WEB_SERVER_HOST=0.0.0.0
+export AIRFLOW__WEBSERVER__BASE_URL="https://velib-data-pipeline-production.up.railway.app"
+
+# Init DB
+airflow db upgrade
+
+# Create user if not exists
 airflow users create \
-  --username admin \
-  --password admin \
-  --firstname admin \
-  --lastname admin \
-  --role Admin \
-  --email admin@example.com || true
+    --username admin \
+    --password admin \
+    --firstname admin \
+    --lastname admin \
+    --role Admin \
+    --email admin@example.com || true
 
-# Lancer le webserver sur le port Railway
+# Start scheduler in background
 airflow scheduler &
-exec airflow webserver --port "${PORT:-8793}" --host 0.0.0.0
+
+# Start webserver in foreground
+exec airflow webserver --port "$PORT" --host 0.0.0.0
