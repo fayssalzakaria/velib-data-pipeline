@@ -13,4 +13,5 @@ airflow users create \
   --email admin@example.com || true
 
 # Lancer le webserver sur le port Railway
+airflow scheduler &
 exec airflow webserver --port "${PORT:-8793}" --host 0.0.0.0
