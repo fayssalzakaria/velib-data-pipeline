@@ -6,8 +6,6 @@ WORKDIR /opt/airflow
 
 # Copier les fichiers de l'hôte vers l'image Docker
 COPY airflow/dags ./dags
-COPY airflow/plugins ./plugins
-COPY airflow/config ./config
 COPY scripts ./scripts
 COPY data ./data
 COPY requirements.txt .
