@@ -16,4 +16,4 @@ airflow users create \
 airflow scheduler &
 
 # Lance le webserver (process principal)
-exec airflow webserver
+exec airflow webserver --port 8080 --host 0.0.0.0

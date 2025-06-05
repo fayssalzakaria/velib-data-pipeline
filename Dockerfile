@@ -19,7 +19,11 @@ RUN chmod +x /entrypoint.sh
 # Passer à l’utilisateur airflow pour l'exécution
 USER airflow
 
-# Installer les dépendances avec pip (en tant qu'airflow)
+# Installer les dépendances
 RUN pip install --no-cache-dir -r /opt/airflow/requirements.txt
 
-ENTRYPOINT ["/entrypoint.sh"]
+# Exposer le port pour Railway
+EXPOSE 8080
+
+# Spécifier la commande à lancer
+CMD ["bash", "/entrypoint.sh"]
