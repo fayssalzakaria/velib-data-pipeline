@@ -9,6 +9,8 @@ WORKDIR /opt/airflow
 
 # Copier les fichiers nécessaires
 COPY airflow/dags /opt/airflow/dags
+COPY airflow/webserver_config.py /opt/airflow/webserver_config.py
+
 COPY scripts /opt/airflow/scripts
 COPY requirements.txt /opt/airflow/requirements.txt
 COPY entrypoint.sh /entrypoint.sh

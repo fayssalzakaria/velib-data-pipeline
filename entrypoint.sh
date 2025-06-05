@@ -15,5 +15,4 @@ airflow users create \
 echo "🚀 Lancement du scheduler..."
 airflow scheduler &
 
-echo "🌐 Lancement du webserver sur 0.0.0.0:$PORT..."
-exec airflow webserver --port "$PORT" --host 0.0.0.0
+exec airflow webserver 
