@@ -18,5 +18,5 @@ RUN chmod +x /entrypoint.sh
 
 # Revenir à l'utilisateur airflow
 USER airflow
-EXPOSE ${PORT}
+EXPOSE 8080
 ENTRYPOINT ["/entrypoint.sh"]
