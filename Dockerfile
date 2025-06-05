@@ -22,5 +22,4 @@ USER airflow
 # Installer les dépendances avec pip (en tant qu'airflow)
 RUN pip install --no-cache-dir -r /opt/airflow/requirements.txt
 
-# Lancer Airflow via le script
-CMD ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
