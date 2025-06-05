@@ -30,4 +30,4 @@ airflow users create \
 airflow scheduler &
 
 # Start webserver in foreground
-exec airflow webserver --port "$PORT" --host 0.0.0.0
+exec airflow webserver 
