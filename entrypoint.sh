@@ -15,10 +15,5 @@ airflow users create \
 echo "🚀 Lancement du scheduler..."
 airflow scheduler &
 
-# Forcer l'utilisation de Flask (Werkzeug) en développement
-export AIRFLOW__WEBSERVER__WORKERS=1
-export AIRFLOW__WEBSERVER__WEB_SERVER_HOST=0.0.0.0
-export AIRFLOW__WEBSERVER__WEB_SERVER_PORT=8080
-
-echo "🌐 Lancement du webserver Flask (werkzeug) sur le port 8080..."
-exec airflow webserver --port 8080 --host 0.0.0.0 --web-server-worker-class werkzeug
+echo "🌐 Lancement du webserver Gunicorn sur le port 8793 (par défaut)..."
+exec airflow webserver

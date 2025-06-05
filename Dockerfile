@@ -25,7 +25,8 @@ USER airflow
 RUN pip install --no-cache-dir -r /opt/airflow/requirements.txt
 
 # Exposer le port pour Railway
-EXPOSE 8080
+EXPOSE 8793
+
 
 # Spécifier la commande à lancer
 CMD ["bash", "/entrypoint.sh"]
