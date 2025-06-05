@@ -5,11 +5,13 @@ set -e
 # Set default port if not set
 export PORT=${PORT:-8080}
 export AIRFLOW__WEBSERVER__WEB_SERVER_HOST=0.0.0.0
+export AIRFLOW__WEBSERVER__WEB_SERVER_PORT="$PORT"
 export AIRFLOW__WEBSERVER__BASE_URL="https://velib-data-pipeline-production.up.railway.app"
 
-# Log pour débogage
+# Log pour debug
 echo "➡️  PORT=$PORT"
 echo "➡️  AIRFLOW__WEBSERVER__WEB_SERVER_HOST=$AIRFLOW__WEBSERVER__WEB_SERVER_HOST"
+echo "➡️  AIRFLOW__WEBSERVER__WEB_SERVER_PORT=$AIRFLOW__WEBSERVER__WEB_SERVER_PORT"
 echo "➡️  AIRFLOW__WEBSERVER__BASE_URL=$AIRFLOW__WEBSERVER__BASE_URL"
 
 # Init DB
