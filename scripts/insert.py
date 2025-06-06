@@ -46,8 +46,17 @@ def insert_into_cloud_db(df):
     )
 
     try:
-        metadata.create_all(engine, checkfirst=True)
+        # 🔄 Supprime la table si elle existe déjà
+        velib_data_table.drop(engine, checkfirst=True)
+        print(" Table existante supprimée.")
+
+        # 🛠️ Recrée la table avec la structure correcte
+        metadata.create_all(engine)
+        print("✅ Table recréée avec succès.")
+
+        # Insertion des données
         df.to_sql("velib_data", engine, if_exists="append", index=False)
-        print(" Données insérées avec succès")
+        print("✅ Données insérées avec succès.")
+        
     except SQLAlchemyError as e:
         print(" Erreur lors de l'insertion :", str(e))
