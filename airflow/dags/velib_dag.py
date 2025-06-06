@@ -68,4 +68,5 @@ with DAG(
     t5 = PythonOperator(task_id='generate_report', python_callable=task_generate_report)
 
     # Dépendances
-    t1 >> t2 >> [t3, t4] >> t5
+    [t3, t4] >> t5  
+    t1 >> t2 >> [t3, t4]
