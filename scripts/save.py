@@ -10,4 +10,4 @@ def save_csv(df):
     filepath = os.path.join(output_dir, filename)
 
     df.to_csv(filepath, index=False, sep=';')
-    print(f"📁 Données sauvegardées dans : {filepath}")
+    print(f" Données sauvegardées dans : {filepath}")

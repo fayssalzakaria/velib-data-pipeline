@@ -30,24 +30,24 @@ with DAG(
 ) as dag:
 
     def task_fetch(**context):
-        print("📥 FETCHING...")
+        print(" FETCHING...")
         data = fetch_data()
         context['ti'].xcom_push(key='json_data', value=data)
 
     def task_transform(**context):
-        print("🔧 TRANSFORMING...")
+        print(" TRANSFORMING...")
         json_data = context['ti'].xcom_pull(task_ids='fetch_data', key='json_data')
         df = transform_data(json_data)
         context['ti'].xcom_push(key='df_json', value=df.to_json())
 
     def task_insert(**context):
-        print("💾 INSERTING...")
+        print(" INSERTING...")
         df_json = context['ti'].xcom_pull(task_ids='transform_data', key='df_json')
         df = pd.read_json(df_json)
         insert_into_cloud_db(df)
 
     def task_save(**context):
-        print("📁 SAVING CSV...")
+        print(" SAVING CSV...")
         df_json = context['ti'].xcom_pull(task_ids='transform_data', key='df_json')
         df = pd.read_json(df_json)
         save_csv(df)
