@@ -29,7 +29,7 @@ with DAG(
     dag_id='velib_multi_task_dag',
     default_args=default_args,
     description='Pipeline Vélib avec plusieurs tâches',
-    start_date = days_ago(1, tz=local_tz),  
+    start_date = days_ago(1),  
     schedule_interval='@hourly',
     catchup=False
 ) as dag:
