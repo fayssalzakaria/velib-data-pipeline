@@ -7,12 +7,9 @@ import boto3
 import pytz
 
 def generate_visual_report():
-    print(" Génération du rapport graphique en PDF...")
+    print(" Génération des rapports graphiques Vélib’...")
 
-    # Connexion à la DB PostgreSQL
     engine = create_engine(os.environ["POSTGRES_URL"])
-
-    # Récupération des données les plus récentes
     query = "SELECT * FROM velib_data ORDER BY timestamp DESC LIMIT 1000"
     df = pd.read_sql(query, engine)
 
@@ -20,66 +17,97 @@ def generate_visual_report():
         print(" Pas de données disponibles")
         return
 
-    # Conversion UTC → heure locale Paris
     df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True)
     paris_tz = pytz.timezone("Europe/Paris")
     df["timestamp_local"] = df["timestamp"].dt.tz_convert(paris_tz)
 
-    # Horodatage du snapshot
     snapshot_time = df["timestamp_local"].max()
     snapshot_str = snapshot_time.strftime('%Y-%m-%d %H:%M')
+    timestamp_suffix = snapshot_time.strftime('%Y%m%d_%H%M')
 
-    # Top 10 des stations à ce moment précis
+    report_dir = "/opt/airflow/reports"
+    os.makedirs(report_dir, exist_ok=True)
+
+    # --- Graphe 1 : Top 10 stations les mieux fournies ---
     top_stations = (
         df.sort_values(by="numbikesavailable", ascending=False)
           .head(10)
           .set_index("name")["numbikesavailable"]
     )
-
-    # Création du graphique
     plt.figure(figsize=(10, 6))
     top_stations.plot(kind='barh', color='skyblue')
     plt.xlabel("Nombre de vélos disponibles")
-    plt.title(f" Top 10 stations Vélib’ – {snapshot_str} (heure locale)")
+    plt.title(f"🚲 Top 10 stations Vélib’ – {snapshot_str} (heure locale)")
     plt.gca().invert_yaxis()
     plt.tight_layout()
-
-    # Sauvegarde locale
-    report_dir = "/opt/airflow/reports"
-    os.makedirs(report_dir, exist_ok=True)
-    filename = f"velib_snapshot_{snapshot_time.strftime('%Y%m%d_%H%M')}.pdf"
-    filepath = os.path.join(report_dir, filename)
-    plt.savefig(filepath, format='pdf')
+    file1 = os.path.join(report_dir, f"velib_top10_{timestamp_suffix}.pdf")
+    plt.savefig(file1, format='pdf')
     plt.close()
-    print(f" Rapport PDF sauvegardé : {filepath}")
 
-    # Upload vers S3
-    upload_report_pdf_to_s3(filepath, filename)
+    # --- Graphe 2 : Stations les plus vides ---
+    top_empty = (
+        df.sort_values(by="numbikesavailable", ascending=True)
+          .head(10)
+          .set_index("name")["numbikesavailable"]
+    )
+    plt.figure(figsize=(10, 6))
+    top_empty.plot(kind='barh', color='lightcoral')
+    plt.xlabel("Nombre de vélos disponibles")
+    plt.title(f"🔴 Stations les plus vides – {snapshot_str}")
+    plt.gca().invert_yaxis()
+    plt.tight_layout()
+    file2 = os.path.join(report_dir, f"velib_empty_{timestamp_suffix}.pdf")
+    plt.savefig(file2, format='pdf')
+    plt.close()
+
+    # --- Graphe 3 : Répartition des états des stations ---
+    status_counts = pd.Series({
+        "Vides (0 vélo)": df["is_empty"].sum(),
+        "Pleines (0 dock)": df["is_full"].sum(),
+        "Partielles": len(df) - df["is_empty"].sum() - df["is_full"].sum()
+    })
+    plt.figure(figsize=(6, 6))
+    status_counts.plot(kind='pie', autopct='%1.1f%%', startangle=90)
+    plt.title(f"📊 Répartition des stations – {snapshot_str}")
+    plt.ylabel("")
+    plt.tight_layout()
+    file3 = os.path.join(report_dir, f"velib_status_{timestamp_suffix}.pdf")
+    plt.savefig(file3, format='pdf')
+    plt.close()
+
+    # --- Graphe 4 : Stations avec la plus grande capacité ---
+    df["capacity"] = df["numbikesavailable"] + df["numdocksavailable"]
+    top_capacity = (
+        df.sort_values(by="capacity", ascending=False)
+          .head(10)
+          .set_index("name")["capacity"]
+    )
+    plt.figure(figsize=(10, 6))
+    top_capacity.plot(kind='barh', color='orange')
+    plt.xlabel("Capacité totale (vélos + docks)")
+    plt.title(f"🏗️ Plus grandes stations – {snapshot_str}")
+    plt.gca().invert_yaxis()
+    plt.tight_layout()
+    file4 = os.path.join(report_dir, f"velib_capacity_{timestamp_suffix}.pdf")
+    plt.savefig(file4, format='pdf')
+    plt.close()
+
+    print("✅ Tous les rapports PDF sont générés.")
+
+    # --- Upload vers S3 ---
+    for filepath in [file1, file2, file3, file4]:
+        upload_report_pdf_to_s3(filepath, os.path.basename(filepath))
 
 def upload_report_pdf_to_s3(filepath, filename):
-    print(" Upload du PDF vers S3...")
-
+    print(f"☁️ Upload du fichier : {filename} ...")
     s3 = boto3.client(
         's3',
         aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
         aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
         region_name=os.environ.get('AWS_REGION', 'eu-north-1')
     )
-
     bucket_name = os.environ['S3_BUCKET']
     s3_prefix = "velib/reports/"
-
-    # Suppression des anciens fichiers PDF
-    print(" Suppression des anciens fichiers PDF dans S3...")
-    response = s3.list_objects_v2(Bucket=bucket_name, Prefix=s3_prefix)
-    if "Contents" in response:
-        for obj in response["Contents"]:
-            if obj["Key"].endswith(".pdf"):
-                print(f"🗑️ Suppression : {obj['Key']}")
-                s3.delete_object(Bucket=bucket_name, Key=obj["Key"])
-    else:
-        print(" Aucun rapport PDF à supprimer")
-
     s3_key = f"{s3_prefix}{filename}"
     s3.upload_file(filepath, bucket_name, s3_key)
-    print(f" Rapport PDF uploadé : s3://{bucket_name}/{s3_key}")
+    print(f"✅ Upload terminé : s3://{bucket_name}/{s3_key}")
