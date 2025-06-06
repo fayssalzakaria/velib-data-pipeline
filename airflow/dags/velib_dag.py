@@ -15,8 +15,8 @@ from insert import insert_into_cloud_db
 from save import save_csv
 import pandas as pd
 from generate_report import generate_visual_report
+from airflow.utils.dates import days_ago
 
-# Fuseau horaire local
 local_tz = pendulum.timezone("Europe/Paris")
 
 default_args = {
@@ -29,7 +29,7 @@ with DAG(
     dag_id='velib_multi_task_dag',
     default_args=default_args,
     description='Pipeline Vélib avec plusieurs tâches',
-    start_date=pendulum.now(tz=local_tz).subtract(minutes=1),  # ✅ Stable et immédiat
+    start_date = days_ago(1, tz=local_tz),  
     schedule_interval='@hourly',
     catchup=False
 ) as dag:
