@@ -13,6 +13,7 @@ from transform import transform_data
 from insert import insert_into_cloud_db
 from save import save_csv
 import pandas as pd
+from generate_report import generate_visual_report
 
 default_args = {
     'owner': 'airflow',
@@ -51,12 +52,13 @@ with DAG(
         df_json = context['ti'].xcom_pull(task_ids='transform_data', key='df_json')
         df = pd.read_json(df_json)
         save_csv(df)
-
+    def task_generate_report(**context):
+        generate_visual_report()
     # Déclaration des tâches
     t1 = PythonOperator(task_id='fetch_data', python_callable=task_fetch, provide_context=True)
     t2 = PythonOperator(task_id='transform_data', python_callable=task_transform, provide_context=True)
     t3 = PythonOperator(task_id='insert_to_db', python_callable=task_insert, provide_context=True)
     t4 = PythonOperator(task_id='save_csv', python_callable=task_save, provide_context=True)
-
+    t5 = PythonOperator(task_id='generate_report', python_callable=task_generate_report, provide_context=True)
     # Dépendances
     t1 >> t2 >> [t3, t4]

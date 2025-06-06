@@ -6,3 +6,4 @@ requests
 pendulum==2.1.2
 boto3
 datetime
+pytz

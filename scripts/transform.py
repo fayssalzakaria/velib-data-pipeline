@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import re
+import pytz
 
 # Fonction pour nettoyer les noms de station (suppression des espaces, majuscules)
 def clean_text(text):
@@ -59,8 +60,8 @@ def transform_data(json_data):
     # Conversion en DataFrame
     df = pd.DataFrame(rows)
 
-    # Nettoyage : conversion explicite de timestamp + suppression des dates invalides
-    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
+    # Nettoyage : conversion explicite de timestamp (en UTC) + suppression des dates invalides
+    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce", utc=True)
     df = df.dropna(subset=["timestamp"])
 
     # Création de colonnes dérivées pour l'analyse

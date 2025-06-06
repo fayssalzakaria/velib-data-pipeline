@@ -9,7 +9,7 @@ def insert_into_cloud_db(df):
 
     DB_URL = os.environ.get("POSTGRES_URL")
     if not DB_URL:
-        raise ValueError("🚨 POSTGRES_URL non défini dans les variables d’environnement.")
+        raise ValueError(" POSTGRES_URL non défini dans les variables d’environnement.")
     
     # Nettoyage avant insertion
     df = df.copy()
@@ -46,11 +46,11 @@ def insert_into_cloud_db(df):
     )
 
     try:
-        # 🔄 Supprime la table si elle existe déjà
+        #  Supprime la table si elle existe déjà
         velib_data_table.drop(engine, checkfirst=True)
         print(" Table existante supprimée.")
 
-        # 🛠️ Recrée la table avec la structure correcte
+        #  Recrée la table avec la structure correcte
         metadata.create_all(engine)
         print("✅ Table recréée avec succès.")
 
