@@ -1,6 +1,7 @@
 import sys
 import os
-from datetime import datetime, timedelta
+from datetime import timedelta
+import pendulum
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
@@ -15,6 +16,9 @@ from save import save_csv
 import pandas as pd
 from generate_report import generate_visual_report
 
+# Fuseau horaire local
+local_tz = pendulum.timezone("Europe/Paris")
+
 default_args = {
     'owner': 'airflow',
     'retries': 1,
@@ -25,7 +29,7 @@ with DAG(
     dag_id='velib_multi_task_dag',
     default_args=default_args,
     description='Pipeline Vélib avec plusieurs tâches',
-    start_date=datetime(2025, 6, 5),
+    start_date=pendulum.now(tz=local_tz).subtract(minutes=1),  # ✅ Stable et immédiat
     schedule_interval='@hourly',
     catchup=False
 ) as dag:
@@ -52,13 +56,16 @@ with DAG(
         df_json = context['ti'].xcom_pull(task_ids='transform_data', key='df_json')
         df = pd.read_json(df_json)
         save_csv(df)
+
     def task_generate_report(**context):
         generate_visual_report()
+
     # Déclaration des tâches
-    t1 = PythonOperator(task_id='fetch_data', python_callable=task_fetch, provide_context=True)
-    t2 = PythonOperator(task_id='transform_data', python_callable=task_transform, provide_context=True)
-    t3 = PythonOperator(task_id='insert_to_db', python_callable=task_insert, provide_context=True)
-    t4 = PythonOperator(task_id='save_csv', python_callable=task_save, provide_context=True)
-    t5 = PythonOperator(task_id='generate_report', python_callable=task_generate_report, provide_context=True)
+    t1 = PythonOperator(task_id='fetch_data', python_callable=task_fetch)
+    t2 = PythonOperator(task_id='transform_data', python_callable=task_transform)
+    t3 = PythonOperator(task_id='insert_to_db', python_callable=task_insert)
+    t4 = PythonOperator(task_id='save_csv', python_callable=task_save)
+    t5 = PythonOperator(task_id='generate_report', python_callable=task_generate_report)
+
     # Dépendances
-    t1 >> t2 >> [t3, t4]
+    t1 >> t2 >> [t3, t4] >> t5
