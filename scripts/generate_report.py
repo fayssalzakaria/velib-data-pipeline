@@ -23,13 +23,14 @@ def generate_visual_report():
     paris_tz = pytz.timezone("Europe/Paris")
     df["timestamp_local"] = df["timestamp"].dt.tz_convert(paris_tz)
 
-    snapshot_time = df["timestamp_local"].max()
+    snapshot_time = datetime.now(paris_tz)
     snapshot_str = snapshot_time.strftime('%Y-%m-%d %H:%M')
     timestamp_suffix = snapshot_time.strftime('%Y%m%d_%H%M')
 
     report_dir = "/opt/airflow/reports"
     os.makedirs(report_dir, exist_ok=True)
-    pdf_path = os.path.join(report_dir, f"velib_rapport_complet_{timestamp_suffix}.pdf")
+    pdf_path = os.path.join(report_dir, "report.pdf")
+
 
     with PdfPages(pdf_path) as pdf:
         # --- Graphe 1 : Top 10 stations les mieux fournies ---
@@ -94,7 +95,8 @@ def generate_visual_report():
         plt.close()
 
     print(f" Rapport global PDF généré : {pdf_path}")
-    upload_report_pdf_to_s3(pdf_path, os.path.basename(pdf_path))
+    upload_report_pdf_to_s3(pdf_path, "report.pdf")
+
 
 def upload_report_pdf_to_s3(filepath, filename):
     print(f"☁️ Upload du fichier : {filename} ...")
