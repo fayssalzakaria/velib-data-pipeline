@@ -43,23 +43,37 @@ with DAG(
         print(" TRANSFORMING...")
         json_data = context['ti'].xcom_pull(task_ids='fetch_data', key='json_data')
         df = transform_data(json_data)
-        # Passage en dict pour éviter les problèmes de datetime
-        context['ti'].xcom_push(key='df_dict', value=df.to_dict(orient="records"))
+
+        # Conversion explicite en datetime
+        df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors="coerce")
+        df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], utc=True, errors="coerce")
+
+        # Sérialisation propre au format texte ISO8601
+        df["Derniere_Actualisation_UTC"] = df["Derniere_Actualisation_UTC"].dt.strftime('%Y-%m-%dT%H:%M:%S%z')
+        df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.strftime('%Y-%m-%dT%H:%M:%S%z')
+
+        context['ti'].xcom_push(key='df_json', value=df.to_json(orient='records'))
 
     def task_insert(**context):
         print(" INSERTING...")
-        df_dict = context['ti'].xcom_pull(task_ids='transform_data', key='df_dict')
-        df = pd.DataFrame.from_dict(df_dict)
+        df_json = context['ti'].xcom_pull(task_ids='transform_data', key='df_json')
+        df = pd.read_json(df_json, orient='records')
+
+        # Re-conversion explicite en datetime
         df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors='coerce')
         df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], utc=True, errors='coerce')
+
         insert_into_cloud_db(df)
 
     def task_save(**context):
         print(" SAVING CSV...")
-        df_dict = context['ti'].xcom_pull(task_ids='transform_data', key='df_dict')
-        df = pd.DataFrame.from_dict(df_dict)
+        df_json = context['ti'].xcom_pull(task_ids='transform_data', key='df_json')
+        df = pd.read_json(df_json, orient='records')
+
+        # Re-conversion explicite en datetime
         df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors='coerce')
         df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], utc=True, errors='coerce')
+
         save_csv(df)
 
     def task_generate_report(**context):
