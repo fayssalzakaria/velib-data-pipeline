@@ -71,7 +71,7 @@ def transform_data(json_data):
     df = df[[
         "station_id", "name", "numbikesavailable", "mechanical", "ebike", "numdocksavailable",
         "Date actualisation", "date", "hour", "weekday", "is_weekend",
-        "is_full", "is_empty", "bike_ratio"
+        "is_full", "is_empty", "bike_ratio","Heure locale" 
     ]]
 
     print(f" Données transformées : {len(df)} lignes prêtes")

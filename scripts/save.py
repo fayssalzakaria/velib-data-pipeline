@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 import boto3
 import pytz
-
+import pandas as pd
 def save_csv(df):
     # Chemin local
     output_dir = "/opt/airflow/data"
@@ -18,7 +18,9 @@ def save_csv(df):
     if "timestamp" in df.columns:
         df = df.rename(columns={"timestamp": "Date actualisation"})
     if "Date actualisation" in df.columns:
-        df["Date actualisation"] = df["Date actualisation"].dt.strftime("%Y-%m-%d %H:%M:%S")
+        # Vérifie que c’est bien un datetime avant de formater
+        if pd.api.types.is_datetime64_any_dtype(df["Date actualisation"]):
+            df["Date actualisation"] = df["Date actualisation"].dt.strftime("%Y-%m-%d %H:%M:%S")
     
     # Sauvegarde locale
     df.to_csv(filepath, index=False, sep=';')
