@@ -18,7 +18,8 @@ def transform_data(json_data):
 
     for rec in records:
         fields = rec.get("fields", {})
-        timestamp = fields.get("duedate")
+        timestamp = parse_timestamp(fields.get("duedate"))
+
 
         try:
             numbikes = int(fields.get("numbikesavailable", 0))
@@ -53,7 +54,7 @@ def transform_data(json_data):
         rows.append(row)
 
     df = pd.DataFrame(rows)
-    df["Derniere Actualisation UTC"] = pd.to_datetime(df["Derniere Actualisation UTC"], errors="coerce", utc=True)
+
     df = df.dropna(subset=["Derniere Actualisation UTC"])
 
     paris_tz = pytz.timezone("Europe/Paris")
@@ -76,3 +77,17 @@ def transform_data(json_data):
     df.columns = [col.replace(" ", "_") for col in df.columns]
 
     return df
+def parse_timestamp(ts):
+    # Si c’est une chaîne de type ISO → OK
+    if isinstance(ts, str):
+        try:
+            return pd.to_datetime(ts, utc=True)
+        except Exception:
+            return pd.NaT
+    # Si c’est un entier ou float (timestamp UNIX ms)
+    elif isinstance(ts, (int, float)):
+        try:
+            return pd.to_datetime(int(ts), unit='ms', utc=True)
+        except Exception:
+            return pd.NaT
+    return pd.NaT

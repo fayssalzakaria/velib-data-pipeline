@@ -10,7 +10,7 @@ def generate_visual_report():
     print(" Génération du rapport PDF global...")
 
     engine = create_engine(os.environ["POSTGRES_URL"])
-    query = "SELECT * FROM velib_data ORDER BY \"Derniere_Actualisation_UTC\" DESC LIMIT 1000"
+    query = "SELECT * FROM velib_data ORDER BY \"Derniere_Actualisation_UTC\" DESC"
     df = pd.read_sql(query, engine)
 
     if df.empty:
@@ -74,15 +74,6 @@ def generate_visual_report():
         plt.xlabel("Capacité totale (vélos + docks)")
         plt.title(f" Plus grandes stations – {snapshot_str}")
         plt.gca().invert_yaxis(); plt.tight_layout()
-        pdf.savefig(); plt.close()
-
-        # Graphe 5 : Moyenne de vélos disponibles par heure
-        plt.figure(figsize=(10, 6))
-        df.groupby("hour")["numbikesavailable"].mean().plot(kind="bar", color='purple')
-        plt.title(" Moyenne de vélos disponibles par heure")
-        plt.xlabel("Heure")
-        plt.ylabel("Vélos disponibles (moyenne)")
-        plt.grid(axis='y'); plt.tight_layout()
         pdf.savefig(); plt.close()
 
         # Graphe 6 : Répartition mécanique vs électrique
