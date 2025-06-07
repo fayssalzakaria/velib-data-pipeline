@@ -31,3 +31,5 @@ airflow scheduler &
 
 # Start webserver in foreground
 exec airflow webserver --port "$PORT"
+airflow webserver --port "$PORT" &
+uvicorn airflow.api.download_api:app --host 0.0.0.0 --port 8081

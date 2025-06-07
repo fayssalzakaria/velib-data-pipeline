@@ -8,3 +8,5 @@ boto3
 datetime
 pytz
 matplotlib==3.8.4
+fastapi
+uvicorn[standard]
