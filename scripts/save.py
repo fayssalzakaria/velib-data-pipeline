@@ -1,7 +1,9 @@
 import os
 from datetime import datetime
 import boto3
-import pytz 
+import pytz
+import pandas as pd  # ← assure-toi que pandas est bien importé ici
+
 def save_csv(df):
     # Chemin local
     output_dir = "/opt/airflow/data"
@@ -14,13 +16,17 @@ def save_csv(df):
     filename = f"velib_{heure_locale_str}.csv"
 
     filepath = os.path.join(output_dir, filename)
-    #convertion en date lisible
+
+    df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], errors="coerce", utc=True)
+    df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], errors="coerce")
+
+    # Formatage en texte lisible
     df["Derniere_Actualisation_UTC"] = df["Derniere_Actualisation_UTC"].dt.strftime('%Y-%m-%d %H:%M:%S')
     df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.strftime('%Y-%m-%d %H:%M:%S')
 
     # Sauvegarde locale
     df.to_csv(filepath, index=False, sep=';')
-    print(f" Données sauvegardées localement : {filepath}")
+    print(f"✅ Données sauvegardées localement : {filepath}")
 
     # Préparation S3
     s3 = boto3.client(
@@ -32,16 +38,16 @@ def save_csv(df):
     bucket_name = os.environ['S3_BUCKET']
     s3_prefix = "velib/"
 
-    # Suppression des anciens fichiers S3 dans velib/
-    print(" Suppression des anciens fichiers S3...")
+    # Suppression des anciens fichiers S3
+    print("🧹 Suppression des anciens fichiers S3...")
     response = s3.list_objects_v2(Bucket=bucket_name, Prefix=s3_prefix)
     if "Contents" in response:
         for obj in response["Contents"]:
-            print(f" Suppression : {obj['Key']}")
+            print(f"🗑️ Suppression : {obj['Key']}")
             s3.delete_object(Bucket=bucket_name, Key=obj["Key"])
     else:
-        print(" Aucun fichier à supprimer")
+        print("ℹ️ Aucun fichier à supprimer")
 
-    # Upload du nouveau fichier
+    # Upload du fichier
     s3.upload_file(filepath, bucket_name, f"{s3_prefix}{filename}")
-    print(f" Nouveau fichier uploadé sur S3 : s3://{bucket_name}/{s3_prefix}{filename}")
+    print(f"✅ Nouveau fichier uploadé sur S3 : s3://{bucket_name}/{s3_prefix}{filename}")
