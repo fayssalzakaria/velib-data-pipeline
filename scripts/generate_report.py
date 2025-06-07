@@ -10,7 +10,7 @@ def generate_visual_report():
     print(" Génération du rapport PDF global...")
 
     engine = create_engine(os.environ["POSTGRES_URL"])
-    query = "SELECT * FROM velib_data ORDER BY \"Derniere Actualisation UTC\" DESC LIMIT 1000"
+    query = "SELECT * FROM velib_data ORDER BY \"Derniere_Actualisation_UTC\" DESC"
     df = pd.read_sql(query, engine)
 
     if df.empty:
@@ -18,7 +18,7 @@ def generate_visual_report():
         return
 
     # Convertir la colonne UTC en datetime si ce n’est pas déjà fait
-    df["Derniere Actualisation UTC"] = pd.to_datetime(df["Derniere Actualisation UTC"], utc=True)
+    df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True)
     paris_tz = pytz.timezone("Europe/Paris")
     df["timestamp_local"] = df["Derniere Actualisation UTC"].dt.tz_convert(paris_tz)
 

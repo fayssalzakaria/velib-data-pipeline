@@ -14,6 +14,9 @@ def save_csv(df):
     filename = f"velib_{heure_locale_str}.csv"
 
     filepath = os.path.join(output_dir, filename)
+    #convertion en date lisible
+    df["Derniere_Actualisation_UTC"] = df["Derniere_Actualisation_UTC"].dt.strftime('%Y-%m-%d %H:%M:%S')
+    df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.strftime('%Y-%m-%d %H:%M:%S')
 
     # Sauvegarde locale
     df.to_csv(filepath, index=False, sep=';')

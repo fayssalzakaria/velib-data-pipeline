@@ -56,6 +56,9 @@ def insert_into_cloud_db(df):
         print(" Table recréée avec succès.")
 
         # Insertion des données
+        # Renommer les colonnes pour éviter les espaces
+        df.columns = [col.replace(" ", "_") for col in df.columns]
+
         df.to_sql("velib_data", engine, if_exists="append", index=False)
         print(" Données insérées avec succès.")
         
