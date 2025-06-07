@@ -40,7 +40,9 @@ def insert_into_cloud_db(df):
         Column('is_full', Boolean),
         Column('is_empty', Boolean),
         Column('bike_ratio', Float),
-        Column('is_weekend', Boolean)
+        Column('is_weekend', Boolean),
+        Column('Heure locale', DateTime(timezone=True)),
+
     )
 
     try:

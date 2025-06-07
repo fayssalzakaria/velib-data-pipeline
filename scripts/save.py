@@ -17,7 +17,9 @@ def save_csv(df):
     # Renommer la colonne 'timestamp' → 'Date actualisation' si elle existe
     if "timestamp" in df.columns:
         df = df.rename(columns={"timestamp": "Date actualisation"})
-
+    if "Date actualisation" in df.columns:
+        df["Date actualisation"] = df["Date actualisation"].dt.strftime("%Y-%m-%d %H:%M:%S")
+    
     # Sauvegarde locale
     df.to_csv(filepath, index=False, sep=';')
     print(f" Données sauvegardées localement : {filepath}")

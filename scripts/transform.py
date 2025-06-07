@@ -57,6 +57,9 @@ def transform_data(json_data):
     # Conversion de "Date actualisation"
     df["Date actualisation"] = pd.to_datetime(df["Date actualisation"], errors="coerce", utc=True)
     df = df.dropna(subset=["Date actualisation"])
+    # Création de l'heure locale
+    paris_tz = pytz.timezone("Europe/Paris")
+    df["Heure locale"] = df["Date actualisation"].dt.tz_convert(paris_tz)
 
     # Colonnes dérivées
     df["date"] = df["Date actualisation"].dt.date
