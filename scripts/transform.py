@@ -11,20 +11,23 @@ def clean_text(text):
     return text.upper()
 
 def parse_timestamp(ts):
-    # Si c’est une chaîne de type ISO → OK
     if isinstance(ts, str):
         try:
-            return pd.to_datetime(ts, utc=True)
-        except Exception:
+            dt = pd.to_datetime(ts, utc=True)
+            return dt
+        except Exception as e:
+            print(f" Erreur de conversion string → datetime : {ts} ({e})")
             return pd.NaT
-    # Si c’est un entier ou float (timestamp UNIX ms)
     elif isinstance(ts, (int, float)):
         try:
-            if int(ts) < 1000000000000:  # Sécurité : timestamp < ~2001 en ms → rejet
+            if int(ts) < 1000000000000:  # timestamp trop petit
+                print(f" Timestamp trop petit, ignoré : {ts}")
                 return pd.NaT
             return pd.to_datetime(int(ts), unit='ms', utc=True)
-        except Exception:
+        except Exception as e:
+            print(f" Erreur de conversion timestamp int → datetime : {ts} ({e})")
             return pd.NaT
+    print(f" Type de timestamp inattendu : {type(ts)} – valeur : {ts}")
     return pd.NaT
 
 def transform_data(json_data):
