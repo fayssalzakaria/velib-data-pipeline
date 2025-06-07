@@ -1,11 +1,8 @@
-import sys
-import os
+from airflow.decorators import dag, task
 from datetime import timedelta
 import pendulum
-from airflow import DAG
-from airflow.operators.python import PythonOperator
-
-# Ajouter les chemins aux scripts et config
+import os
+import sys
 sys.path.append("/opt/airflow/scripts")
 sys.path.append("/opt/airflow/config")
 
@@ -13,84 +10,56 @@ from fetch import fetch_data
 from transform import transform_data
 from insert import insert_into_cloud_db
 from save import save_csv
-import pandas as pd
-import pytz
 from generate_report import generate_visual_report
-from airflow.utils.dates import days_ago
 
-local_tz = pytz.timezone("Europe/Paris")
+import pandas as pd
 
-default_args = {
-    'owner': 'airflow',
-    'retries': 1,
-    'retry_delay': timedelta(minutes=2),
-}
+local_tz = pendulum.timezone("Europe/Paris")
 
-with DAG(
+@dag(
     dag_id='velib_multi_task_dag',
-    default_args=default_args,
-    description='Pipeline Vélib avec plusieurs tâches',
-    start_date=days_ago(1),
     schedule_interval='@hourly',
-    catchup=False
-) as dag:
+    start_date=pendulum.now().subtract(hours=1),
+    catchup=False,
+    default_args={
+        'owner': 'airflow',
+        'retries': 1,
+        'retry_delay': timedelta(minutes=2),
+    },
+    description="Pipeline Vélib sans JSON via TaskFlow API"
+)
+def velib_pipeline():
 
-    def task_fetch(**context):
+    @task()
+    def task_fetch():
         print(" FETCHING...")
-        data = fetch_data()
-        context['ti'].xcom_push(key='json_data', value=data)
+        return fetch_data()
 
-    def task_transform(**context):
+    @task()
+    def task_transform(raw_data):
         print(" TRANSFORMING...")
-        json_data = context['ti'].xcom_pull(task_ids='fetch_data', key='json_data')
-        df = transform_data(json_data)
+        df = transform_data(raw_data)
+        return df  # pickled par Airflow automatiquement
 
-        # Sérialisation ISO8601 pour XCom
-        df["Derniere_Actualisation_UTC"] = df["Derniere_Actualisation_UTC"].dt.strftime('%Y-%m-%dT%H:%M:%S%z')
-        df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.strftime('%Y-%m-%dT%H:%M:%S%z')
-
-        context['ti'].xcom_push(key='df_json', value=df.to_json(orient='records'))
-
-    def task_insert(**context):
+    @task()
+    def task_insert(df):
         print(" INSERTING...")
-        df_json = context['ti'].xcom_pull(task_ids='transform_data', key='df_json')
-        df = pd.read_json(df_json, orient='records')
-
-        df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors='coerce')
-        df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], errors='coerce')
-
-        try:
-            df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.tz_convert(local_tz)
-        except TypeError:
-            df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.tz_localize(local_tz)
-
         insert_into_cloud_db(df)
 
-    def task_save(**context):
+    @task()
+    def task_save(df):
         print(" SAVING CSV...")
-        df_json = context['ti'].xcom_pull(task_ids='transform_data', key='df_json')
-        df = pd.read_json(df_json, orient='records')
-
-        df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors='coerce')
-        df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], errors='coerce')
-
-        try:
-            df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.tz_convert(local_tz)
-        except TypeError:
-            df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.tz_localize(local_tz)
-
         save_csv(df)
 
-    def task_generate_report(**context):
+    @task()
+    def task_generate_report():
+        print(" GENERATING REPORT...")
         generate_visual_report()
 
-    # Déclaration des tâches
-    t1 = PythonOperator(task_id='fetch_data', python_callable=task_fetch)
-    t2 = PythonOperator(task_id='transform_data', python_callable=task_transform)
-    t3 = PythonOperator(task_id='insert_to_db', python_callable=task_insert)
-    t4 = PythonOperator(task_id='save_csv', python_callable=task_save)
-    t5 = PythonOperator(task_id='generate_report', python_callable=task_generate_report)
+    # Définition du pipeline
+    raw = task_fetch()
+    df = task_transform(raw)
+    task_insert(df)
+    task_save(df) >> task_generate_report()
 
-    # Dépendances
-    [t3, t4] >> t5
-    t1 >> t2 >> [t3, t4]
+velib_pipeline()
