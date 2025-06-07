@@ -10,6 +10,23 @@ def clean_text(text):
     text = re.sub(r"\s+", " ", text)
     return text.upper()
 
+def parse_timestamp(ts):
+    # Si c’est une chaîne de type ISO → OK
+    if isinstance(ts, str):
+        try:
+            return pd.to_datetime(ts, utc=True)
+        except Exception:
+            return pd.NaT
+    # Si c’est un entier ou float (timestamp UNIX ms)
+    elif isinstance(ts, (int, float)):
+        try:
+            if int(ts) < 1000000000000:  # Sécurité : timestamp < ~2001 en ms → rejet
+                return pd.NaT
+            return pd.to_datetime(int(ts), unit='ms', utc=True)
+        except Exception:
+            return pd.NaT
+    return pd.NaT
+
 def transform_data(json_data):
     print(" Étapes : nettoyage → normalisation → enrichissement")
 
@@ -19,7 +36,6 @@ def transform_data(json_data):
     for rec in records:
         fields = rec.get("fields", {})
         timestamp = parse_timestamp(fields.get("duedate"))
-
 
         try:
             numbikes = int(fields.get("numbikesavailable", 0))
@@ -45,7 +61,7 @@ def transform_data(json_data):
             "mechanical": int(fields.get("mechanical", 0)),
             "ebike": int(fields.get("ebike", 0)),
             "numdocksavailable": numdocks,
-            "Derniere Actualisation UTC": timestamp,
+            "Derniere_Actualisation_UTC": timestamp,
             "is_full": numdocks == 0,
             "is_empty": numbikes == 0,
             "bike_ratio": round(numbikes / total, 2) if total > 0 else np.nan
@@ -55,39 +71,29 @@ def transform_data(json_data):
 
     df = pd.DataFrame(rows)
 
-    df = df.dropna(subset=["Derniere Actualisation UTC"])
+    # Supprimer les lignes sans timestamp valide
+    df = df.dropna(subset=["Derniere_Actualisation_UTC"])
 
+    # Vérifier/convertir en datetime explicite si besoin
+    if not pd.api.types.is_datetime64_any_dtype(df["Derniere_Actualisation_UTC"]):
+        df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors="coerce")
+
+    # Conversion en heure locale
     paris_tz = pytz.timezone("Europe/Paris")
-    df["Derniere Actualisation Heure locale"] = df["Derniere Actualisation UTC"].dt.tz_convert(paris_tz)
+    df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_UTC"].dt.tz_convert(paris_tz)
 
-    df["date"] = df["Derniere Actualisation Heure locale"].dt.date
-    df["hour"] = df["Derniere Actualisation Heure locale"].dt.hour
-    df["weekday"] = df["Derniere Actualisation Heure locale"].dt.day_name()
+    # Colonnes dérivées
+    df["date"] = df["Derniere_Actualisation_Heure_locale"].dt.date
+    df["hour"] = df["Derniere_Actualisation_Heure_locale"].dt.hour
+    df["weekday"] = df["Derniere_Actualisation_Heure_locale"].dt.day_name()
     df["is_weekend"] = df["weekday"].isin(["Saturday", "Sunday"])
 
     df = df[[
         "station_id", "name", "numbikesavailable", "mechanical", "ebike", "numdocksavailable",
-        "Derniere Actualisation UTC", "Derniere Actualisation Heure locale",
+        "Derniere_Actualisation_UTC", "Derniere_Actualisation_Heure_locale",
         "date", "hour", "weekday", "is_weekend",
         "is_full", "is_empty", "bike_ratio"
     ]]
 
     print(f" Données transformées : {len(df)} lignes prêtes")
-    # Renommer les colonnes pour usage cohérent (pas d’espaces)
-    df.columns = [col.replace(" ", "_") for col in df.columns]
-
     return df
-def parse_timestamp(ts):
-    # Si c’est une chaîne de type ISO → OK
-    if isinstance(ts, str):
-        try:
-            return pd.to_datetime(ts, utc=True)
-        except Exception:
-            return pd.NaT
-    # Si c’est un entier ou float (timestamp UNIX ms)
-    elif isinstance(ts, (int, float)):
-        try:
-            return pd.to_datetime(int(ts), unit='ms', utc=True)
-        except Exception:
-            return pd.NaT
-    return pd.NaT

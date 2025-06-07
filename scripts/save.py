@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 import boto3
 import pytz
-import pandas as pd  # ← assure-toi que pandas est bien importé ici
+import pandas as pd
 
 def save_csv(df):
     # Chemin local
@@ -17,13 +17,18 @@ def save_csv(df):
 
     filepath = os.path.join(output_dir, filename)
 
+    #  Conversion sécurisée en datetime si nécessaire
+    for col in ["Derniere_Actualisation_UTC", "Derniere_Actualisation_Heure_locale"]:
+        if not pd.api.types.is_datetime64_any_dtype(df[col]):
+            df[col] = pd.to_datetime(df[col], errors="coerce")
+
     # Formatage en texte lisible
     df["Derniere_Actualisation_UTC"] = df["Derniere_Actualisation_UTC"].dt.strftime('%Y-%m-%d %H:%M:%S')
     df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.strftime('%Y-%m-%d %H:%M:%S')
 
     # Sauvegarde locale
     df.to_csv(filepath, index=False, sep=';')
-    print(f"✅ Données sauvegardées localement : {filepath}")
+    print(f" Données sauvegardées localement : {filepath}")
 
     # Préparation S3
     s3 = boto3.client(
@@ -47,4 +52,4 @@ def save_csv(df):
 
     # Upload du fichier
     s3.upload_file(filepath, bucket_name, f"{s3_prefix}{filename}")
-    print(f"✅ Nouveau fichier uploadé sur S3 : s3://{bucket_name}/{s3_prefix}{filename}")
+    print(f" Nouveau fichier uploadé sur S3 : s3://{bucket_name}/{s3_prefix}{filename}")

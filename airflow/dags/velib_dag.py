@@ -48,13 +48,19 @@ with DAG(
     def task_insert(**context):
         print(" INSERTING...")
         df_json = context['ti'].xcom_pull(task_ids='transform_data', key='df_json')
-        df = pd.read_json(df_json)
+        df = pd.read_json(df_json, convert_dates=True)
+        df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors='coerce')
+        df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], utc=True, errors='coerce')
+
         insert_into_cloud_db(df)
 
     def task_save(**context):
         print(" SAVING CSV...")
         df_json = context['ti'].xcom_pull(task_ids='transform_data', key='df_json')
-        df = pd.read_json(df_json)
+        df = pd.read_json(df_json, convert_dates=True)
+        df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors='coerce')
+        df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], utc=True, errors='coerce')
+
         save_csv(df)
 
     def task_generate_report(**context):
