@@ -11,8 +11,7 @@ def generate_visual_report():
     print(" Génération du rapport PDF global...")
 
     engine = create_engine(os.environ["POSTGRES_URL"])
-    query = 'SELECT * FROM velib_data ORDER BY "Date actualisation" DESC LIMIT 1000'
-
+    query = "SELECT * FROM velib_data ORDER BY 'Date actualisation' DESC LIMIT 1000;"
     df = pd.read_sql(query, engine)
 
     if df.empty:
@@ -20,9 +19,9 @@ def generate_visual_report():
         return
 
     # Convertir en heure locale
-    df["Date actualisation"] = pd.to_datetime(df["Date actualisation"], utc=True)
+    df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True)
     paris_tz = pytz.timezone("Europe/Paris")
-    df["timestamp_local"] = df["Date actualisation"].dt.tz_convert(paris_tz)
+    df["timestamp_local"] = df["timestamp"].dt.tz_convert(paris_tz)
 
     snapshot_time = datetime.now(paris_tz)
     snapshot_str = snapshot_time.strftime('%Y-%m-%d %H:%M')
