@@ -11,7 +11,7 @@ def generate_visual_report():
     print(" Génération du rapport PDF global...")
 
     engine = create_engine(os.environ["POSTGRES_URL"])
-    query = "SELECT * FROM velib_data ORDER BY 'Date actualisation' DESC LIMIT 1000;"
+    query = "SELECT * FROM velib_data ORDER BY timestamp DESC LIMIT 1000"
     df = pd.read_sql(query, engine)
 
     if df.empty:
