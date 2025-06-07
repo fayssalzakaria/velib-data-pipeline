@@ -1,16 +1,22 @@
 import os
 from datetime import datetime
 import boto3
+import pytz
 
 def save_csv(df):
     # Chemin local
     output_dir = "/opt/airflow/data"
     os.makedirs(output_dir, exist_ok=True)
 
-    # Nom de fichier basé sur la date
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    # Heure locale à Paris
+    paris_tz = pytz.timezone("Europe/Paris")
+    timestamp = datetime.now(paris_tz).strftime("%Y%m%d_%Hh%M")
     filename = f"velib_{timestamp}.csv"
     filepath = os.path.join(output_dir, filename)
+
+    # Renommer la colonne 'timestamp' → 'Date actualisation' si elle existe
+    if "timestamp" in df.columns:
+        df = df.rename(columns={"timestamp": "Date actualisation"})
 
     # Sauvegarde locale
     df.to_csv(filepath, index=False, sep=';')
