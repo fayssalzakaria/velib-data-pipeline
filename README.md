@@ -41,7 +41,7 @@ Chaque heure :
 - **Requests** (API REST Vélib’)
 
 ---
-
+```
 ## 📂 Structure du projet
 
 velib-data-pipeline/
@@ -60,6 +60,7 @@ velib-data-pipeline/
 ├── entrypoint.sh # Lancement Webserver + Scheduler
 ├── requirements.txt # Dépendances Python
 └── .env / Railway Variables # Clés AWS, URL DB, bucket S3...
+```
 ## Rapport pdf
 Le rapport contient :
 
@@ -84,9 +85,11 @@ Cette API est exposée sur Railway (port 8081) en parallèle du serveur Airflow 
 | `/download/report` | 📄 Télécharge le dernier rapport PDF (`report.pdf`) |
 | `/download/csv`    | 📁 Télécharge le dernier fichier CSV (`velib_...csv`) |
 
-> Exemple :  
-> `https://<ton-projet>.railway.app:8081/download/report`  
-> `https://<ton-projet>.railway.app:8081/download/csv`
+lien de base (
+pour acceder a airflow)
+pour acceder a airflow)
+
+Lien de base (pour accéder à Airflow) :https://velib-data-pipeline-production.up.railway.app/
 
 ---
 
