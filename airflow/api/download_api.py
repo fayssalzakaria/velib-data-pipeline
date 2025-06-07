@@ -22,13 +22,24 @@ os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 @router.get("/report")
 def download_report():
-    key = "velib/reports/report.pdf"
-    local_path = os.path.join(DOWNLOAD_DIR, "report.pdf")
     try:
-        s3.download_file(S3_BUCKET, key, local_path)
+        # Lister tous les fichiers PDF dans le dossier velib/reports/
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix="velib/reports/")
+        pdf_files = sorted([
+            obj["Key"] for obj in response.get("Contents", [])
+            if obj["Key"].endswith(".pdf")
+        ], reverse=True)
+
+        if not pdf_files:
+            raise Exception("Aucun fichier PDF trouvé.")
+
+        latest_key = pdf_files[0]
+        local_path = os.path.join(DOWNLOAD_DIR, "latest_report.pdf")
+        s3.download_file(S3_BUCKET, latest_key, local_path)
         return FileResponse(local_path, filename="report.pdf", media_type="application/pdf")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur téléchargement rapport : {e}")
+
 
 @router.get("/csv")
 def download_csv():
