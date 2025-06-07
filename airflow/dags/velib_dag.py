@@ -29,7 +29,7 @@ with DAG(
     dag_id='velib_multi_task_dag',
     default_args=default_args,
     description='Pipeline Vélib avec plusieurs tâches',
-    start_date = days_ago(1),  
+    start_date=days_ago(1),
     schedule_interval='@hourly',
     catchup=False
 ) as dag:
@@ -43,24 +43,23 @@ with DAG(
         print(" TRANSFORMING...")
         json_data = context['ti'].xcom_pull(task_ids='fetch_data', key='json_data')
         df = transform_data(json_data)
-        context['ti'].xcom_push(key='df_json', value=df.to_json())
+        # Passage en dict pour éviter les problèmes de datetime
+        context['ti'].xcom_push(key='df_dict', value=df.to_dict(orient="records"))
 
     def task_insert(**context):
         print(" INSERTING...")
-        df_json = context['ti'].xcom_pull(task_ids='transform_data', key='df_json')
-        df = pd.read_json(df_json, convert_dates=True)
+        df_dict = context['ti'].xcom_pull(task_ids='transform_data', key='df_dict')
+        df = pd.DataFrame.from_dict(df_dict)
         df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors='coerce')
         df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], utc=True, errors='coerce')
-
         insert_into_cloud_db(df)
 
     def task_save(**context):
         print(" SAVING CSV...")
-        df_json = context['ti'].xcom_pull(task_ids='transform_data', key='df_json')
-        df = pd.read_json(df_json, convert_dates=True)
+        df_dict = context['ti'].xcom_pull(task_ids='transform_data', key='df_dict')
+        df = pd.DataFrame.from_dict(df_dict)
         df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors='coerce')
         df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], utc=True, errors='coerce')
-
         save_csv(df)
 
     def task_generate_report(**context):
@@ -74,5 +73,5 @@ with DAG(
     t5 = PythonOperator(task_id='generate_report', python_callable=task_generate_report)
 
     # Dépendances
-    [t3, t4] >> t5  
+    [t3, t4] >> t5
     t1 >> t2 >> [t3, t4]
