@@ -72,4 +72,7 @@ def transform_data(json_data):
     ]]
 
     print(f" Données transformées : {len(df)} lignes prêtes")
+    # Renommer les colonnes pour usage cohérent (pas d’espaces)
+    df.columns = [col.replace(" ", "_") for col in df.columns]
+
     return df
