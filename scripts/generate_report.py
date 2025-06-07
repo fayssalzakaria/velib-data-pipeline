@@ -5,7 +5,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 from sqlalchemy import create_engine
 import boto3
 import pytz
-
+from datetime import datetime
 def generate_visual_report():
     print(" Génération du rapport PDF global...")
 
@@ -25,7 +25,7 @@ def generate_visual_report():
     paris_tz = pytz.timezone("Europe/Paris")
     df["timestamp_local"] = df["Derniere_Actualisation_UTC"].dt.tz_convert(paris_tz)
 
-    snapshot_time = df["timestamp_local"].max()
+    snapshot_time = datetime.now(paris_tz)
     snapshot_str = snapshot_time.strftime('%Y-%m-%d %H:%M')
     timestamp_suffix = snapshot_time.strftime('%Y%m%d_%H%M')
 
