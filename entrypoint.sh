@@ -2,22 +2,16 @@
 
 set -e
 
-# Set default port if not set
+# Port Railway
 export PORT=8080
 export AIRFLOW__WEBSERVER__WEB_SERVER_HOST=0.0.0.0
 export AIRFLOW__WEBSERVER__WEB_SERVER_PORT=8080
 export AIRFLOW__WEBSERVER__BASE_URL="https://velib-data-pipeline-production.up.railway.app"
 
-# Log pour debug
-echo "➡️  PORT=$PORT"
-echo "➡️  AIRFLOW__WEBSERVER__WEB_SERVER_HOST=$AIRFLOW__WEBSERVER__WEB_SERVER_HOST"
-echo "➡️  AIRFLOW__WEBSERVER__WEB_SERVER_PORT=$AIRFLOW__WEBSERVER__WEB_SERVER_PORT"
-echo "➡️  AIRFLOW__WEBSERVER__BASE_URL=$AIRFLOW__WEBSERVER__BASE_URL"
-
-# Init DB
+echo "➡️  Démarrage de la base Airflow..."
 airflow db upgrade
 
-# Create user if not exists
+echo "➡️  Création de l'utilisateur Airflow (admin)..."
 airflow users create \
     --username admin \
     --password admin \
@@ -26,10 +20,8 @@ airflow users create \
     --role Admin \
     --email admin@example.com || true
 
-# Start scheduler in background
+echo "➡️  Lancement du scheduler Airflow..."
 airflow scheduler &
 
-# Start webserver in foreground
-exec airflow webserver --port "$PORT"
-airflow webserver --port "$PORT" &
-uvicorn airflow.api.download_api:app --host 0.0.0.0 --port 8081
+echo "➡️  Lancement de l'application combinée FastAPI + Airflow..."
+exec uvicorn serve:app --host 0.0.0.0 --port "$PORT"
