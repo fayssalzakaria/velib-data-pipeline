@@ -16,7 +16,7 @@ Ce projet déploie un pipeline de données complet autour du service Vélib’ M
 
 ---
 
-## 🎯 Fonctionnement
+## Fonctionnement
 
 Chaque heure :
 1. Les données sont extraites depuis l’API Vélib’.
@@ -25,12 +25,12 @@ Chaque heure :
 4. Elles sont exportées au format `.csv` (sauvegarde locale + upload vers AWS S3).
 5. Un rapport PDF est généré avec des graphiques synthétiques et aussi envoyé sur S3.
 
-🗂️ **Le fichier CSV courant peut être utilisé dans Power BI**, et  
-📄 **le rapport PDF est téléchargeable à des fins de suivi ou de reporting personnel.**
+ **Le fichier CSV courant peut être utilisé dans Power BI**, et  
+ **le rapport PDF est téléchargeable à des fins de suivi ou de reporting personnel.**
 
 ---
 
-## ⚙️ Technologies utilisées
+## ⚙Technologies utilisées
 
 - **Apache Airflow** (Dockerisé, déployé sur Railway)
 - **Python 3.9+**
@@ -62,15 +62,50 @@ velib-data-pipeline/
 └── .env / Railway Variables # Clés AWS, URL DB, bucket S3...
 ```
 ## Rapport pdf
-Le rapport contient :
+Le rapport PDF généré automatiquement chaque heure contient les analyses visuelles suivantes :
 
-Top 10 stations avec le plus de vélos
+Top 10 des stations les mieux fournies
+→ Affiche les 10 stations avec le plus grand nombre de vélos disponibles.
 
-Top 10 stations vides
+Top 10 des stations les plus vides
+→ Montre les stations avec le moins de vélos disponibles (y compris celles totalement vides).
 
 Répartition des états des stations
+→ Diagramme circulaire des stations :
 
-Plus grandes stations par capacité
+Vides (0 vélo)
+
+Pleines (0 borne libre)
+
+Partielles (avec au moins un vélo et une borne)
+
+Top 10 des stations les plus grandes
+→ Classement selon la capacité totale (vélos + bornes).
+
+Répartition des types de vélos
+→ Diagramme en camembert :
+
+Vélos mécaniques
+
+Vélos électriques
+
+Statistiques générales
+→ Encadré synthétique avec :
+
+Nombre total de stations
+
+Nombre total de vélos disponibles
+
+Nombre total de bornes disponibles
+
+Taux de remplissage moyen
+
+Lien direct de téléchargement
+ Télécharger le dernier rapport PDF :
+https://velib-data-pipeline-production.up.railway.app/download/report
+
+ Télécharger le dernier fichier CSV :
+https://velib-data-pipeline-production.up.railway.app/download/csv
 
 ##  API de téléchargement – FastAPI
 
@@ -78,12 +113,12 @@ Une API FastAPI légère est intégrée au projet pour permettre le **téléchar
 
 Cette API est exposée sur Railway (port 8081) en parallèle du serveur Airflow (port 8080).
 
-### 🔗 Endpoints disponibles
+###  Endpoints disponibles
 
 | Endpoint | Description |
 |----------|-------------|
-| `/download/report` | 📄 Télécharge le dernier rapport PDF (`report.pdf`) |
-| `/download/csv`    | 📁 Télécharge le dernier fichier CSV (`velib_...csv`) |
+| `/download/report` |  Télécharge le dernier rapport PDF (`report.pdf`) |
+| `/download/csv`    |  Télécharge le dernier fichier CSV (`velib_...csv`) |
 
 lien de base (
 pour acceder a airflow)
