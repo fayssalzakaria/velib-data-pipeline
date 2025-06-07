@@ -17,9 +17,6 @@ def save_csv(df):
 
     filepath = os.path.join(output_dir, filename)
 
-    df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], errors="coerce", utc=True)
-    df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], errors="coerce")
-
     # Formatage en texte lisible
     df["Derniere_Actualisation_UTC"] = df["Derniere_Actualisation_UTC"].dt.strftime('%Y-%m-%d %H:%M:%S')
     df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.strftime('%Y-%m-%d %H:%M:%S')

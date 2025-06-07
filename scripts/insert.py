@@ -58,8 +58,6 @@ def insert_into_cloud_db(df):
         # Insertion des données
         # Renommer les colonnes pour éviter les espaces
         df.columns = [col.replace(" ", "_") for col in df.columns]
-        df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors="coerce")
-        df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], errors="coerce")
 
         df.to_sql("velib_data", engine, if_exists="append", index=False)
         print(" Données insérées avec succès.")
