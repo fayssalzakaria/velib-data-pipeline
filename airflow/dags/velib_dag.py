@@ -14,10 +14,11 @@ from transform import transform_data
 from insert import insert_into_cloud_db
 from save import save_csv
 import pandas as pd
+import pytz
 from generate_report import generate_visual_report
 from airflow.utils.dates import days_ago
 
-local_tz = pendulum.timezone("Europe/Paris")
+local_tz = pytz.timezone("Europe/Paris")
 
 default_args = {
     'owner': 'airflow',
@@ -44,11 +45,12 @@ with DAG(
         json_data = context['ti'].xcom_pull(task_ids='fetch_data', key='json_data')
         df = transform_data(json_data)
 
-        # Conversion explicite en datetime
+        # Conversion explicite des colonnes de date
         df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors="coerce")
-        df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], utc=True, errors="coerce")
+        df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], errors="coerce")
+        df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.tz_localize(local_tz)
 
-        # Sérialisation propre au format texte ISO8601
+        # Sérialisation au format ISO8601
         df["Derniere_Actualisation_UTC"] = df["Derniere_Actualisation_UTC"].dt.strftime('%Y-%m-%dT%H:%M:%S%z')
         df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.strftime('%Y-%m-%dT%H:%M:%S%z')
 
@@ -61,7 +63,8 @@ with DAG(
 
         # Re-conversion explicite en datetime
         df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors='coerce')
-        df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], utc=True, errors='coerce')
+        df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], errors='coerce')
+        df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.tz_localize(local_tz)
 
         insert_into_cloud_db(df)
 
@@ -70,9 +73,9 @@ with DAG(
         df_json = context['ti'].xcom_pull(task_ids='transform_data', key='df_json')
         df = pd.read_json(df_json, orient='records')
 
-        # Re-conversion explicite en datetime
         df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors='coerce')
-        df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], utc=True, errors='coerce')
+        df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], errors='coerce')
+        df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.tz_localize(local_tz)
 
         save_csv(df)
 
