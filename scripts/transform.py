@@ -59,9 +59,9 @@ def transform_data(json_data):
     paris_tz = pytz.timezone("Europe/Paris")
     df["Derniere Actualisation Heure locale"] = df["Derniere Actualisation UTC"].dt.tz_convert(paris_tz)
 
-    df["date"] = df["Derniere Actualisation UTC"].dt.date
-    df["hour"] = df["Derniere Actualisation UTC"].dt.hour
-    df["weekday"] = df["Derniere Actualisation UTC"].dt.day_name()
+    df["date"] = df["Derniere Actualisation Heure locale"].dt.date
+    df["hour"] = df["Derniere Actualisation Heure locale"].dt.hour
+    df["weekday"] = df["Derniere Actualisation Heure locale"].dt.day_name()
     df["is_weekend"] = df["weekday"].isin(["Saturday", "Sunday"])
 
     df = df[[

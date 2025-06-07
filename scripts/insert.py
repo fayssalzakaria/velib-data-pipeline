@@ -36,7 +36,7 @@ def insert_into_cloud_db(df):
         Column('ebike', Integer),
         Column('numdocksavailable', Integer),
         Column('Derniere_Actualisation_UTC', DateTime),
-        Column('Derniere_Actualisation_Heure locale', DateTime),
+        Column('Derniere_Actualisation_Heure_locale', DateTime),
         Column('date', DATE),
         Column('hour', Integer),
         Column('weekday', String),
