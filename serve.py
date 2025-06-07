@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from starlette.middleware.wsgi import WSGIMiddleware
 from airflow.www.app import create_app
-from airflow.api.download_api import router as download_router
+from api.download_api import router as download_router
+
 
 app = FastAPI()
 
