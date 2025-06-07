@@ -8,8 +8,11 @@ def save_csv(df):
     os.makedirs(output_dir, exist_ok=True)
 
     # Nom de fichier basé sur la date
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"velib_{timestamp}.csv"
+    paris_tz = pytz.timezone("Europe/Paris")
+    timestamp = datetime.now(paris_tz)
+    heure_locale_str = timestamp.strftime("%Y%m%d_%H%M")
+    filename = f"velib_{heure_locale_str}.csv"
+
     filepath = os.path.join(output_dir, filename)
 
     # Sauvegarde locale

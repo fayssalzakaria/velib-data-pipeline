@@ -2,7 +2,6 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
-from datetime import datetime
 from sqlalchemy import create_engine
 import boto3
 import pytz
@@ -11,26 +10,25 @@ def generate_visual_report():
     print(" Génération du rapport PDF global...")
 
     engine = create_engine(os.environ["POSTGRES_URL"])
-    query = "SELECT * FROM velib_data ORDER BY timestamp DESC LIMIT 1000"
+    query = "SELECT * FROM velib_data ORDER BY \"Derniere Actualisation UTC\" DESC LIMIT 1000"
     df = pd.read_sql(query, engine)
 
     if df.empty:
         print(" Pas de données disponibles")
         return
 
-    # Convertir en heure locale
-    df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True)
+    # Convertir la colonne UTC en datetime si ce n’est pas déjà fait
+    df["Derniere Actualisation UTC"] = pd.to_datetime(df["Derniere Actualisation UTC"], utc=True)
     paris_tz = pytz.timezone("Europe/Paris")
-    df["timestamp_local"] = df["timestamp"].dt.tz_convert(paris_tz)
+    df["timestamp_local"] = df["Derniere Actualisation UTC"].dt.tz_convert(paris_tz)
 
-    snapshot_time = datetime.now(paris_tz)
+    snapshot_time = df["timestamp_local"].max()
     snapshot_str = snapshot_time.strftime('%Y-%m-%d %H:%M')
     timestamp_suffix = snapshot_time.strftime('%Y%m%d_%H%M')
 
     report_dir = "/opt/airflow/reports"
     os.makedirs(report_dir, exist_ok=True)
     pdf_path = os.path.join(report_dir, "report.pdf")
-
 
     with PdfPages(pdf_path) as pdf:
         # --- Graphe 1 : Top 10 stations les mieux fournies ---
@@ -58,7 +56,7 @@ def generate_visual_report():
         top_empty.plot(kind='barh', color='lightcoral')
         plt.xlabel("Nombre de vélos disponibles")
         plt.title(f" Stations les plus vides – {snapshot_str}")
-        plt.grid(axis='x')  # Ajoute les lignes verticales
+        plt.grid(axis='x')
         plt.gca().invert_yaxis()
         plt.tight_layout()
         pdf.savefig()
@@ -96,7 +94,6 @@ def generate_visual_report():
 
     print(f" Rapport global PDF généré : {pdf_path}")
     upload_report_pdf_to_s3(pdf_path, "report.pdf")
-
 
 def upload_report_pdf_to_s3(filepath, filename):
     print(f"☁️ Upload du fichier : {filename} ...")
