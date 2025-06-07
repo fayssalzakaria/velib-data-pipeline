@@ -45,12 +45,7 @@ with DAG(
         json_data = context['ti'].xcom_pull(task_ids='fetch_data', key='json_data')
         df = transform_data(json_data)
 
-        # Conversion explicite des colonnes de date
-        df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors="coerce")
-        df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], errors="coerce")
-        df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.tz_localize(local_tz)
-
-        # Sérialisation au format ISO8601
+        # Sérialisation ISO8601 pour XCom
         df["Derniere_Actualisation_UTC"] = df["Derniere_Actualisation_UTC"].dt.strftime('%Y-%m-%dT%H:%M:%S%z')
         df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.strftime('%Y-%m-%dT%H:%M:%S%z')
 
@@ -61,10 +56,13 @@ with DAG(
         df_json = context['ti'].xcom_pull(task_ids='transform_data', key='df_json')
         df = pd.read_json(df_json, orient='records')
 
-        # Re-conversion explicite en datetime
         df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors='coerce')
         df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], errors='coerce')
-        df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.tz_localize(local_tz)
+
+        try:
+            df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.tz_convert(local_tz)
+        except TypeError:
+            df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.tz_localize(local_tz)
 
         insert_into_cloud_db(df)
 
@@ -75,7 +73,11 @@ with DAG(
 
         df["Derniere_Actualisation_UTC"] = pd.to_datetime(df["Derniere_Actualisation_UTC"], utc=True, errors='coerce')
         df["Derniere_Actualisation_Heure_locale"] = pd.to_datetime(df["Derniere_Actualisation_Heure_locale"], errors='coerce')
-        df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.tz_localize(local_tz)
+
+        try:
+            df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.tz_convert(local_tz)
+        except TypeError:
+            df["Derniere_Actualisation_Heure_locale"] = df["Derniere_Actualisation_Heure_locale"].dt.tz_localize(local_tz)
 
         save_csv(df)
 
