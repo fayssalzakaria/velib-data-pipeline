@@ -3,12 +3,11 @@ import logging
 import os
 from datetime import datetime
 
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
-import pandas as pd
 import pytz
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
 
 from insert import get_latest_snapshot
 from save import save_report_to_s3
@@ -21,56 +20,79 @@ def generate_visual_report(snapshot_id: str) -> str:
 
     df = get_latest_snapshot()
     if df.empty:
-        logger.warning("Pas de données pour le rapport.")
+        logger.warning("Pas de données.")
         return ""
 
-    df.columns = [col.strip() for col in df.columns]
-    paris_tz   = pytz.timezone("Europe/Paris")
-    snap_str   = datetime.now(paris_tz).strftime("%Y-%m-%d %H:%M")
+    paris_tz = pytz.timezone("Europe/Paris")
+    snap_str = datetime.now(paris_tz).strftime("%Y-%m-%d %H:%M")
 
     buf = io.BytesIO()
-    with PdfPages(buf) as pdf:
+    doc = SimpleDocTemplate(buf, pagesize=A4)
+    styles = getSampleStyleSheet()
+    elements = []
 
-        # Top 10 mieux fournies
-        top = df.sort_values("numbikesavailable", ascending=False).head(10).set_index("name")["numbikesavailable"]
-        fig, ax = plt.subplots(figsize=(10, 6))
-        top.plot(kind="barh", color="#5DCAA5", ax=ax)
-        ax.set_title(f"Top 10 stations — {snap_str}")
-        ax.invert_yaxis(); plt.tight_layout()
-        pdf.savefig(fig); plt.close(fig)
+    # Titre
+    elements.append(Paragraph(f"Rapport Vélib — {snap_str}", styles["Title"]))
+    elements.append(Spacer(1, 20))
 
-        # Top 10 plus vides
-        empty = df.sort_values("numbikesavailable").head(10).set_index("name")["numbikesavailable"]
-        fig, ax = plt.subplots(figsize=(10, 6))
-        empty.plot(kind="barh", color="#F09995", ax=ax)
-        ax.set_title(f"Stations les plus vides — {snap_str}")
-        ax.invert_yaxis(); plt.tight_layout()
-        pdf.savefig(fig); plt.close(fig)
+    # Stats globales
+    elements.append(Paragraph("Statistiques globales", styles["Heading2"]))
+    stats = [
+        ["Stations actives", str(df["station_id"].nunique())],
+        ["Vélos disponibles", str(int(df["numbikesavailable"].sum()))],
+        ["Bornes disponibles", str(int(df["numdocksavailable"].sum()))],
+        ["Taux remplissage moyen", f"{df['bike_ratio'].mean():.1%}"],
+        ["Stations vides", str(int(df["is_empty"].sum()))],
+        ["Stations pleines", str(int(df["is_full"].sum()))],
+        ["Snapshot ID", snapshot_id],
+    ]
+    t = Table(stats, colWidths=[250, 200])
+    t.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1D9E75")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
+        ("FONTSIZE", (0, 0), (-1, -1), 11),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#F1EFE8")]),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#B4B2A9")),
+        ("PADDING", (0, 0), (-1, -1), 8),
+    ]))
+    elements.append(t)
+    elements.append(Spacer(1, 30))
 
-        # Répartition états
-        status = pd.Series({
-            "Vides":     int(df["is_empty"].sum()),
-            "Pleines":   int(df["is_full"].sum()),
-            "Partielles": len(df) - int(df["is_empty"].sum()) - int(df["is_full"].sum()),
-        })
-        fig, ax = plt.subplots(figsize=(6, 6))
-        status.plot(kind="pie", autopct="%1.1f%%", startangle=90,
-                    colors=["#F09995", "#5DCAA5", "#FAC775"], ax=ax)
-        ax.set_title(f"Répartition — {snap_str}"); ax.set_ylabel("")
-        plt.tight_layout(); pdf.savefig(fig); plt.close(fig)
+    # Top 10 stations mieux fournies
+    elements.append(Paragraph("Top 10 stations les mieux fournies", styles["Heading2"]))
+    top10 = df.nlargest(10, "numbikesavailable")[["name", "numbikesavailable", "numdocksavailable"]]
+    data = [["Station", "Vélos dispo", "Bornes dispo"]] + top10.values.tolist()
+    t2 = Table(data, colWidths=[250, 100, 100])
+    t2.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#185FA5")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
+        ("FONTSIZE", (0, 0), (-1, -1), 9),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#E6F1FB")]),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#B4B2A9")),
+        ("PADDING", (0, 0), (-1, -1), 6),
+    ]))
+    elements.append(t2)
+    elements.append(Spacer(1, 30))
 
-        # Stats globales
-        fig, ax = plt.subplots(figsize=(10, 5))
-        ax.text(0.05, 0.85, (
-            f"Statistiques — {snap_str}\n\n"
-            f"Stations  : {df['station_id'].nunique()}\n"
-            f"Vélos     : {int(df['numbikesavailable'].sum()):,}\n"
-            f"Bornes    : {int(df['numdocksavailable'].sum()):,}\n"
-            f"Remplissage moyen : {df['bike_ratio'].mean():.1%}\n"
-            f"Snapshot  : {snapshot_id}"
-        ), fontsize=13, va="top", fontfamily="monospace", transform=ax.transAxes)
-        ax.axis("off"); pdf.savefig(fig); plt.close(fig)
+    # Top 10 stations les plus vides
+    elements.append(Paragraph("Top 10 stations les plus vides", styles["Heading2"]))
+    empty10 = df.nsmallest(10, "numbikesavailable")[["name", "numbikesavailable", "numdocksavailable"]]
+    data2 = [["Station", "Vélos dispo", "Bornes dispo"]] + empty10.values.tolist()
+    t3 = Table(data2, colWidths=[250, 100, 100])
+    t3.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#A32D2D")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
+        ("FONTSIZE", (0, 0), (-1, -1), 9),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#FCEBEB")]),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#B4B2A9")),
+        ("PADDING", (0, 0), (-1, -1), 6),
+    ]))
+    elements.append(t3)
 
+    doc.build(elements)
     pdf_bytes = buf.getvalue()
     logger.info(f"PDF généré ({len(pdf_bytes):,} bytes)")
     return save_report_to_s3(pdf_bytes, snapshot_id)

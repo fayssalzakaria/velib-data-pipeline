@@ -310,7 +310,7 @@ resource "aws_rds_cluster" "aurora" {
   cluster_identifier     = "${local.name_prefix}-aurora"
   engine                 = "aurora-postgresql"
   engine_mode            = "provisioned"
-  engine_version         = "15.4"
+  engine_version         = "16.4"
   database_name          = "velib"
   master_username        = "velib_app"
   master_password        = var.db_password
