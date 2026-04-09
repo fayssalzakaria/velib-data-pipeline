@@ -1,7 +1,7 @@
 #  Vélib' Data Pipeline v2.0
 **AWS Lambda · Aurora Serverless v2 · S3 · API Gateway · EventBridge**
 
-Pipeline de données automatisé autour du service Vélib' Métropole à Paris.
+Pipeline de données automatisé autour du service Vélib' Métropole à Paris.  
 Collecte horaire, stockage cloud historisé, rapports PDF et API de téléchargement.
 
 ---
@@ -10,51 +10,60 @@ Collecte horaire, stockage cloud historisé, rapports PDF et API de télécharge
 
 | Endpoint | Description |
 |---|---|
-|  https://v52sw2rux7.execute-api.eu-north-1.amazonaws.com/health | Status |
-|  https://v52sw2rux7.execute-api.eu-north-1.amazonaws.com/download/csv | Dernier CSV |
-|  https://v52sw2rux7.execute-api.eu-north-1.amazonaws.com/download/report | Dernier PDF |
+| `GET` https://v52sw2rux7.execute-api.eu-north-1.amazonaws.com/health | Status |
+| `GET` https://v52sw2rux7.execute-api.eu-north-1.amazonaws.com/download/csv | Dernier CSV |
+| `GET` https://v52sw2rux7.execute-api.eu-north-1.amazonaws.com/download/report | Dernier PDF |
 
 ---
 
-## ⚙️ Architecture
- API Vélib' opendata.paris.fr
+##  Architecture
+
+```
+API Vélib' opendata.paris.fr
 ↓ toutes les heures
 EventBridge Scheduler
 ↓
 Lambda Pipeline (Python 3.12)
-├── fetch.py            → 1509 stations récupérées
-├── transform.py        → nettoyage + enrichissement
-├── insert.py           → Aurora Serverless v2 (append-only + snapshot_id)
-├── save.py             → S3 partitionné year=/month=/day=/
-└── generate_report.py → PDF reportlab → S3
+├── fetch.py             → 1509 stations récupérées
+├── transform.py         → nettoyage + enrichissement
+├── insert.py            → Aurora Serverless v2 (append-only + snapshot_id)
+├── save.py              → S3 partitionné year=/month=/day=/
+└── generate_report.py  → PDF reportlab → S3
+
 Lambda API + API Gateway
 ├── GET /health
 ├── GET /download/csv
 └── GET /download/report
+```
+
 ---
 
 ##  Structure
+
+```
 velib-data-pipeline/
 ├── lambdas/
 │   ├── pipeline/
 │   │   ├── handler.py
-│   │   ├── fetch.py
-│   │   ├── transform.py
-│   │   ├── insert.py
-│   │   ├── save.py
-│   │   ├── generate_report.py
+│   │   ├── fetch.py             ← collecte opendata
+│   │   ├── transform.py         ← nettoyage
+│   │   ├── insert.py            ← Aurora
+│   │   ├── save.py              ← S3 Hive
+│   │   ├── generate_report.py   ← PDF
 │   │   ├── secrets_helper.py
 │   │   └── requirements.txt
 │   └── api/
 │       ├── handler.py
 │       └── requirements.txt
 └── infrastructure/
-└── main.tf
+    └── main.tf
+```
+
 ---
 
 ##  Migration v1 → v2
 
-| Ancien | Nouveau |
+| Avant | Après |
 |---|---|
 | Railway + Airflow | AWS Lambda + EventBridge |
 | FastAPI + Uvicorn | API Gateway + Lambda |
@@ -81,6 +90,7 @@ velib-data-pipeline/
 ##  Déploiement
 
 ### Prérequis
+
 - AWS CLI configuré (`aws configure`)
 - Terraform >= 1.6
 - Python 3.12
@@ -110,32 +120,34 @@ aws lambda invoke \
 
 | Champ | Description |
 |---|---|
-| station_id | Identifiant unique station |
-| name | Nom de la station |
-| numbikesavailable | Vélos disponibles |
-| mechanical | Vélos mécaniques |
-| ebike | Vélos électriques |
-| numdocksavailable | Bornes disponibles |
-| bike_ratio | Taux de remplissage |
-| is_empty | Station vide |
-| is_full | Station pleine |
-| snapshot_id | Identifiant du run horaire |
-| run_at | Timestamp UTC du run |
+| `station_id` | Identifiant unique station |
+| `name` | Nom de la station |
+| `numbikesavailable` | Vélos disponibles |
+| `mechanical` | Vélos mécaniques |
+| `ebike` | Vélos électriques |
+| `numdocksavailable` | Bornes disponibles |
+| `bike_ratio` | Taux de remplissage |
+| `is_empty` | Station vide |
+| `is_full` | Station pleine |
+| `snapshot_id` | Identifiant du run horaire |
+| `run_at` | Timestamp UTC du run |
 
 ---
 
 ##  Roadmap
 
 ###  Phase 1 — Backend AWS Serverless
-- Lambda pipeline horaire automatique
-- Aurora Serverless v2 avec historique complet
-- API Gateway endpoints
-- S3 Hive partitionné compatible Athena
-- CloudWatch Alarms + SNS email alerts
-- Terraform IaC complet
+
+- [x] Lambda pipeline horaire automatique
+- [x] Aurora Serverless v2 avec historique complet
+- [x] API Gateway endpoints
+- [x] S3 Hive partitionné compatible Athena
+- [x] CloudWatch Alarms + SNS email alerts
+- [x] Terraform IaC complet
 
 ###  Phase 3 — IA Générative
-- Rapport PDF avec analyse narrative (Claude API)
-- Chatbot "Ask Vélib Data" — questions en langage naturel
-- Agent de monitoring autonome
-- Forecasting disponibilité des stations
+
+- [ ] Rapport PDF avec analyse narrative (Claude API)
+- [ ] Chatbot "Ask Vélib Data" — questions en langage naturel
+- [ ] Agent de monitoring autonome
+- [ ] Forecasting disponibilité des stations
