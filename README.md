@@ -1,126 +1,141 @@
-# 🚲 Vélib' Data Pipeline  
-**Apache Airflow • Railway • AWS S3**
+#  Vélib' Data Pipeline v2.0
+**AWS Lambda · Aurora Serverless v2 · S3 · API Gateway · EventBridge**
 
-Un pipeline de données complet autour du service Vélib’ Métropole à Paris, avec automatisation horaire, archivage cloud et rapports visuels.
-
----
-
-## 🎯 Objectifs du projet
-
-- 🔄 Collecte automatique des données en temps réel via l’API [opendata.paris.fr](https://opendata.paris.fr).
-- 🧼 Transformation des données brutes en tableaux exploitables (`pandas`).
-- 🗄️ Insertion dans une base PostgreSQL hébergée sur Railway.
-- 💾 Sauvegarde CSV locale + envoi automatique sur AWS S3.
-- 📊 Génération de rapports PDF (stats + graphiques).
-- ⏰ Orchestration horaire via Apache Airflow (Dockerisé).
-- 🔗 Intégration facile dans Power BI / Excel / outils analytiques.
+Pipeline de données automatisé autour du service Vélib' Métropole à Paris.
+Collecte horaire, stockage cloud historisé, rapports PDF et API de téléchargement.
 
 ---
 
-## ⚙️ Technologies utilisées
+##  Endpoints
 
-| Technologie       | Usage principal                            |
-|-------------------|---------------------------------------------|
-| **Apache Airflow**| Orchestration & planification               |
-| **Railway**       | Hébergement Airflow + base PostgreSQL       |
-| **AWS S3**        | Stockage cloud CSV & rapports PDF           |
-| **Python 3.9+**   | Langage principal                           |
-| **Pandas / Matplotlib** | Traitement & visualisation           |
-| **FastAPI / Uvicorn**   | API de téléchargement à distance     |
-| **SQLAlchemy**    | Interaction base de données                 |
+| Endpoint | Description |
+|---|---|
+|  https://v52sw2rux7.execute-api.eu-north-1.amazonaws.com/health | Status |
+|  https://v52sw2rux7.execute-api.eu-north-1.amazonaws.com/download/csv | Dernier CSV |
+|  https://v52sw2rux7.execute-api.eu-north-1.amazonaws.com/download/report | Dernier PDF |
 
 ---
 
-## 🛠️ Fonctionnement du pipeline
-
-> 📅 **Planification :** toutes les heures
-
-1. 📡 Récupération des données via l'API Vélib’.
-2. 🧼 Nettoyage et enrichissement des données (format tabulaire).
-3. 🗃️ Insertion dans PostgreSQL (Railway).
-4. 📥 Sauvegarde CSV (locale + S3).
-5. 🧾 Génération d’un rapport PDF (graphique + stats).
-6. ☁️ Envoi des fichiers dans AWS S3.
-
+## ⚙️ Architecture
+ API Vélib' opendata.paris.fr
+↓ toutes les heures
+EventBridge Scheduler
+↓
+Lambda Pipeline (Python 3.12)
+├── fetch.py            → 1509 stations récupérées
+├── transform.py        → nettoyage + enrichissement
+├── insert.py           → Aurora Serverless v2 (append-only + snapshot_id)
+├── save.py             → S3 partitionné year=/month=/day=/
+└── generate_report.py → PDF reportlab → S3
+Lambda API + API Gateway
+├── GET /health
+├── GET /download/csv
+└── GET /download/report
 ---
 
-## 🗂️ Structure du projet
-```
+##  Structure
 velib-data-pipeline/
-├── airflow/
-│ ├── dags/
-│ │ └── velib_dag.py # DAG Airflow principal
-│ └── scripts/
-│ ├── fetch.py # API Vélib’
-│ ├── transform.py # Nettoyage / enrichissement
-│ ├── insert.py # PostgreSQL (Railway)
-│ ├── save.py # CSV + upload S3
-│ └── generate_report.py # PDF + S3
-│
-├── Dockerfile # Image Airflow personnalisée
-├── entrypoint.sh # Lancement webserver + scheduler
-├── requirements.txt # Dépendances Python
-└── .env / Variables Railway # URL DB, clés AWS, bucket, etc.
+├── lambdas/
+│   ├── pipeline/
+│   │   ├── handler.py
+│   │   ├── fetch.py
+│   │   ├── transform.py
+│   │   ├── insert.py
+│   │   ├── save.py
+│   │   ├── generate_report.py
+│   │   ├── secrets_helper.py
+│   │   └── requirements.txt
+│   └── api/
+│       ├── handler.py
+│       └── requirements.txt
+└── infrastructure/
+└── main.tf
+---
+
+##  Migration v1 → v2
+
+| Ancien | Nouveau |
+|---|---|
+| Railway + Airflow | AWS Lambda + EventBridge |
+| FastAPI + Uvicorn | API Gateway + Lambda |
+| PostgreSQL Railway | Aurora Serverless v2 |
+| DROP TABLE chaque run | Append-only + snapshot_id |
+| S3 fichier unique écrasé | S3 Hive partitionné |
+| Aucune alerte | CloudWatch + SNS email |
+| Docker + entrypoint.sh | Lambda Layers |
+
+---
+
+##  Coûts estimés
+
+| Service | Coût/mois |
+|---|---|
+| Lambda pipeline (720 runs) | ~$1.50 |
+| Aurora Serverless v2 | ~$10 |
+| NAT Gateway | ~$3 |
+| S3 + API Gateway | < $0.10 |
+| **Total** | **~$15/mois** |
+
+---
+
+##  Déploiement
+
+### Prérequis
+- AWS CLI configuré (`aws configure`)
+- Terraform >= 1.6
+- Python 3.12
+
+### Lancer l'infrastructure
+
+```bash
+cd infrastructure/
+terraform init
+terraform plan -out=tfplan
+terraform apply tfplan
 ```
-yaml
-Copier
-Modifier
+
+### Déclencher le pipeline manuellement
+
+```bash
+aws lambda invoke \
+  --function-name velib-pipeline-prod-pipeline \
+  --region eu-north-1 \
+  --payload '{}' \
+  response.json && cat response.json
+```
 
 ---
 
-## 📈 Rapport PDF – Contenu
+##  Données collectées
 
-Le rapport PDF généré automatiquement contient :
-
-### ✅ Synthèse visuelle :
-
-- **Top 10 stations les mieux fournies**
-- **Top 10 stations les plus vides**
-- **Top 10 stations les plus grandes** (capacités totales)
-- **Répartition des états des stations** :
-  - 🔴 Vides
-  - 🟢 Pleines
-  - 🟡 Partielles
-- **Types de vélos disponibles** :
-  - 🚲 Mécaniques
-  - ⚡ Électriques
-
-### ✅ Statistiques globales :
-
-- Nombre de stations
-- Nombre total de vélos
-- Nombre total de bornes
-- Taux de remplissage moyen
+| Champ | Description |
+|---|---|
+| station_id | Identifiant unique station |
+| name | Nom de la station |
+| numbikesavailable | Vélos disponibles |
+| mechanical | Vélos mécaniques |
+| ebike | Vélos électriques |
+| numdocksavailable | Bornes disponibles |
+| bike_ratio | Taux de remplissage |
+| is_empty | Station vide |
+| is_full | Station pleine |
+| snapshot_id | Identifiant du run horaire |
+| run_at | Timestamp UTC du run |
 
 ---
 
-## 📦 Fichiers téléchargeables
+##  Roadmap
 
-- 📄 [Dernier rapport PDF](https://velib-data-pipeline-production.up.railway.app/download/report)
-- 📊 [Dernier fichier CSV](https://velib-data-pipeline-production.up.railway.app/download/csv)
+###  Phase 1 — Backend AWS Serverless
+- Lambda pipeline horaire automatique
+- Aurora Serverless v2 avec historique complet
+- API Gateway endpoints
+- S3 Hive partitionné compatible Athena
+- CloudWatch Alarms + SNS email alerts
+- Terraform IaC complet
 
----
-
-## 🌐 Interface Airflow
-
-👉 **Lien pour accéder à l’interface Airflow**  
-🔗 [https://velib-data-pipeline-production.up.railway.app](https://velib-data-pipeline-production.up.railway.app)
-
----
-
-## ⚡ API de téléchargement – FastAPI
-
-| Endpoint             | Description                                    |
-|----------------------|------------------------------------------------|
-| `/download/report`   | Télécharge le rapport PDF le plus récent       |
-| `/download/csv`      | Télécharge le fichier CSV le plus récent       |
-
-> 🔧 API FastAPI servie par `Uvicorn`, déployée en parallèle d’Airflow.
-
----
-
-## 👤 Cas d’usage
-
-- 👨‍💼 **Décideur / Analyste** : Consulter les rapports visuels.
-- 📊 **Power BI / Excel** : Charger automatiquement les fichiers CSV.
-- 🔁 **Usage personnel** : Suivre en temps réel l’état du réseau Vélib’.
+###  Phase 3 — IA Générative
+- Rapport PDF avec analyse narrative (Claude API)
+- Chatbot "Ask Vélib Data" — questions en langage naturel
+- Agent de monitoring autonome
+- Forecasting disponibilité des stations
