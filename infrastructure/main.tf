@@ -24,6 +24,10 @@ variable "db_password"  {
   description = "Mot de passe Aurora"
   sensitive   = true
 }
+variable "gemini_api_key" {
+  description = "Clé API Gemini"
+  sensitive   = true
+}
 
 locals {
   name_prefix = "${var.project_name}-${var.environment}"
@@ -95,6 +99,13 @@ data "archive_file" "pipeline_zip" {
   source_dir  = "${path.module}/../lambdas/pipeline"
   output_path = "${path.module}/build/pipeline.zip"
 }
+resource "aws_lambda_layer_version" "dependencies" {
+  layer_name          = "${local.name_prefix}-dependencies"
+  s3_bucket           = aws_s3_bucket.velib_data.bucket
+  s3_key              = "builds/layer.zip"
+  compatible_runtimes = ["python3.12"]
+  depends_on          = [aws_s3_bucket.velib_data]
+}
 
 resource "aws_lambda_function" "pipeline" {
   function_name    = "${local.name_prefix}-pipeline"
@@ -105,12 +116,13 @@ resource "aws_lambda_function" "pipeline" {
   memory_size      = 1024
   filename         = data.archive_file.pipeline_zip.output_path
   source_code_hash = data.archive_file.pipeline_zip.output_base64sha256
-
+  layers = [aws_lambda_layer_version.dependencies.arn]
   environment {
     variables = {
       S3_BUCKET           = aws_s3_bucket.velib_data.bucket
       SNS_ALERT_TOPIC_ARN = aws_sns_topic.pipeline_alerts.arn
       AWS_REGION_NAME     = var.aws_region
+      GEMINI_API_KEY      = var.gemini_api_key
       POSTGRES_URL = "postgresql://velib_app:${var.db_password}@${aws_rds_cluster.aurora.endpoint}/velib"
     }
   }
@@ -262,6 +274,7 @@ resource "aws_cloudwatch_metric_alarm" "pipeline_errors" {
   }
 }
 # VPC pour Aurora
+data "aws_availability_zones" "available" { state = "available" }
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
@@ -269,22 +282,34 @@ resource "aws_vpc" "main" {
   tags = merge(local.common_tags, { Name = "${local.name_prefix}-vpc" })
 }
 
-data "aws_availability_zones" "available" { state = "available" }
-
-resource "aws_subnet" "private" {
+resource "aws_subnet" "public" {
   count             = 2
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.${count.index}.0/24"
   availability_zone = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = true
   tags = merge(local.common_tags, { Name = "${local.name_prefix}-subnet-${count.index}" })
 }
-
-resource "aws_db_subnet_group" "aurora" {
-  name       = "${local.name_prefix}-subnet-group"
-  subnet_ids = aws_subnet.private[*].id
-  tags       = local.common_tags
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+  tags   = merge(local.common_tags, { Name = "${local.name_prefix}-igw" })
 }
 
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+  tags = merge(local.common_tags, { Name = "${local.name_prefix}-rt" })
+}
+resource "aws_route_table_association" "public" {
+  count          = 2
+  subnet_id      = aws_subnet.public[count.index].id
+  route_table_id = aws_route_table.public.id
+}
+
+# Security Group Aurora — port 5432 ouvert
 resource "aws_security_group" "aurora" {
   name   = "${local.name_prefix}-aurora-sg"
   vpc_id = aws_vpc.main.id
@@ -293,7 +318,7 @@ resource "aws_security_group" "aurora" {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -306,6 +331,12 @@ resource "aws_security_group" "aurora" {
 }
 
 # Aurora Serverless v2
+resource "aws_db_subnet_group" "aurora" {
+  name       = "${local.name_prefix}-subnet-group"
+  subnet_ids = aws_subnet.public[*].id
+  tags       = local.common_tags
+}
+
 resource "aws_rds_cluster" "aurora" {
   cluster_identifier     = "${local.name_prefix}-aurora"
   engine                 = "aurora-postgresql"
@@ -331,6 +362,7 @@ resource "aws_rds_cluster_instance" "aurora" {
   instance_class     = "db.serverless"
   engine             = aws_rds_cluster.aurora.engine
   engine_version     = aws_rds_cluster.aurora.engine_version
+  publicly_accessible = true
   tags               = local.common_tags
 }
 # Outputs
@@ -344,4 +376,8 @@ output "s3_bucket" {
 
 output "pipeline_lambda" {
   value = aws_lambda_function.pipeline.function_name
+}
+output "aurora_endpoint" {
+  value     = aws_rds_cluster_instance.aurora.endpoint
+  sensitive = true
 }
