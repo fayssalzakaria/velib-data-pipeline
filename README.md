@@ -49,6 +49,7 @@ velib-data-pipeline/
 │   │   ├── transform.py         ← nettoyage
 │   │   ├── insert.py            ← Aurora
 │   │   ├── save.py              ← S3 Hive
+|   |   ├── ai_report.py         
 │   │   ├── generate_report.py   ← PDF
 │   │   ├── secrets_helper.py
 │   │   └── requirements.txt
@@ -71,7 +72,9 @@ velib-data-pipeline/
 | DROP TABLE chaque run | Append-only + snapshot_id |
 | S3 fichier unique écrasé | S3 Hive partitionné |
 | Aucune alerte | CloudWatch + SNS email |
-| Docker + entrypoint.sh | Lambda Layers |
+| Docker + entrypoint.sh | Lambda Layers auto-buildés |
+| Rapport PDF statique | Rapport narratif Gemini AI |
+| NAT Gateway ~$1/jour | Supprimé — Aurora public |
 
 ---
 
@@ -79,11 +82,14 @@ velib-data-pipeline/
 
 | Service | Coût/mois |
 |---|---|
-| Lambda pipeline (720 runs) | ~$1.50 |
-| Aurora Serverless v2 | ~$10 |
-| NAT Gateway | ~$3 |
-| S3 + API Gateway | < $0.10 |
-| **Total** | **~$15/mois** |
+| Lambda | Gratuit (free tier) |
+| API Gateway | Gratuit (free tier) |
+| S3 | < $0.05 |
+| EventBridge | Gratuit |
+| NAT Gateway | $0 — supprimé  |
+| Aurora Serverless v2 | ~$0.06/heure quand active |
+| Gemini API | Gratuit (1500 req/jour) |
+| **Total au repos** | **~$0/mois** |
 
 ---
 
@@ -94,14 +100,14 @@ velib-data-pipeline/
 - AWS CLI configuré (`aws configure`)
 - Terraform >= 1.6
 - Python 3.12
+- Docker (pour builder le Lambda Layer)
 
 ### Lancer l'infrastructure
 
 ```bash
 cd infrastructure/
 terraform init
-terraform plan -out=tfplan
-terraform apply tfplan
+terraform apply -var-file="terraform.tfvars"
 ```
 
 ### Déclencher le pipeline manuellement
@@ -112,6 +118,13 @@ aws lambda invoke \
   --region eu-north-1 \
   --payload '{}' \
   response.json && cat response.json
+```
+
+### Stopper pour économiser
+
+```bash
+cd infrastructure/
+terraform destroy
 ```
 
 ---
@@ -136,18 +149,18 @@ aws lambda invoke \
 
 ##  Roadmap
 
+
 ###  Phase 1 — Backend AWS Serverless
-
-- [x] Lambda pipeline horaire automatique
-- [x] Aurora Serverless v2 avec historique complet
+- [x] Lambda pipeline
+- [x] Aurora Serverless v2 append-only
 - [x] API Gateway endpoints
-- [x] S3 Hive partitionné compatible Athena
-- [x] CloudWatch Alarms + SNS email alerts
-- [x] Terraform IaC complet
+- [x] S3 Hive partitionné
+- [x] CloudWatch + SNS alertes
+- [x] Terraform IaC complet + Lambda Layer auto-buildé
+- [x] Aurora public — suppression NAT Gateway
 
-###  Phase 3 — IA Générative
-
-- [ ] Rapport PDF avec analyse narrative (Claude API)
-- [ ] Chatbot "Ask Vélib Data" — questions en langage naturel
+###  Phase 3 — IA Générative (en cours)
+- [x] Rapport PDF narratif avec Gemini AI
+- [ ] Chatbot "Ask Vélib Data" — text-to-SQL
 - [ ] Agent de monitoring autonome
 - [ ] Forecasting disponibilité des stations
