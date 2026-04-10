@@ -10,7 +10,7 @@ from fetch import fetch_data
 from transform import transform_data
 from insert import insert_into_db
 from save import save_to_s3
-from generate_report import generate_visual_report
+from ai_report import generate_ai_report as generate_visual_report
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

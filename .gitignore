@@ -12,3 +12,4 @@ infrastructure/*.tfvars
 infrastructure/.terraform/
 infrastructure/.terraform.lock.hcl
 infrastructure/tfplan
+.env
