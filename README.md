@@ -6,13 +6,19 @@ Collecte horaire, stockage cloud historisé, rapports PDF et API de télécharge
 
 ---
 
-##  Endpoints
+## Endpoints
+
+> Les endpoints changent à chaque déploiement. Pour les obtenir :
+> ```bash
+> cd infrastructure/
+> terraform output api_endpoint
+> ```
 
 | Endpoint | Description |
 |---|---|
-| `GET` https://v52sw2rux7.execute-api.eu-north-1.amazonaws.com/health | Status |
-| `GET` https://v52sw2rux7.execute-api.eu-north-1.amazonaws.com/download/csv | Dernier CSV |
-| `GET` https://v52sw2rux7.execute-api.eu-north-1.amazonaws.com/download/report | Dernier PDF |
+| `GET` {api_endpoint}/health | Status |
+| `GET` {api_endpoint}/download/csv | Dernier CSV |
+| `GET` {api_endpoint}/download/report | Dernier PDF IA |
 
 ---
 
@@ -73,7 +79,7 @@ velib-data-pipeline/
 | S3 fichier unique écrasé | S3 Hive partitionné |
 | Aucune alerte | CloudWatch + SNS email |
 | Docker + entrypoint.sh | Lambda Layers auto-buildés |
-| Rapport PDF statique | Rapport narratif Gemini AI |
+| Rapport PDF statique | Rapport narratif Groq API (Llama 3.3)  Gratuit |
 | NAT Gateway ~$1/jour | Supprimé — Aurora public |
 
 ---
@@ -88,7 +94,7 @@ velib-data-pipeline/
 | EventBridge | Gratuit |
 | NAT Gateway | $0 — supprimé  |
 | Aurora Serverless v2 | ~$0.06/heure quand active |
-| Gemini API | Gratuit (1500 req/jour) |
+| Groq API (Llama 3.3) | Gratuit |
 | **Total au repos** | **~$0/mois** |
 
 ---
@@ -160,7 +166,7 @@ terraform destroy
 - [x] Aurora public — suppression NAT Gateway
 
 ###  Phase 3 — IA Générative (en cours)
-- [x] Rapport PDF narratif avec Gemini AI
+- [x] Rapport PDF narratif avec Groq AI
 - [ ] Chatbot "Ask Vélib Data" — text-to-SQL
 - [ ] Agent de monitoring autonome
 - [ ] Forecasting disponibilité des stations
