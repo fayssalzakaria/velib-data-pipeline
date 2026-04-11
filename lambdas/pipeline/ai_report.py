@@ -20,38 +20,39 @@ from save import save_report_to_s3
 
 logger = logging.getLogger(__name__)
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 
-def _call_gemini(prompt: str) -> str:
-    """Appelle l'API Gemini et retourne le texte généré."""
-    if not GEMINI_API_KEY:
-        logger.warning("GEMINI_API_KEY non défini — analyse IA désactivée")
+
+def _call_groq(prompt: str) -> str:
+    """Appelle l'API Groq et retourne le texte généré."""
+    if not GROQ_API_KEY:
+        logger.warning("GROQ_API_KEY non défini — analyse IA désactivée")
         return "Analyse IA non disponible."
 
-    headers = {"Content-Type": "application/json"}
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+    }
     payload = {
-        "contents": [{
-            "parts": [{"text": prompt}]
-        }],
-        "generationConfig": {
-            "temperature": 0.7,
-            "maxOutputTokens": 1000,
-        }
+        "model": "llama-3.3-70b-versatile",
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": 1000,
+        "temperature": 0.7,
     }
 
     try:
         response = requests.post(
-            f"{GEMINI_URL}?key={GEMINI_API_KEY}",
+            GROQ_URL,
             headers=headers,
             json=payload,
             timeout=30,
         )
         response.raise_for_status()
-        return response.json()["candidates"][0]["content"]["parts"][0]["text"]
+        return response.json()["choices"][0]["message"]["content"]
     except Exception as e:
-        logger.error(f"Erreur Gemini API : {e}")
+        logger.error(f"Erreur Groq API : {e}")
         return "Analyse IA temporairement indisponible."
 
 
@@ -124,7 +125,7 @@ def generate_ai_report(snapshot_id: str) -> str:
     # Appel Gemini
     logger.info("Appel Gemini API...")
     prompt = _build_prompt(stats)
-    ai_analysis = _call_gemini(prompt)
+    ai_analysis = _call_groq(prompt)
     logger.info("Analyse Gemini reçue.")
 
     # Génération PDF

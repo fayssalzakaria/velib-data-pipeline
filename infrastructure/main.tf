@@ -9,6 +9,10 @@ terraform {
       source  = "hashicorp/archive"
       version = "~> 2.0"
     }
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.0"
+    }
   }
 }
 
@@ -99,14 +103,35 @@ data "archive_file" "pipeline_zip" {
   source_dir  = "${path.module}/../lambdas/pipeline"
   output_path = "${path.module}/build/pipeline.zip"
 }
+# Build du layer via Docker
+resource "null_resource" "build_layer" {
+  triggers = {
+    always = timestamp()
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    command     = "${path.module}/build_layer.sh"
+  }
+}
+
+# Upload le layer sur S3
+resource "aws_s3_object" "layer_zip" {
+  bucket     = aws_s3_bucket.velib_data.bucket
+  key        = "builds/layer.zip"
+  source     = "${path.module}/build/layer.zip"
+  depends_on = [null_resource.build_layer]
+}
+
+# Crée le Lambda Layer depuis S3
+
 resource "aws_lambda_layer_version" "dependencies" {
   layer_name          = "${local.name_prefix}-dependencies"
   s3_bucket           = aws_s3_bucket.velib_data.bucket
-  s3_key              = "builds/layer.zip"
+  s3_key              = aws_s3_object.layer_zip.key
   compatible_runtimes = ["python3.12"]
-  depends_on          = [aws_s3_bucket.velib_data]
+  depends_on          = [aws_s3_object.layer_zip]
 }
-
 resource "aws_lambda_function" "pipeline" {
   function_name    = "${local.name_prefix}-pipeline"
   role             = aws_iam_role.lambda.arn
