@@ -2,6 +2,7 @@
 **AWS Lambda · Aurora Serverless v2 · S3 · API Gateway · EventBridge**
 
 Pipeline de données automatisé autour du service Vélib' Métropole à Paris.  
+Pipeline de données automatisé autour du service Vélib' Métropole à Paris.  
 Collecte horaire, stockage cloud historisé, rapports PDF et API de téléchargement.
 
 ---
@@ -26,10 +27,20 @@ Collecte horaire, stockage cloud historisé, rapports PDF et API de télécharge
 
 ```
 API Vélib' opendata.paris.fr
+##  Architecture
+
+```
+API Vélib' opendata.paris.fr
 ↓ toutes les heures
 EventBridge Scheduler
 ↓
 Lambda Pipeline (Python 3.12)
+├── fetch.py             → 1509 stations récupérées
+├── transform.py         → nettoyage + enrichissement
+├── insert.py            → Aurora Serverless v2 (append-only + snapshot_id)
+├── save.py              → S3 partitionné year=/month=/day=/
+└── generate_report.py  → PDF reportlab → S3
+
 ├── fetch.py             → 1509 stations récupérées
 ├── transform.py         → nettoyage + enrichissement
 ├── insert.py            → Aurora Serverless v2 (append-only + snapshot_id)
@@ -42,9 +53,13 @@ Lambda API + API Gateway
 └── GET /download/report
 ```
 
+```
+
 ---
 
 ##  Structure
+
+```
 
 ```
 velib-data-pipeline/
@@ -66,10 +81,14 @@ velib-data-pipeline/
     └── main.tf
 ```
 
+    └── main.tf
+```
+
 ---
 
 ##  Migration v1 → v2
 
+| Avant | Après |
 | Avant | Après |
 |---|---|
 | Railway + Airflow | AWS Lambda + EventBridge |
@@ -102,6 +121,7 @@ velib-data-pipeline/
 ##  Déploiement
 
 ### Prérequis
+
 
 - AWS CLI configuré (`aws configure`)
 - Terraform >= 1.6
@@ -139,6 +159,17 @@ terraform destroy
 
 | Champ | Description |
 |---|---|
+| `station_id` | Identifiant unique station |
+| `name` | Nom de la station |
+| `numbikesavailable` | Vélos disponibles |
+| `mechanical` | Vélos mécaniques |
+| `ebike` | Vélos électriques |
+| `numdocksavailable` | Bornes disponibles |
+| `bike_ratio` | Taux de remplissage |
+| `is_empty` | Station vide |
+| `is_full` | Station pleine |
+| `snapshot_id` | Identifiant du run horaire |
+| `run_at` | Timestamp UTC du run |
 | `station_id` | Identifiant unique station |
 | `name` | Nom de la station |
 | `numbikesavailable` | Vélos disponibles |
