@@ -2,30 +2,85 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import requests
-import boto3
 import os
 import io
-from datetime import datetime
 import pytz
-
-#config
+from datetime import datetime
 
 st.set_page_config(
     page_title="Vélib' Dashboard",
-    page_icon="🚲",
+    page_icon="",
     layout="wide",
 )
 
-S3_BUCKET = os.environ.get("S3_BUCKET", "velib-pipeline-prod-data")
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+# SIDEBAR — Configuration
+
+
+st.sidebar.title(" Configuration")
+
+source = st.sidebar.radio(
+    "Source des données",
+    ["API Vélib' (temps réel)", "AWS S3 (dernier snapshot)"],
+    index=0,
+)
+
+st.sidebar.divider()
+
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 API_ENDPOINT = os.environ.get("API_ENDPOINT", "")
+S3_BUCKET = os.environ.get("S3_BUCKET", "velib-pipeline-prod-data")
 
-#Fonctions
+
+# CHARGEMENT DES DONNEES
 @st.cache_data(ttl=300)
-def load_latest_csv():
-    """Charge le dernier CSV depuis S3."""
+def load_from_api():
+    """Charge depuis l'API Vélib' opendata.paris.fr"""
+    all_records = []
+    for start in range(0, 2000, 1000):
+        params = {
+            "dataset": "velib-disponibilite-en-temps-reel",
+            "rows": 1000,
+            "start": start,
+        }
+        r = requests.get(
+            "https://opendata.paris.fr/api/records/1.0/search/",
+            params=params,
+            timeout=30,
+        )
+        records = r.json().get("records", [])
+        all_records.extend(records)
+        if len(records) < 1000:
+            break
+
+    rows = []
+    for rec in all_records:
+        f = rec.get("fields", {})
+        rows.append({
+            "station_id":        f.get("stationcode"),
+            "name":              f.get("name", "").upper(),
+            "numbikesavailable": int(f.get("numbikesavailable", 0)),
+            "mechanical":        int(f.get("mechanical", 0)),
+            "ebike":             int(f.get("ebike", 0)),
+            "numdocksavailable": int(f.get("numdocksavailable", 0)),
+            "is_full":           f.get("numdocksavailable", 1) == 0,
+            "is_empty":          f.get("numbikesavailable", 1) == 0,
+            "bike_ratio":        round(
+                int(f.get("numbikesavailable", 0)) /
+                max(int(f.get("numbikesavailable", 0)) + int(f.get("numdocksavailable", 0)), 1),
+                2
+            ),
+            "lat": f.get("coordonnees_geo", [None, None])[0] if f.get("coordonnees_geo") else None,
+            "lon": f.get("coordonnees_geo", [None, None])[1] if f.get("coordonnees_geo") else None,
+        })
+    return pd.DataFrame(rows)
+
+
+@st.cache_data(ttl=300)
+def load_from_s3():
+    """Charge depuis AWS S3"""
     try:
+        import boto3
         s3 = boto3.client(
             "s3",
             aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
@@ -40,35 +95,18 @@ def load_latest_csv():
                 if key.endswith(".csv"):
                     if latest_key is None or key > latest_key:
                         latest_key = key
-
         if not latest_key:
-            return None
-
+            return None, "Aucun fichier CSV dans S3."
         obj = s3.get_object(Bucket=S3_BUCKET, Key=latest_key)
         df = pd.read_csv(io.BytesIO(obj["Body"].read()), sep=";")
-        return df
+        return df, latest_key
     except Exception as e:
-        st.error(f"Erreur chargement données : {e}")
-        return None
+        return None, str(e)
 
 
 def ask_groq(question: str, context: str) -> str:
-    """Pose une question à Groq avec le contexte des données."""
     if not GROQ_API_KEY:
-        return "Clé Groq non configurée."
-
-    prompt = f"""
-Tu es un expert en mobilité urbaine à Paris spécialisé dans le réseau Vélib'.
-Réponds en français de manière concise et utile.
-
-Données actuelles du réseau :
-{context}
-
-Question de l'utilisateur : {question}
-
-Réponds directement sans introduction.
-"""
-
+        return "Clé Groq non configurée dans les secrets Streamlit."
     try:
         response = requests.post(
             GROQ_URL,
@@ -78,7 +116,15 @@ Réponds directement sans introduction.
             },
             json={
                 "model": "llama-3.3-70b-versatile",
-                "messages": [{"role": "user", "content": prompt}],
+                "messages": [{"role": "user", "content": f"""
+Tu es un expert en mobilité urbaine à Paris spécialisé dans le réseau Vélib'.
+Réponds en français de manière concise et utile.
+
+Données actuelles :
+{context}
+
+Question : {question}
+"""}],
                 "max_tokens": 500,
                 "temperature": 0.7,
             },
@@ -89,90 +135,85 @@ Réponds directement sans introduction.
     except Exception as e:
         return f"Erreur Groq : {e}"
 
-
-
-# HEADER
+# CHARGEMENT
 
 st.title(" Vélib' Dashboard Paris")
-st.caption(f"Données en temps réel — Réseau Vélib' Métropole")
 
-df = load_latest_csv()
+if source == "API Vélib' (temps réel)":
+    with st.spinner("Chargement depuis l'API Vélib'..."):
+        df = load_from_api()
+    st.sidebar.success(f"{len(df)} stations chargées")
+    st.caption("Source : opendata.paris.fr — temps réel")
+else:
+    with st.spinner("Chargement depuis AWS S3..."):
+        df, info = load_from_s3()
+    if df is None:
+        st.error(f"Erreur S3 : {info}")
+        st.info("Basculez sur 'API Vélib' (temps réel)' dans la sidebar.")
+        st.stop()
+    st.sidebar.success(f"{len(df)} stations chargées")
+    st.caption(f"Source : AWS S3 — {info}")
 
-if df is None:
-    st.error("Impossible de charger les données. Vérifiez la connexion S3.")
+if df is None or df.empty:
+    st.error("Aucune donnée disponible.")
     st.stop()
+# METRICS
 
-# Stats globales
+
 paris_tz = pytz.timezone("Europe/Paris")
 now = datetime.now(paris_tz).strftime("%Y-%m-%d %H:%M")
 
 col1, col2, col3, col4, col5 = st.columns(5)
-col1.metric("Stations actives", df["station_id"].nunique())
-col2.metric("Vélos disponibles", f"{int(df['numbikesavailable'].sum()):,}")
-col3.metric("Bornes disponibles", f"{int(df['numdocksavailable'].sum()):,}")
+col1.metric("Stations", df["station_id"].nunique())
+col2.metric("Vélos dispo", f"{int(df['numbikesavailable'].sum()):,}")
+col3.metric("Bornes dispo", f"{int(df['numdocksavailable'].sum()):,}")
 col4.metric("Stations vides", int(df["is_empty"].sum()))
-col5.metric("Taux de remplissage", f"{df['bike_ratio'].mean():.1%}")
+col5.metric("Remplissage", f"{df['bike_ratio'].mean():.1%}")
 
 st.divider()
 
-# CARTE
-
+#carte
 
 st.subheader(" Carte des stations")
 
-if "coordonnees_geo" in df.columns:
-    try:
-        df[["lat", "lon"]] = df["coordonnees_geo"].str.split(",", expand=True).astype(float)
-        map_df = df[["name", "lat", "lon", "numbikesavailable", "numdocksavailable"]].dropna()
-        st.map(map_df, latitude="lat", longitude="lon", size="numbikesavailable")
-    except Exception:
-        st.info("Coordonnées non disponibles dans ce snapshot.")
+if "lat" in df.columns and df["lat"].notna().any():
+    map_df = df[["name", "lat", "lon", "numbikesavailable"]].dropna()
+    st.map(map_df, latitude="lat", longitude="lon", size="numbikesavailable", color="#1D9E75")
 else:
-    st.info("Les coordonnées géographiques ne sont pas dans les données actuelles.")
+    st.info("Coordonnées non disponibles pour ce snapshot.")
 
 st.divider()
 
-
-# GRAPHIQUES
-
+#GRAPHIQUES
 
 col_left, col_right = st.columns(2)
 
 with col_left:
-    st.subheader("🏆 Top 10 stations les mieux fournies")
-    top10 = df.nlargest(10, "numbikesavailable")[["name", "numbikesavailable", "ebike", "mechanical"]]
+    st.subheader(" Top 10 mieux fournies")
+    top10 = df.nlargest(10, "numbikesavailable")[["name", "numbikesavailable", "ebike"]]
     fig = px.bar(
-        top10,
-        x="numbikesavailable",
-        y="name",
-        orientation="h",
-        color="ebike",
-        color_continuous_scale="teal",
-        labels={"numbikesavailable": "Vélos dispo", "name": "Station", "ebike": "Électriques"},
+        top10, x="numbikesavailable", y="name", orientation="h",
+        color="ebike", color_continuous_scale="teal",
+        labels={"numbikesavailable": "Vélos", "name": "Station", "ebike": "Électriques"},
     )
     fig.update_layout(yaxis={"autorange": "reversed"}, height=400)
     st.plotly_chart(fig, use_container_width=True)
 
 with col_right:
-    st.subheader(" Top 10 stations les plus vides")
-    empty10 = df.nsmallest(10, "numbikesavailable")[["name", "numbikesavailable", "numdocksavailable"]]
+    st.subheader(" Top 10 plus vides")
+    empty10 = df.nsmallest(10, "numbikesavailable")[["name", "numbikesavailable"]]
     fig2 = px.bar(
-        empty10,
-        x="numbikesavailable",
-        y="name",
-        orientation="h",
-        color="numbikesavailable",
-        color_continuous_scale="reds",
-        labels={"numbikesavailable": "Vélos dispo", "name": "Station"},
+        empty10, x="numbikesavailable", y="name", orientation="h",
+        color="numbikesavailable", color_continuous_scale="reds",
+        labels={"numbikesavailable": "Vélos", "name": "Station"},
     )
     fig2.update_layout(yaxis={"autorange": "reversed"}, height=400)
     st.plotly_chart(fig2, use_container_width=True)
 
-# Répartition mécanique / électrique
-st.subheader(" Répartition des types de vélos")
 col_a, col_b = st.columns(2)
 
 with col_a:
+    st.subheader(" Types de vélos")
     bike_data = pd.DataFrame({
         "Type": ["Mécaniques", "Électriques"],
         "Nombre": [int(df["mechanical"].sum()), int(df["ebike"].sum())]
@@ -182,6 +223,7 @@ with col_a:
     st.plotly_chart(fig3, use_container_width=True)
 
 with col_b:
+    st.subheader(" État des stations")
     status_data = pd.DataFrame({
         "État": ["Vides", "Pleines", "Partielles"],
         "Nombre": [
@@ -196,9 +238,9 @@ with col_b:
 
 st.divider()
 
-# CHATBOT
+#CHATBOT
 
-st.subheader("💬 Ask Vélib Data — Posez vos questions")
+st.subheader(" Ask Vélib Data")
 
 context = f"""
 - Stations actives : {df['station_id'].nunique()}
@@ -224,7 +266,6 @@ if question := st.chat_input("Ex: Quelle station a le plus de vélos électrique
     st.session_state.messages.append({"role": "user", "content": question})
     with st.chat_message("user"):
         st.write(question)
-
     with st.chat_message("assistant"):
         with st.spinner("Analyse en cours..."):
             response = ask_groq(question, context)
@@ -242,15 +283,17 @@ col_dl1, col_dl2 = st.columns(2)
 with col_dl1:
     if API_ENDPOINT:
         st.link_button(
-            " Télécharger le rapport PDF",
+            " Rapport PDF (AWS)",
             f"{API_ENDPOINT}/download/report",
             use_container_width=True,
         )
+    else:
+        st.info("API_ENDPOINT non configuré")
 
 with col_dl2:
     csv_bytes = df.to_csv(index=False, sep=";").encode("utf-8")
     st.download_button(
-        " Télécharger le CSV",
+        " Télécharger CSV",
         data=csv_bytes,
         file_name="velib_latest.csv",
         mime="text/csv",
