@@ -15,16 +15,14 @@ st.set_page_config(
 
 # SIDEBAR — Configuration
 
-
-st.sidebar.title(" Configuration")
-
+st.sidebar.title("Configuration")
 source = st.sidebar.radio(
-    "Source des données",
-    ["API Vélib' (temps réel)", "AWS S3 (dernier snapshot)"],
+    "Source des donnees",
+    ["API Velib (temps reel)", "AWS S3 (dernier snapshot)"],
     index=0,
 )
-
 st.sidebar.divider()
+
 st.sidebar.subheader("Filtres")
 
 filtre_type = st.sidebar.selectbox(
@@ -46,6 +44,7 @@ filtre_min_velos = st.sidebar.slider(
 )
 
 st.sidebar.divider()
+sidebar_count = st.sidebar.empty()
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
@@ -201,8 +200,9 @@ if etats_selectionnes:
     df_filtered = df_filtered[mask]
 
 df_filtered = df_filtered[df_filtered["numbikesavailable"] >= filtre_min_velos]
+sidebar_count.info(f"{len(df_filtered)} stations apres filtres")
 
-st.sidebar.info(f"{len(df_filtered)} stations apres filtres")
+
 # METRICS
 
 
@@ -210,12 +210,11 @@ paris_tz = pytz.timezone("Europe/Paris")
 now = datetime.now(paris_tz).strftime("%Y-%m-%d %H:%M")
 
 col1, col2, col3, col4, col5 = st.columns(5)
-col1.metric("Stations", df["station_id"].nunique())
-col2.metric("Vélos dispo", f"{int(df['numbikesavailable'].sum()):,}")
-col3.metric("Bornes dispo", f"{int(df['numdocksavailable'].sum()):,}")
-col4.metric("Stations vides", int(df["is_empty"].sum()))
-col5.metric("Remplissage", f"{df['bike_ratio'].mean():.1%}")
-
+col1.metric("Stations", df_filtered["station_id"].nunique())
+col2.metric("Velos dispo", f"{int(df_filtered['numbikesavailable'].sum()):,}")
+col3.metric("Bornes dispo", f"{int(df_filtered['numdocksavailable'].sum()):,}")
+col4.metric("Stations vides", int(df_filtered["is_empty"].sum()))
+col5.metric("Remplissage", f"{df_filtered['bike_ratio'].mean():.1%}")
 st.divider()
 
 st.subheader("Recherche de station")
