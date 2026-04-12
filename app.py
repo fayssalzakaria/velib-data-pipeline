@@ -30,12 +30,11 @@ filtre_type = st.sidebar.selectbox(
     ["Tous", "Mecaniques uniquement", "Electriques uniquement"]
 )
 
-filtre_etat = st.sidebar.multiselect(
+filtre_etat = st.sidebar.selectbox(
     "Etat des stations",
-    ["Disponibles", "Vides", "Pleines"],
-    default=["Disponibles", "Vides", "Pleines"]
+    ["Tous", "Disponibles", "Vides", "Pleines"],
+    index=0,
 )
-
 filtre_min_velos = st.sidebar.slider(
     "Minimum de velos disponibles",
     min_value=0,
@@ -185,15 +184,15 @@ elif filtre_type == "Electriques uniquement":
     df_filtered = df_filtered[df_filtered["ebike"] > 0]
 
 etats_selectionnes = []
-if "Vides" in filtre_etat:
-    etats_selectionnes.append(df_filtered["is_empty"] == True)
-if "Pleines" in filtre_etat:
-    etats_selectionnes.append(df_filtered["is_full"] == True)
-if "Disponibles" in filtre_etat:
-    etats_selectionnes.append(
-        (df_filtered["is_empty"] == False) & (df_filtered["is_full"] == False)
-    )
 
+if filtre_etat == "Vides":
+    df_filtered = df_filtered[df_filtered["is_empty"]]
+elif filtre_etat == "Pleines":
+    df_filtered = df_filtered[df_filtered["is_full"]]
+elif filtre_etat == "Disponibles":
+    df_filtered = df_filtered[
+        (~df_filtered["is_empty"]) & (~df_filtered["is_full"])
+    ]
 if etats_selectionnes:
     import functools
     mask = functools.reduce(lambda a, b: a | b, etats_selectionnes)
