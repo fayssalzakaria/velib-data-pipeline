@@ -18,7 +18,7 @@ st.set_page_config(
 st.sidebar.title("Configuration")
 source = st.sidebar.radio(
     "Source des donnees",
-    ["API Velib (temps reel)", "AWS S3 (dernier snapshot)"],
+    ["API Velib' (temps reel)", "AWS S3 (dernier snapshot)"],
     index=0,
 )
 st.sidebar.divider()
@@ -203,6 +203,7 @@ df_filtered = df_filtered[df_filtered["numbikesavailable"] >= filtre_min_velos]
 sidebar_count.info(f"{len(df_filtered)} stations apres filtres")
 
 
+
 # METRICS
 
 
@@ -222,7 +223,7 @@ st.subheader("Recherche de station")
 search = st.text_input("Nom de la station", placeholder="Ex: Bastille, Nation, Republique...")
 
 if search:
-    results = df[df["name"].str.contains(search.upper(), na=False)]
+    results = df_filtered[df_filtered["name"].str.contains(search.upper(), na=False)]
     if results.empty:
         st.warning(f"Aucune station trouvee pour '{search}'")
     else:
@@ -244,7 +245,7 @@ if search:
 
 st.subheader(" Carte des stations")
 
-if "lat" in df.columns and df["lat"].notna().any():
+if "lat" in df_filtered.columns and df_filtered["lat"].notna().any():
     map_df = df[["name", "lat", "lon", "numbikesavailable"]].dropna()
     st.map(map_df, latitude="lat", longitude="lon", size="numbikesavailable", color="#1D9E75")
 else:
@@ -258,7 +259,7 @@ col_left, col_right = st.columns(2)
 
 with col_left:
     st.subheader(" Top 10 mieux fournies")
-    top10 = df.nlargest(10, "numbikesavailable")[["name", "numbikesavailable", "ebike"]]
+    top10 = df_filtered.nlargest(10, "numbikesavailable")[["name", "numbikesavailable", "ebike"]]
     fig = px.bar(
         top10, x="numbikesavailable", y="name", orientation="h",
         color="ebike", color_continuous_scale="teal",
@@ -269,7 +270,7 @@ with col_left:
 
 with col_right:
     st.subheader(" Top 10 plus vides")
-    empty10 = df.nsmallest(10, "numbikesavailable")[["name", "numbikesavailable"]]
+    empty10 = df_filtered.nsmallest(10, "numbikesavailable")[["name", "numbikesavailable"]]
     fig2 = px.bar(
         empty10, x="numbikesavailable", y="name", orientation="h",
         color="numbikesavailable", color_continuous_scale="reds",
@@ -284,7 +285,7 @@ with col_a:
     st.subheader(" Types de vélos")
     bike_data = pd.DataFrame({
         "Type": ["Mécaniques", "Électriques"],
-        "Nombre": [int(df["mechanical"].sum()), int(df["ebike"].sum())]
+        "Nombre": [int(df_filtered["mechanical"].sum()), int(df["ebike"].sum())]
     })
     fig3 = px.pie(bike_data, values="Nombre", names="Type",
                   color_discrete_sequence=["#185FA5", "#1D9E75"])
@@ -295,9 +296,9 @@ with col_b:
     status_data = pd.DataFrame({
         "État": ["Vides", "Pleines", "Partielles"],
         "Nombre": [
-            int(df["is_empty"].sum()),
-            int(df["is_full"].sum()),
-            len(df) - int(df["is_empty"].sum()) - int(df["is_full"].sum())
+            int(df_filtered["is_empty"].sum()),
+            int(df_filtered["is_full"].sum()),
+            len(df_filtered) - int(df["is_empty"].sum()) - int(df["is_full"].sum())
         ]
     })
     fig4 = px.pie(status_data, values="Nombre", names="État",
@@ -311,16 +312,16 @@ st.divider()
 st.subheader(" Ask Vélib Data")
 
 context = f"""
-- Stations actives : {df['station_id'].nunique()}
-- Vélos disponibles : {int(df['numbikesavailable'].sum())}
-- Bornes disponibles : {int(df['numdocksavailable'].sum())}
+- Stations actives : {df_filtered['station_id'].nunique()}
+- Vélos disponibles : {int(df_filtered['numbikesavailable'].sum())}
+- Bornes disponibles : {int(df_filtered['numdocksavailable'].sum())}
 - Taux de remplissage moyen : {df['bike_ratio'].mean():.1%}
-- Stations vides : {int(df['is_empty'].sum())}
-- Stations pleines : {int(df['is_full'].sum())}
-- Vélos mécaniques : {int(df['mechanical'].sum())}
-- Vélos électriques : {int(df['ebike'].sum())}
-- Top 3 mieux fournies : {', '.join(df.nlargest(3, 'numbikesavailable')['name'].tolist())}
-- Top 3 plus vides : {', '.join(df.nsmallest(3, 'numbikesavailable')['name'].tolist())}
+- Stations vides : {int(df_filtered['is_empty'].sum())}
+- Stations pleines : {int(df_filtered['is_full'].sum())}
+- Vélos mécaniques : {int(df_filtered['mechanical'].sum())}
+- Vélos électriques : {int(df_filtered['ebike'].sum())}
+- Top 3 mieux fournies : {', '.join(df_filtered.nlargest(3, 'numbikesavailable')['name'].tolist())}
+- Top 3 plus vides : {', '.join(df_filtered.nsmallest(3, 'numbikesavailable')['name'].tolist())}
 """
 
 if "messages" not in st.session_state:
@@ -359,7 +360,7 @@ with col_dl1:
         st.info("API_ENDPOINT non configuré")
 
 with col_dl2:
-    csv_bytes = df.to_csv(index=False, sep=";").encode("utf-8")
+    csv_bytes = df_filtered.to_csv(index=False, sep=";").encode("utf-8")
     st.download_button(
         " Télécharger CSV",
         data=csv_bytes,
