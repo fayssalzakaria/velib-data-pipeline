@@ -56,7 +56,7 @@ def render_source_info(source: str, df, info: str | None = None):
 
 def render_metrics(df_filtered):
     col1, col2, col3, col4, col5 = st.columns(5)
-    col1.metric("Stations", df_filtered["station_id"].nunique())
+    col1.metric("Stations", len(df_filtered))
     col2.metric("Velos dispo", f"{int(df_filtered['numbikesavailable'].sum()):,}")
     col3.metric("Bornes dispo", f"{int(df_filtered['numdocksavailable'].sum()):,}")
     col4.metric("Stations vides", int(df_filtered["is_empty"].sum()))
