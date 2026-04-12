@@ -39,8 +39,8 @@ def load_from_api():
             "mechanical":        int(f.get("mechanical", 0)),
             "ebike":             int(f.get("ebike", 0)),
             "numdocksavailable": int(f.get("numdocksavailable", 0)),
-            "is_full":           f.get("numdocksavailable", 1) == 0,
-            "is_empty":          f.get("numbikesavailable", 1) == 0,
+            "is_empty": int(f.get("numbikesavailable", 0)) == 0,
+            "is_full":  int(f.get("numdocksavailable", 0)) == 0,
             "bike_ratio":        round(
                 int(f.get("numbikesavailable", 0)) /
                 max(int(f.get("numbikesavailable", 0)) + int(f.get("numdocksavailable", 0)), 1),
