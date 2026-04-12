@@ -246,7 +246,7 @@ if search:
 st.subheader(" Carte des stations")
 
 if "lat" in df_filtered.columns and df_filtered["lat"].notna().any():
-    map_df = df[["name", "lat", "lon", "numbikesavailable"]].dropna()
+    map_df = df_filtered[["name", "lat", "lon", "numbikesavailable"]].dropna()
     st.map(map_df, latitude="lat", longitude="lon", size="numbikesavailable", color="#1D9E75")
 else:
     st.info("Coordonnées non disponibles pour ce snapshot.")
@@ -285,7 +285,7 @@ with col_a:
     st.subheader(" Types de vélos")
     bike_data = pd.DataFrame({
         "Type": ["Mécaniques", "Électriques"],
-        "Nombre": [int(df_filtered["mechanical"].sum()), int(df["ebike"].sum())]
+        "Nombre": [int(df_filtered["mechanical"].sum()), int(df_filtered["ebike"].sum())]
     })
     fig3 = px.pie(bike_data, values="Nombre", names="Type",
                   color_discrete_sequence=["#185FA5", "#1D9E75"])
@@ -298,7 +298,7 @@ with col_b:
         "Nombre": [
             int(df_filtered["is_empty"].sum()),
             int(df_filtered["is_full"].sum()),
-            len(df_filtered) - int(df["is_empty"].sum()) - int(df["is_full"].sum())
+            len(df_filtered) - int(df_filtered["is_empty"].sum()) - int(df_filtered["is_full"].sum())
         ]
     })
     fig4 = px.pie(status_data, values="Nombre", names="État",
@@ -315,7 +315,7 @@ context = f"""
 - Stations actives : {df_filtered['station_id'].nunique()}
 - Vélos disponibles : {int(df_filtered['numbikesavailable'].sum())}
 - Bornes disponibles : {int(df_filtered['numdocksavailable'].sum())}
-- Taux de remplissage moyen : {df['bike_ratio'].mean():.1%}
+- Taux de remplissage moyen : {df_filtered['bike_ratio'].mean():.1%}
 - Stations vides : {int(df_filtered['is_empty'].sum())}
 - Stations pleines : {int(df_filtered['is_full'].sum())}
 - Vélos mécaniques : {int(df_filtered['mechanical'].sum())}
