@@ -25,6 +25,27 @@ source = st.sidebar.radio(
 )
 
 st.sidebar.divider()
+st.sidebar.subheader("Filtres")
+
+filtre_type = st.sidebar.selectbox(
+    "Type de velo",
+    ["Tous", "Mecaniques uniquement", "Electriques uniquement"]
+)
+
+filtre_etat = st.sidebar.multiselect(
+    "Etat des stations",
+    ["Disponibles", "Vides", "Pleines"],
+    default=["Disponibles", "Vides", "Pleines"]
+)
+
+filtre_min_velos = st.sidebar.slider(
+    "Minimum de velos disponibles",
+    min_value=0,
+    max_value=50,
+    value=0,
+)
+
+st.sidebar.divider()
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
@@ -157,6 +178,31 @@ else:
 if df is None or df.empty:
     st.error("Aucune donnée disponible.")
     st.stop()
+df_filtered = df.copy()
+
+if filtre_type == "Mecaniques uniquement":
+    df_filtered = df_filtered[df_filtered["mechanical"] > 0]
+elif filtre_type == "Electriques uniquement":
+    df_filtered = df_filtered[df_filtered["ebike"] > 0]
+
+etats_selectionnes = []
+if "Vides" in filtre_etat:
+    etats_selectionnes.append(df_filtered["is_empty"] == True)
+if "Pleines" in filtre_etat:
+    etats_selectionnes.append(df_filtered["is_full"] == True)
+if "Disponibles" in filtre_etat:
+    etats_selectionnes.append(
+        (df_filtered["is_empty"] == False) & (df_filtered["is_full"] == False)
+    )
+
+if etats_selectionnes:
+    import functools
+    mask = functools.reduce(lambda a, b: a | b, etats_selectionnes)
+    df_filtered = df_filtered[mask]
+
+df_filtered = df_filtered[df_filtered["numbikesavailable"] >= filtre_min_velos]
+
+st.sidebar.info(f"{len(df_filtered)} stations apres filtres")
 # METRICS
 
 
