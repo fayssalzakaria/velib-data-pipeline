@@ -172,6 +172,29 @@ col5.metric("Remplissage", f"{df['bike_ratio'].mean():.1%}")
 
 st.divider()
 
+st.subheader("Recherche de station")
+
+search = st.text_input("Nom de la station", placeholder="Ex: Bastille, Nation, Republique...")
+
+if search:
+    results = df[df["name"].str.contains(search.upper(), na=False)]
+    if results.empty:
+        st.warning(f"Aucune station trouvee pour '{search}'")
+    else:
+        for _, row in results.iterrows():
+            with st.expander(f"{row['name']}"):
+                c1, c2, c3, c4 = st.columns(4)
+                c1.metric("Velos dispo", int(row["numbikesavailable"]))
+                c2.metric("Dont electriques", int(row["ebike"]))
+                c3.metric("Bornes dispo", int(row["numdocksavailable"]))
+                c4.metric("Remplissage", f"{row['bike_ratio']:.0%}")
+
+                if row["is_empty"]:
+                    st.error("Station vide")
+                elif row["is_full"]:
+                    st.warning("Station pleine")
+                else:
+                    st.success("Station disponible")
 #carte
 
 st.subheader(" Carte des stations")
