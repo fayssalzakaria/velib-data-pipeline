@@ -46,15 +46,7 @@ if df is None or df.empty:
     st.stop()
 
 df_filtered = apply_filters(df, filtre_type, filtre_etat, filtre_min_velos)
-st.write("Lignes :", len(df_filtered))
-st.write("station_id uniques :", df_filtered["station_id"].nunique())
-st.write("station_id manquants :", df_filtered["station_id"].isna().sum())
 
-st.write("Exemples station_id manquants :")
-st.write(df_filtered[df_filtered["station_id"].isna()].head(20))
-
-st.write("Exemples station_id renseignés :")
-st.write(df_filtered[df_filtered["station_id"].notna()][["station_id", "name"]].head(20))
 sidebar_count.info(f"{len(df_filtered)} stations après filtres")
 
 render_metrics(df_filtered)

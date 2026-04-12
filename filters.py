@@ -25,4 +25,18 @@ def apply_filters(
 
     df_filtered = df_filtered[df_filtered["numbikesavailable"] >= filtre_min_velos]
 
+    # Deduplique — garde la ligne la plus recente par station
+    if "snapshot_id" in df_filtered.columns:
+        df_filtered = (
+            df_filtered
+            .sort_values("snapshot_id", ascending=False)
+            .drop_duplicates(subset=["station_id"])
+        )
+    elif "run_at" in df_filtered.columns:
+        df_filtered = (
+            df_filtered
+            .sort_values("run_at", ascending=False)
+            .drop_duplicates(subset=["station_id"])
+        )
+
     return df_filtered
