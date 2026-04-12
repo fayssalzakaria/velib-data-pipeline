@@ -19,7 +19,7 @@ st.sidebar.title("Configuration")
 source = st.sidebar.radio(
     "Source des donnees",
     ["API Velib' (temps reel)", "AWS S3 (dernier snapshot)"],
-    index=0,
+    index=0,   
 )
 st.sidebar.divider()
 
@@ -159,7 +159,7 @@ Question : {question}
 
 st.title(" Vélib' Dashboard Paris")
 
-if source == "API Vélib' (temps réel)":
+if source == "API Velib' (temps reel)":
     with st.spinner("Chargement depuis l'API Vélib'..."):
         df = load_from_api()
     st.sidebar.success(f"{len(df)} stations chargées")
