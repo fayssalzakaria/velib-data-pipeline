@@ -14,6 +14,7 @@ from ui import (
     render_search,
     render_sidebar,
     render_source_info,
+    render_history,
 )
 
 st.set_page_config(
@@ -51,6 +52,7 @@ sidebar_count.info(f"{len(df_filtered)} stations après filtres")
 
 render_metrics(df_filtered)
 render_search(df_filtered)
+render_history()
 render_map(df_filtered)
 render_charts(df_filtered)
 render_chatbot(df_filtered)

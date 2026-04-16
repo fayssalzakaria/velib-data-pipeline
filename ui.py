@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from history import get_station_history
 import pandas as pd
 import plotly.express as px
 import pytz
@@ -263,3 +263,60 @@ def render_last_update():
     paris_tz = pytz.timezone(PARIS_TIMEZONE)
     now = datetime.now(paris_tz).strftime("%Y-%m-%d %H:%M")
     st.caption(f"Dernière mise à jour : {now}")
+    def render_history():
+    st.subheader("Historique d'une station")
+
+    postgres_url = os.environ.get("POSTGRES_URL", "")
+
+    if not postgres_url:
+        st.info("Connectez AWS (POSTGRES_URL) pour voir l'historique.")
+        return
+
+    col1, col2 = st.columns([3, 1])
+
+    with col1:
+        station_name = st.text_input(
+            "Nom de la station",
+            placeholder="Ex: Bastille",
+            key="history_search",
+        )
+
+    with col2:
+        hours = st.selectbox(
+            "Periode",
+            [6, 12, 24, 48],
+            index=2,
+            format_func=lambda x: f"{x}h",
+        )
+
+    if not station_name:
+        return
+
+    with st.spinner("Chargement historique..."):
+        df_history = get_station_history(station_name, hours)
+
+    if df_history.empty:
+        st.warning("Aucune donnee historique. AWS doit etre actif.")
+        return
+
+    import plotly.express as px
+
+    fig = px.line(
+        df_history,
+        x="run_at",
+        y=["numbikesavailable", "ebike", "mechanical"],
+        labels={
+            "run_at": "Heure",
+            "value": "Nombre",
+            "variable": "Type",
+        },
+        color_discrete_map={
+            "numbikesavailable": "#1D9E75",
+            "ebike":             "#185FA5",
+            "mechanical":        "#EF9F27",
+        },
+    )
+    fig.update_layout(height=350)
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.divider()
