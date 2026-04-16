@@ -263,7 +263,7 @@ def render_last_update():
     paris_tz = pytz.timezone(PARIS_TIMEZONE)
     now = datetime.now(paris_tz).strftime("%Y-%m-%d %H:%M")
     st.caption(f"Dernière mise à jour : {now}")
-    def render_history():
+def render_history():
     st.subheader("Historique d'une station")
 
     postgres_url = os.environ.get("POSTGRES_URL", "")
