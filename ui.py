@@ -362,7 +362,7 @@ def render_snapshot_button(source: str):
                 st.error(message)
 
     st.divider()
-    
+
 def render_rag_chatbot(df_filtered=None):
     st.subheader("Ask Velib Data — RAG")
 
@@ -395,7 +395,20 @@ def render_rag_chatbot(df_filtered=None):
             st.session_state.rag_docs = n_docs
 
     if st.session_state.rag_engine:
-        st.caption(f"Index RAG : {st.session_state.rag_docs} snapshots indexes")
+        col1, col2 = st.columns([3, 1])
+
+        with col1:
+            st.caption(
+                f"Index RAG : {st.session_state.rag_docs} snapshots indexes"
+            )
+
+        with col2:
+            if st.button("Rafraichir index"):
+                if "rag_engine" in st.session_state:
+                    del st.session_state["rag_engine"]
+                if "rag_docs" in st.session_state:
+                    del st.session_state["rag_docs"]
+                st.rerun()
 
     if "rag_messages" not in st.session_state:
         st.session_state.rag_messages = []
