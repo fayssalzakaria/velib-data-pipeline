@@ -71,24 +71,32 @@ def _fetch_velib_snapshot() -> pd.DataFrame:
 
 
 def capture_snapshot_local() -> tuple[bool, str]:
-    """
-    Capture un snapshot et le sauvegarde dans le CSV local.
-    Utilisé quand Aurora est down.
-    """
+    """Capture un snapshot et le sauvegarde dans S3."""
     try:
+        import boto3
         df = _fetch_velib_snapshot()
-        os.makedirs(os.path.dirname(SAMPLE_DATA_PATH), exist_ok=True)
-
-        if os.path.exists(SAMPLE_DATA_PATH):
-            existing = pd.read_csv(SAMPLE_DATA_PATH, sep=";")
-            df_combined = pd.concat([existing, df], ignore_index=True)
-        else:
-            df_combined = df
-
-        df_combined.to_csv(SAMPLE_DATA_PATH, index=False, sep=";")
-        now_str = datetime.now(PARIS_TZ).strftime("%Y-%m-%d %H:%M")
-        return True, f"Snapshot capturé à {now_str} — {len(df)} stations"
-
+        
+        now = datetime.now(PARIS_TZ)
+        s3_key = f"velib/history/snapshot_{now.strftime('%Y%m%d_%H%M%S')}.csv"
+        
+        s3 = boto3.client(
+            "s3",
+            aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
+            aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
+            region_name=os.environ.get("AWS_REGION", "eu-north-1"),
+        )
+        bucket = os.environ.get("S3_BUCKET", "velib-pipeline-fz-prod-data")
+        
+        buf = io.StringIO()
+        df.to_csv(buf, index=False, sep=";")
+        s3.put_object(
+            Bucket=bucket,
+            Key=s3_key,
+            Body=buf.getvalue().encode("utf-8"),
+        )
+        
+        now_str = now.strftime("%Y-%m-%d %H:%M")
+        return True, f"Snapshot capturé à {now_str} — {len(df)} stations sauvegardées sur S3"
     except Exception as e:
         return False, f"Erreur : {e}"
 
