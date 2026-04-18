@@ -438,3 +438,44 @@ def render_rag_chatbot(df_filtered=None):
             )
 
     st.divider()
+
+def render_semantic_search():
+    st.subheader("Recherche semantique")
+    st.caption("Posez une question sur les patterns historiques")
+
+    if "chroma_collection" not in st.session_state:
+        with st.spinner("Construction index ChromaDB..."):
+            from vector_store import build_chroma_index
+            collection, n = build_chroma_index()
+            st.session_state.chroma_collection = collection
+            st.session_state.chroma_docs = n
+
+    if st.session_state.chroma_collection is None:
+        st.info("Capturez des snapshots pour activer la recherche semantique.")
+        return
+
+    st.caption(f"Index ChromaDB : {st.session_state.chroma_docs} documents")
+
+    col1, col2 = st.columns([3, 1])
+    with col2:
+        if st.button("Rafraichir ChromaDB"):
+            del st.session_state["chroma_collection"]
+            st.rerun()
+
+    query = st.text_input(
+        "Recherche",
+        placeholder="Ex: stations vides le matin, patterns weekend...",
+        key="chroma_search",
+    )
+
+    if not query:
+        return
+
+    with st.spinner("Recherche semantique..."):
+        from vector_store import ask_with_chroma
+        response = ask_with_chroma(
+            query, st.session_state.chroma_collection
+        )
+
+    st.write(response)
+    st.divider()
