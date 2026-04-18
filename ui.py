@@ -329,7 +329,7 @@ def render_history(df_filtered=None):
     st.plotly_chart(fig, use_container_width=True)
 
     st.divider()
-    
+
 def render_snapshot_button(source: str):
     st.subheader("Capturer un snapshot")
 
@@ -360,5 +360,68 @@ def render_snapshot_button(source: str):
                 st.cache_data.clear()
             else:
                 st.error(message)
+
+    st.divider()
+    
+def render_rag_chatbot(df_filtered=None):
+    st.subheader("Ask Velib Data — RAG")
+
+    has_history = False
+    try:
+        import boto3
+        s3 = boto3.client(
+            "s3",
+            aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
+            aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
+            region_name=os.environ.get("AWS_REGION", "eu-north-1"),
+        )
+        bucket = os.environ.get("S3_BUCKET", "")
+        if bucket:
+            resp = s3.list_objects_v2(Bucket=bucket, Prefix="velib/history/")
+            has_history = resp.get("KeyCount", 0) > 0
+    except Exception:
+        pass
+
+    if not has_history:
+        st.info("Capturez des snapshots pour activer le RAG.")
+        render_chatbot(df_filtered)
+        return
+
+    if "rag_engine" not in st.session_state:
+        with st.spinner("Construction de l'index RAG..."):
+            from rag import build_rag_index
+            engine, n_docs = build_rag_index()
+            st.session_state.rag_engine = engine
+            st.session_state.rag_docs = n_docs
+
+    if st.session_state.rag_engine:
+        st.caption(f"Index RAG : {st.session_state.rag_docs} snapshots indexes")
+
+    if "rag_messages" not in st.session_state:
+        st.session_state.rag_messages = []
+
+    for msg in st.session_state.rag_messages:
+        with st.chat_message(msg["role"]):
+            st.write(msg["content"])
+
+    if question := st.chat_input(
+        "Ex: Bastille est-elle souvent vide le matin ?"
+    ):
+        st.session_state.rag_messages.append(
+            {"role": "user", "content": question}
+        )
+        with st.chat_message("user"):
+            st.write(question)
+
+        with st.chat_message("assistant"):
+            with st.spinner("Recherche dans l'historique..."):
+                from rag import ask_rag
+                response = ask_rag(
+                    question, st.session_state.rag_engine
+                )
+            st.write(response)
+            st.session_state.rag_messages.append(
+                {"role": "assistant", "content": response}
+            )
 
     st.divider()

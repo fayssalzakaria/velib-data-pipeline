@@ -7,3 +7,7 @@ pytz
 sqlalchemy
 psycopg2-binary
 numpy
+llama-index
+llama-index-llms-groq
+llama-index-embeddings-huggingface
+sentence-transformers
