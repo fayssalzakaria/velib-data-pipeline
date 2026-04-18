@@ -1,16 +1,18 @@
 #!/bin/bash
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+
 REGION="eu-north-1"
-FUNCTION="velib-pipeline-prod-pipeline"
-S3_BUCKET="velib-pipeline-prod-data"
-SNS_ARN="arn:aws:sns:eu-north-1:503505393771:velib-pipeline-prod-alerts"
+FUNCTION="velib-pipeline-fz-prod-pipeline"
+S3_BUCKET="velib-pipeline-fz-prod-data"
+SNS_ARN="arn:aws:sns:eu-north-1:503505393771:velib-pipeline-fz-prod-alerts"
 
 source ~/.env
 
-# Recupere les endpoints automatiquement depuis Terraform
 echo "Recuperation des endpoints Terraform..."
-cd ~/velib-data-pipeline/infrastructure
+cd "$PROJECT_DIR/infrastructure"
 AURORA_ENDPOINT=$(terraform output -raw aurora_endpoint 2>/dev/null)
 API_ENDPOINT=$(terraform output -raw api_endpoint 2>/dev/null)
 POSTGRES_URL="postgresql://velib_app:${DB_PASSWORD}@${AURORA_ENDPOINT}/velib"
@@ -19,7 +21,8 @@ echo "Aurora : $AURORA_ENDPOINT"
 echo "API    : $API_ENDPOINT"
 
 echo "Copie des fichiers..."
-cp ~/velib-data-pipeline/lambdas/pipeline/*.py ~/lambda-code/
+mkdir -p ~/lambda-code
+cp "$PROJECT_DIR/lambdas/pipeline/"*.py ~/lambda-code/
 
 echo "Zip..."
 cd ~/lambda-code
