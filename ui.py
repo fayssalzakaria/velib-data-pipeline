@@ -327,8 +327,7 @@ def render_history():
     st.plotly_chart(fig, use_container_width=True)
 
     st.divider()
-
-    def render_snapshot_button(source: str):
+def render_snapshot_button(source: str):
     st.subheader("Capturer un snapshot")
 
     postgres_url = os.environ.get("POSTGRES_URL", "")
