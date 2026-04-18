@@ -332,7 +332,10 @@ def render_snapshot_button(source: str):
 
     postgres_url = os.environ.get("POSTGRES_URL", "")
     aws_key = os.environ.get("AWS_ACCESS_KEY_ID", "")
-    aws_active = bool(postgres_url and aws_key)
+    pipeline_lambda = os.environ.get("PIPELINE_LAMBDA", "")
+
+    # AWS actif seulement si les 3 variables sont configurees
+    aws_active = bool(postgres_url and aws_key and pipeline_lambda)
 
     if aws_active:
         st.info("Aurora active — le snapshot sera sauvegarde dans Aurora et S3.")
