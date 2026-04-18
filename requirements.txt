@@ -6,3 +6,4 @@ requests
 pytz
 sqlalchemy
 psycopg2-binary
+numpy
