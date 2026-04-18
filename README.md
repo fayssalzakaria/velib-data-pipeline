@@ -146,6 +146,7 @@ velib-data-pipeline/
 ### Lancer l'infrastructure
 
 ```bash
+chmod +x ~/velib-data-pipeline/infrastructure/build_layer.sh
 cd infrastructure/
 terraform init
 terraform apply -var-file="terraform.tfvars"
@@ -154,6 +155,7 @@ terraform apply -var-file="terraform.tfvars"
 ### Déployer le code Lambda
 
 ```bash
+chmod +x ~/velib-data-pipeline-git/deploy-velib.sh
 ./deploy-velib.sh
 ```
 

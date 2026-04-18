@@ -15,6 +15,7 @@ from ui import (
     render_sidebar,
     render_source_info,
     render_history,
+    render_snapshot_button,
 )
 
 st.set_page_config(
@@ -51,6 +52,7 @@ df_filtered = apply_filters(df, filtre_type, filtre_etat, filtre_min_velos)
 sidebar_count.info(f"{len(df_filtered)} stations après filtres")
 
 render_metrics(df_filtered)
+render_snapshot_button(source)
 render_search(df_filtered)
 render_history()
 render_map(df_filtered)

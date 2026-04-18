@@ -8,7 +8,7 @@ import streamlit as st
 
 from chatbot import ask_groq, build_context
 from config import API_ENDPOINT, PARIS_TIMEZONE, SOURCE_API, SOURCE_S3
-
+from snapshot import capture_snapshot_aws, capture_snapshot_local
 
 def render_sidebar():
     st.sidebar.title("Configuration")
@@ -268,7 +268,6 @@ def render_history():
     st.subheader("Historique d'une station")
 
     postgres_url = os.environ.get("POSTGRES_URL", "")
-
     if not postgres_url:
         st.info("Connectez AWS (POSTGRES_URL) pour voir l'historique.")
         return
@@ -276,8 +275,8 @@ def render_history():
     col1, col2 = st.columns([3, 1])
 
     with col1:
-        station_name = st.text_input(
-            "Nom de la station",
+        search = st.text_input(
+            "Recherche station",
             placeholder="Ex: Bastille",
             key="history_search",
         )
@@ -290,8 +289,20 @@ def render_history():
             format_func=lambda x: f"{x}h",
         )
 
-    if not station_name:
+    if not search:
         return
+
+    # Cherche les stations qui matchent
+    from history import get_available_stations, get_station_history
+    all_stations = get_available_stations(hours)
+    matching = [s for s in all_stations if search.upper() in s.upper()]
+
+    if not matching:
+        st.warning(f"Aucune station trouvee pour '{search}'")
+        return
+
+    # Laisse l'utilisateur choisir parmi les résultats
+    station_name = st.selectbox("Choisir une station", matching)
 
     with st.spinner("Chargement historique..."):
         df_history = get_station_history(station_name, hours)
@@ -301,23 +312,48 @@ def render_history():
         return
 
     import plotly.express as px
-
     fig = px.line(
         df_history,
         x="run_at",
         y=["numbikesavailable", "ebike", "mechanical"],
-        labels={
-            "run_at": "Heure",
-            "value": "Nombre",
-            "variable": "Type",
-        },
+        labels={"run_at": "Heure", "value": "Nombre", "variable": "Type"},
         color_discrete_map={
             "numbikesavailable": "#1D9E75",
-            "ebike":             "#185FA5",
-            "mechanical":        "#EF9F27",
+            "ebike": "#185FA5",
+            "mechanical": "#EF9F27",
         },
     )
     fig.update_layout(height=350)
     st.plotly_chart(fig, use_container_width=True)
+
+    st.divider()
+
+    def render_snapshot_button(source: str):
+    st.subheader("Capturer un snapshot")
+
+    postgres_url = os.environ.get("POSTGRES_URL", "")
+    aws_key = os.environ.get("AWS_ACCESS_KEY_ID", "")
+    aws_active = bool(postgres_url and aws_key)
+
+    if aws_active:
+        st.info("Aurora active — le snapshot sera sauvegarde dans Aurora et S3.")
+        if st.button("Lancer le pipeline AWS", type="primary"):
+            with st.spinner("Pipeline en cours..."):
+                success, message = capture_snapshot_aws()
+            if success:
+                st.success(message)
+                st.cache_data.clear()
+            else:
+                st.error(message)
+    else:
+        st.info("Aurora inactive — le snapshot sera sauvegarde localement.")
+        if st.button("Capturer snapshot local", type="primary"):
+            with st.spinner("Capture en cours..."):
+                success, message = capture_snapshot_local()
+            if success:
+                st.success(message)
+                st.cache_data.clear()
+            else:
+                st.error(message)
 
     st.divider()
