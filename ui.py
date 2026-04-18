@@ -264,13 +264,10 @@ def render_last_update():
     paris_tz = pytz.timezone(PARIS_TIMEZONE)
     now = datetime.now(paris_tz).strftime("%Y-%m-%d %H:%M")
     st.caption(f"Dernière mise à jour : {now}")
-def render_history():
+def render_history(df_filtered=None):
     st.subheader("Historique d'une station")
 
     postgres_url = os.environ.get("POSTGRES_URL", "")
-    if not postgres_url:
-        st.info("Connectez AWS (POSTGRES_URL) pour voir l'historique.")
-        return
 
     col1, col2 = st.columns([3, 1])
 
@@ -292,23 +289,28 @@ def render_history():
     if not search:
         return
 
-    # Cherche les stations qui matchent
-    from history import get_available_stations, get_station_history
-    all_stations = get_available_stations(hours)
-    matching = [s for s in all_stations if search.upper() in s.upper()]
+    # Cherche dans le dataframe courant (API temps reel ou S3)
+    if df_filtered is not None and not df_filtered.empty:
+        matching = df_filtered[
+            df_filtered["name"].str.contains(search.upper(), na=False)
+        ]["name"].unique().tolist()
+    else:
+        from history import get_available_stations
+        all_stations = get_available_stations(hours)
+        matching = [s for s in all_stations if search.upper() in s.upper()]
 
     if not matching:
         st.warning(f"Aucune station trouvee pour '{search}'")
         return
 
-    # Laisse l'utilisateur choisir parmi les résultats
-    station_name = st.selectbox("Choisir une station", matching)
+    station_name = st.selectbox("Choisir une station", sorted(matching))
 
     with st.spinner("Chargement historique..."):
+        from history import get_station_history
         df_history = get_station_history(station_name, hours)
 
     if df_history.empty:
-        st.warning("Aucune donnee historique. AWS doit etre actif.")
+        st.info("Aucune donnee historique disponible. Capturez des snapshots pour alimenter l'historique.")
         return
 
     import plotly.express as px
@@ -327,6 +329,7 @@ def render_history():
     st.plotly_chart(fig, use_container_width=True)
 
     st.divider()
+    
 def render_snapshot_button(source: str):
     st.subheader("Capturer un snapshot")
 
