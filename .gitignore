@@ -1,4 +1,3 @@
-
 airflow/logs/
 airflow/__pycache__/
 dags/__pycache__/
@@ -7,10 +6,20 @@ venv/
 __pycache__/
 *.pyc
 *.csv
+
 infrastructure/build/
 infrastructure/*.tfvars
 infrastructure/.terraform/
 infrastructure/.terraform.lock.hcl
 infrastructure/tfplan
-.env
+infrastructure/*.tfstate
+infrastructure/*.tfstate.*
+infrastructure/crash.log
+infrastructure/override.tf
+infrastructure/override.tf.json
+infrastructure/*_override.tf
+infrastructure/*_override.tf.json
+
 data/
+.env
+.env.*
