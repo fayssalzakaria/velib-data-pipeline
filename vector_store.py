@@ -103,13 +103,10 @@ def _collection_count(client) -> int:
 
 
 def build_chroma_index(df: pd.DataFrame = None):
-    """
-    Construit ou charge l'index Qdrant.
-    Retourne (client, nb_documents)
-    """
     try:
         from sentence_transformers import SentenceTransformer
         from qdrant_client.models import Distance, VectorParams, PointStruct
+        import hashlib
 
         client = _get_qdrant_client()
         if client is None:
@@ -121,21 +118,20 @@ def build_chroma_index(df: pd.DataFrame = None):
         if df.empty:
             return None, 0
 
-        # Crée la collection si elle n'existe pas
+        # Si collection existe deja avec des points — retourne sans re-indexer
+        if _collection_exists(client):
+            existing = _collection_count(client)
+            if existing > 0:
+                return client, existing
+
+        # Crée la collection
         if not _collection_exists(client):
             client.create_collection(
                 collection_name=COLLECTION_NAME,
-                vectors_config=VectorParams(
-                    size=384,
-                    distance=Distance.COSINE,
-                ),
+                vectors_config=VectorParams(size=384, distance=Distance.COSINE),
             )
 
-        existing_count = _collection_count(client)
-
-        # Encode et indexe les documents
         model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-
         texts = []
         payloads = []
         for _, row in df.iterrows():
@@ -151,20 +147,19 @@ def build_chroma_index(df: pd.DataFrame = None):
                 })
 
         if not texts:
-            return client, existing_count
+            return client, 0
 
         embeddings = model.encode(texts, show_progress_bar=False)
 
         points = [
             PointStruct(
-                
                 id=hashlib.md5(
-                    f"{payload.get('snapshot_id', '')}{payload.get('station', '')}".encode()
-                ).hexdigest(),  
+                    f"{p.get('snapshot_id','')}{p.get('station','')}".encode()
+                ).hexdigest(),
                 vector=embedding.tolist(),
-                payload={**payload, "text": text},
+                payload={**p, "text": text},
             )
-            for text, embedding, payload in zip(texts, embeddings, payloads)
+            for text, embedding, p in zip(texts, embeddings, payloads)
         ]
 
         batch_size = 100
@@ -174,8 +169,7 @@ def build_chroma_index(df: pd.DataFrame = None):
                 points=points[i:i+batch_size],
             )
 
-        total = _collection_count(client)
-        return client, total
+        return client, _collection_count(client)
 
     except Exception as e:
         return None, 0
