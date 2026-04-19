@@ -337,11 +337,12 @@ def render_snapshot_button(source: str):
     aws_key = os.environ.get("AWS_ACCESS_KEY_ID", "")
     pipeline_lambda = os.environ.get("PIPELINE_LAMBDA", "")
 
-    # AWS actif seulement si les 3 variables sont configurees
+    # AWS actif si credentials S3 disponibles (Aurora optionnelle)
+    s3_active = bool(aws_key and os.environ.get("S3_BUCKET", ""))
     aws_active = bool(postgres_url and aws_key and pipeline_lambda)
 
     if aws_active:
-        st.info("Aurora active — le snapshot sera sauvegarde dans Aurora et S3.")
+        st.info("Aurora active — snapshot dans Aurora et S3.")
         if st.button("Lancer le pipeline AWS", type="primary"):
             with st.spinner("Pipeline en cours..."):
                 success, message = capture_snapshot_aws()
@@ -350,9 +351,9 @@ def render_snapshot_button(source: str):
                 st.cache_data.clear()
             else:
                 st.error(message)
-    else:
-        st.info("Aurora inactive — le snapshot sera sauvegarde localement.")
-        if st.button("Capturer snapshot local", type="primary"):
+    elif s3_active:
+        st.info("Snapshot sauvegarde dans S3.")
+        if st.button("Capturer snapshot S3", type="primary"):
             with st.spinner("Capture en cours..."):
                 success, message = capture_snapshot_local()
             if success:
@@ -360,7 +361,15 @@ def render_snapshot_button(source: str):
                 st.cache_data.clear()
             else:
                 st.error(message)
-
+    else:
+        st.warning("AWS non configure — snapshots non persistants.")
+        if st.button("Capturer snapshot local", type="primary"):
+            with st.spinner("Capture en cours..."):
+                success, message = capture_snapshot_local()
+            if success:
+                st.success(message)
+            else:
+                st.error(message)
     st.divider()
 
 def render_rag_chatbot(df_filtered=None):
@@ -524,10 +533,11 @@ def render_snapshot_manager():
                     s3.delete_object(Bucket=bucket, Key=key)
                 st.sidebar.success(f"{len(to_delete)} snapshots supprimes")
                 st.cache_data.clear()
-                if "rag_engine" in st.session_state:
-                    del st.session_state["rag_engine"]
-                if "chroma_collection" in st.session_state:
-                    del st.session_state["chroma_collection"]
+                for key in ["rag_engine", "rag_docs", "chroma_collection",
+                            "qdrant_client", "qdrant_docs"]:
+                    if key in st.session_state:
+                        del st.session_state[key]
+                st.rerun()
 
         elif action == "Tout supprimer":
             if st.sidebar.button("Confirmer suppression totale", type="secondary"):
@@ -535,10 +545,11 @@ def render_snapshot_manager():
                     s3.delete_object(Bucket=bucket, Key=key)
                 st.sidebar.success("Tous les snapshots supprimes")
                 st.cache_data.clear()
-                if "rag_engine" in st.session_state:
-                    del st.session_state["rag_engine"]
-                if "chroma_collection" in st.session_state:
-                    del st.session_state["chroma_collection"]
+                for key in ["rag_engine", "rag_docs", "chroma_collection",
+                            "qdrant_client", "qdrant_docs"]:
+                    if key in st.session_state:
+                        del st.session_state[key]
+                st.rerun()
 
     except Exception as e:
         st.sidebar.error(f"Erreur : {e}")
