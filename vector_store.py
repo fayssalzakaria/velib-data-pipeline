@@ -7,6 +7,7 @@ import os
 import uuid
 import pandas as pd
 import pytz
+import hashlib
 
 PARIS_TZ = pytz.timezone("Europe/Paris")
 S3_BUCKET = os.environ.get("S3_BUCKET", "velib-pipeline-fz-prod-data")
@@ -156,7 +157,7 @@ def build_chroma_index(df: pd.DataFrame = None):
 
         points = [
             PointStruct(
-                import hashlib
+                
                 id=hashlib.md5(
                     f"{payload.get('snapshot_id', '')}{payload.get('station', '')}".encode()
                 ).hexdigest(),  
