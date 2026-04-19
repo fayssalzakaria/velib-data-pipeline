@@ -473,7 +473,7 @@ def render_rag_chatbot(df_filtered=None):
 
     st.divider()
 
-ddef render_semantic_search():
+def render_semantic_search():
     st.subheader("Recherche semantique")
     st.caption("Posez une question sur les patterns historiques")
 
