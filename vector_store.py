@@ -117,29 +117,33 @@ def build_chroma_index(df: pd.DataFrame = None):
         if df.empty:
             return None, 0
 
-        # Si collection existe deja avec des points — retourne sans re-indexer
+        # Si la collection existe deja avec des points, on la reutilise
         if _collection_exists(client):
             existing = _collection_count(client)
             if existing > 0:
                 return client, existing
 
-            # Collection existe mais vide — supprime et recrée
+            # Si elle existe mais est vide, on la supprime
             try:
                 client.delete_collection(COLLECTION_NAME)
             except Exception:
                 pass
 
-        # Crée la collection si elle n'existe pas
+        # Cree la collection si elle n'existe pas
         if not _collection_exists(client):
             client.create_collection(
                 collection_name=COLLECTION_NAME,
-                vectors_config=VectorParams(size=384, distance=Distance.COSINE),
+                vectors_config=VectorParams(
+                    size=384,
+                    distance=Distance.COSINE,
+                ),
             )
 
         model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
         texts = []
         payloads = []
+
         for _, row in df.iterrows():
             text = _row_to_text(row)
             if text:
@@ -177,7 +181,7 @@ def build_chroma_index(df: pd.DataFrame = None):
 
         return client, _collection_count(client)
 
-    except Exception:
+    except Exception as e:
         return None, 0
 
 
