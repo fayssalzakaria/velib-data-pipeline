@@ -119,10 +119,15 @@ def build_chroma_index(df: pd.DataFrame = None):
             return None, 0
 
         # Si collection existe deja avec des points — retourne sans re-indexer
-        if _collection_exists(client):
-            existing = _collection_count(client)
-            if existing > 0:
-                return client, existing
+    if _collection_exists(client):
+        existing = _collection_count(client)
+        if existing > 0:
+            return client, existing
+        # Collection existe mais vide — supprime et recrée
+        try:
+            client.delete_collection(COLLECTION_NAME)
+        except Exception:
+            pass
 
         # Crée la collection
         if not _collection_exists(client):

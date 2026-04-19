@@ -450,25 +450,22 @@ def render_rag_chatbot(df_filtered=None):
     if "rag_messages" not in st.session_state:
         st.session_state.rag_messages = []
 
-    for msg in st.session_state.rag_messages:
-        with st.chat_message(msg["role"]):
-            st.write(msg["content"])
+ 
+    question = st.chat_input("Ex: Bastille est-elle souvent vide le matin ?")
 
-    if question := st.chat_input(
-        "Ex: Bastille est-elle souvent vide le matin ?"
-    ):
-        st.session_state.rag_messages.append(
-            {"role": "user", "content": question}
-        )
-        with st.chat_message("user"):
-            st.write(question)
+    if question:
+        st.session_state.rag_messages.append({"role": "user", "content": question})
 
+    if st.session_state.rag_messages:
+        for msg in st.session_state.rag_messages:
+            with st.chat_message(msg["role"]):
+                st.write(msg["content"])
+
+    if question:
         with st.chat_message("assistant"):
             with st.spinner("Recherche dans l'historique..."):
                 from rag import ask_rag
-                response = ask_rag(
-                    question, st.session_state.rag_engine
-                )
+                response = ask_rag(question, st.session_state.rag_engine)
             st.write(response)
             st.session_state.rag_messages.append(
                 {"role": "assistant", "content": response}
