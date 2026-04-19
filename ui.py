@@ -235,9 +235,9 @@ def render_chatbot(df_filtered):
 
 
 def render_downloads(df_filtered):
-    st.subheader("Téléchargements")
+    st.subheader("Telechargements")
 
-    col_dl1, col_dl2 = st.columns(2)
+    col_dl1, col_dl2, col_dl3 = st.columns(3)
 
     with col_dl1:
         if API_ENDPOINT:
@@ -247,12 +247,25 @@ def render_downloads(df_filtered):
                 use_container_width=True,
             )
         else:
-            st.info("API_ENDPOINT non configuré")
+            st.info("API AWS non configure")
 
     with col_dl2:
+        if st.button("Generer rapport PDF", use_container_width=True):
+            with st.spinner("Generation du rapport..."):
+                from report_generator import generate_pdf_report
+                pdf_bytes = generate_pdf_report(df_filtered)
+            st.download_button(
+                "Telecharger le PDF",
+                data=pdf_bytes,
+                file_name=f"velib_rapport_{datetime.now(pytz.timezone('Europe/Paris')).strftime('%Y%m%d_%H%M')}.pdf",
+                mime="application/pdf",
+                use_container_width=True,
+            )
+
+    with col_dl3:
         csv_bytes = df_filtered.to_csv(index=False, sep=";").encode("utf-8")
         st.download_button(
-            "Télécharger CSV",
+            "Telecharger CSV",
             data=csv_bytes,
             file_name="velib_latest.csv",
             mime="text/csv",

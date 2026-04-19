@@ -12,3 +12,4 @@ llama-index-llms-groq
 llama-index-embeddings-huggingface
 sentence-transformers
 qdrant-client
+reportlab
