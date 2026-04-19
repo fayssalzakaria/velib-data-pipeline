@@ -364,6 +364,7 @@ def render_snapshot_button(source: str):
                 st.cache_data.clear()
                 from snapshot import refresh_ai_indexes
                 refresh_ai_indexes()
+                st.rerun()
                 st.info("Index RAG et Qdrant mis a jour.")
             else:
                 st.error(message)
@@ -378,6 +379,7 @@ def render_snapshot_button(source: str):
                 st.cache_data.clear()
                 from snapshot import refresh_ai_indexes
                 refresh_ai_indexes()
+                st.rerun()
                 st.info("Index RAG et Qdrant mis a jour.")
             else:
                 st.error(message)
@@ -391,6 +393,7 @@ def render_snapshot_button(source: str):
                 st.success(message)
                 from snapshot import refresh_ai_indexes
                 refresh_ai_indexes()
+                st.rerun()
                 st.info("Index RAG et Qdrant mis a jour.")
             else:
                 st.error(message)
