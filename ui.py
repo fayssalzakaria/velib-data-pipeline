@@ -479,3 +479,71 @@ def render_semantic_search():
 
     st.write(response)
     st.divider()
+
+def render_snapshot_manager():
+    st.sidebar.divider()
+    st.sidebar.subheader("Gestion snapshots")
+
+    s3_key = os.environ.get("AWS_ACCESS_KEY_ID", "")
+    bucket = os.environ.get("S3_BUCKET", "")
+
+    if not s3_key or not bucket:
+        st.sidebar.info("AWS non configure.")
+        return
+
+    try:
+        import boto3
+        s3 = boto3.client(
+            "s3",
+            aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
+            aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
+            region_name=os.environ.get("AWS_REGION", "eu-north-1"),
+        )
+        paginator = s3.get_paginator("list_objects_v2")
+        keys = []
+        for page in paginator.paginate(Bucket=bucket, Prefix="velib/history/"):
+            for obj in page.get("Contents", []):
+                keys.append(obj["Key"])
+
+        st.sidebar.info(f"{len(keys)} snapshots en S3")
+
+        if not keys:
+            return
+
+        action = st.sidebar.selectbox(
+            "Action",
+            ["Choisir", "Supprimer les plus anciens", "Tout supprimer"],
+            key="snapshot_action",
+        )
+
+        if action == "Supprimer les plus anciens":
+            n = st.sidebar.number_input(
+                "Garder les N derniers",
+                min_value=1,
+                max_value=len(keys),
+                value=min(24, len(keys)),
+            )
+            if st.sidebar.button("Supprimer", type="secondary"):
+                to_delete = sorted(keys)[:-n]
+                for key in to_delete:
+                    s3.delete_object(Bucket=bucket, Key=key)
+                st.sidebar.success(f"{len(to_delete)} snapshots supprimes")
+                st.cache_data.clear()
+                if "rag_engine" in st.session_state:
+                    del st.session_state["rag_engine"]
+                if "chroma_collection" in st.session_state:
+                    del st.session_state["chroma_collection"]
+
+        elif action == "Tout supprimer":
+            if st.sidebar.button("Confirmer suppression totale", type="secondary"):
+                for key in keys:
+                    s3.delete_object(Bucket=bucket, Key=key)
+                st.sidebar.success("Tous les snapshots supprimes")
+                st.cache_data.clear()
+                if "rag_engine" in st.session_state:
+                    del st.session_state["rag_engine"]
+                if "chroma_collection" in st.session_state:
+                    del st.session_state["chroma_collection"]
+
+    except Exception as e:
+        st.sidebar.error(f"Erreur : {e}")

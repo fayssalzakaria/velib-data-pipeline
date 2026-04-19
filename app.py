@@ -18,6 +18,7 @@ from ui import (
     render_snapshot_button,
     render_rag_chatbot,
     render_semantic_search,
+    render_snapshot_manager,
 )
 
 st.set_page_config(
@@ -52,7 +53,7 @@ if df is None or df.empty:
 df_filtered = apply_filters(df, filtre_type, filtre_etat, filtre_min_velos)
 
 sidebar_count.info(f"{len(df_filtered)} stations après filtres")
-
+render_snapshot_manager()
 render_metrics(df_filtered)
 render_snapshot_button(source)
 render_search(df_filtered)
