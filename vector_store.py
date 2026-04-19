@@ -106,7 +106,6 @@ def build_chroma_index(df: pd.DataFrame = None):
     try:
         from sentence_transformers import SentenceTransformer
         from qdrant_client.models import Distance, VectorParams, PointStruct
-        import hashlib
 
         client = _get_qdrant_client()
         if client is None:
@@ -119,17 +118,18 @@ def build_chroma_index(df: pd.DataFrame = None):
             return None, 0
 
         # Si collection existe deja avec des points — retourne sans re-indexer
-    if _collection_exists(client):
-        existing = _collection_count(client)
-        if existing > 0:
-            return client, existing
-        # Collection existe mais vide — supprime et recrée
-        try:
-            client.delete_collection(COLLECTION_NAME)
-        except Exception:
-            pass
+        if _collection_exists(client):
+            existing = _collection_count(client)
+            if existing > 0:
+                return client, existing
 
-        # Crée la collection
+            # Collection existe mais vide — supprime et recrée
+            try:
+                client.delete_collection(COLLECTION_NAME)
+            except Exception:
+                pass
+
+        # Crée la collection si elle n'existe pas
         if not _collection_exists(client):
             client.create_collection(
                 collection_name=COLLECTION_NAME,
@@ -137,6 +137,7 @@ def build_chroma_index(df: pd.DataFrame = None):
             )
 
         model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+
         texts = []
         payloads = []
         for _, row in df.iterrows():
@@ -159,7 +160,7 @@ def build_chroma_index(df: pd.DataFrame = None):
         points = [
             PointStruct(
                 id=hashlib.md5(
-                    f"{p.get('snapshot_id','')}{p.get('station','')}".encode()
+                    f"{p.get('snapshot_id', '')}{p.get('station', '')}".encode()
                 ).hexdigest(),
                 vector=embedding.tolist(),
                 payload={**p, "text": text},
@@ -171,12 +172,12 @@ def build_chroma_index(df: pd.DataFrame = None):
         for i in range(0, len(points), batch_size):
             client.upsert(
                 collection_name=COLLECTION_NAME,
-                points=points[i:i+batch_size],
+                points=points[i:i + batch_size],
             )
 
         return client, _collection_count(client)
 
-    except Exception as e:
+    except Exception:
         return None, 0
 
 
