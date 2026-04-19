@@ -362,8 +362,12 @@ def render_snapshot_button(source: str):
             if success:
                 st.success(message)
                 st.cache_data.clear()
+                from snapshot import refresh_ai_indexes
+                refresh_ai_indexes()
+                st.info("Index RAG et Qdrant mis a jour.")
             else:
                 st.error(message)
+
     elif s3_active:
         st.info("Snapshot sauvegarde dans S3.")
         if st.button("Capturer snapshot S3", type="primary"):
@@ -372,8 +376,12 @@ def render_snapshot_button(source: str):
             if success:
                 st.success(message)
                 st.cache_data.clear()
+                from snapshot import refresh_ai_indexes
+                refresh_ai_indexes()
+                st.info("Index RAG et Qdrant mis a jour.")
             else:
                 st.error(message)
+
     else:
         st.warning("AWS non configure — snapshots non persistants.")
         if st.button("Capturer snapshot local", type="primary"):
@@ -381,8 +389,12 @@ def render_snapshot_button(source: str):
                 success, message = capture_snapshot_local()
             if success:
                 st.success(message)
+                from snapshot import refresh_ai_indexes
+                refresh_ai_indexes()
+                st.info("Index RAG et Qdrant mis a jour.")
             else:
                 st.error(message)
+
     st.divider()
 
 def render_rag_chatbot(df_filtered=None):

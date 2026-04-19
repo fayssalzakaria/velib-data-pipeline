@@ -131,3 +131,32 @@ def capture_snapshot_aws() -> tuple[bool, str]:
 
     except Exception as e:
         return False, f"Erreur : {e}"
+
+def refresh_ai_indexes(df: pd.DataFrame = None):
+    """
+    Met à jour RAG LlamaIndex et Qdrant après un nouveau snapshot.
+    Appelé automatiquement après chaque capture.
+    """
+    import streamlit as st
+
+    # Reset RAG LlamaIndex
+    for key in ["rag_engine", "rag_docs"]:
+        if key in st.session_state:
+            del st.session_state[key]
+
+    # Reset Qdrant — force re-indexation avec nouvelles données
+    for key in ["qdrant_client", "qdrant_docs"]:
+        if key in st.session_state:
+            del st.session_state[key]
+
+    # Vide la collection Qdrant pour forcer re-indexation complète
+    try:
+        from vector_store import _get_qdrant_client, COLLECTION_NAME
+        client = _get_qdrant_client()
+        if client:
+            try:
+                client.delete_collection(COLLECTION_NAME)
+            except Exception:
+                pass
+    except Exception:
+        pass
