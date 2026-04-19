@@ -1,18 +1,18 @@
 """
-vector_store.py — ChromaDB vector store pour les données Vélib'
-Commit 2 Phase ML : feat(ml): ChromaDB embeddings + semantic search
+vector_store.py — Qdrant Cloud vector store pour les données Vélib'
+Persistent, gratuit, compatible Python 3.14
 """
 import io
 import os
-import json
-import hashlib
+import uuid
 import pandas as pd
 import pytz
-from datetime import datetime
 
 PARIS_TZ = pytz.timezone("Europe/Paris")
 S3_BUCKET = os.environ.get("S3_BUCKET", "velib-pipeline-fz-prod-data")
-CHROMA_S3_KEY = "velib/vectorstore/chroma_data.json"
+QDRANT_URL = os.environ.get("QDRANT_URL", "")
+QDRANT_API_KEY = os.environ.get("QDRANT_API_KEY", "")
+COLLECTION_NAME = "velib_snapshots"
 
 
 def _get_s3():
@@ -29,7 +29,6 @@ def _get_s3():
 
 
 def _load_history_from_s3() -> pd.DataFrame:
-    """Charge tous les snapshots depuis S3."""
     s3 = _get_s3()
     if s3 is None:
         return pd.DataFrame()
@@ -49,7 +48,6 @@ def _load_history_from_s3() -> pd.DataFrame:
 
 
 def _row_to_text(row) -> str:
-    """Convertit une ligne en texte descriptif pour l'embedding."""
     try:
         run_at = pd.to_datetime(row["run_at"], utc=True)
         run_at_paris = run_at.tz_convert(PARIS_TZ)
@@ -78,14 +76,43 @@ def _row_to_text(row) -> str:
         return ""
 
 
+def _get_qdrant_client():
+    if not QDRANT_URL or not QDRANT_API_KEY:
+        return None
+    try:
+        from qdrant_client import QdrantClient
+        return QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
+    except Exception:
+        return None
+
+
+def _collection_exists(client) -> bool:
+    try:
+        collections = client.get_collections().collections
+        return any(c.name == COLLECTION_NAME for c in collections)
+    except Exception:
+        return False
+
+
+def _collection_count(client) -> int:
+    try:
+        return client.count(COLLECTION_NAME).count
+    except Exception:
+        return 0
+
+
 def build_chroma_index(df: pd.DataFrame = None):
     """
-    Construit un index ChromaDB en mémoire.
-    Retourne la collection ChromaDB.
+    Construit ou charge l'index Qdrant.
+    Retourne (client, nb_documents)
     """
     try:
-        import chromadb
         from sentence_transformers import SentenceTransformer
+        from qdrant_client.models import Distance, VectorParams, PointStruct
+
+        client = _get_qdrant_client()
+        if client is None:
+            return None, 0
 
         if df is None or df.empty:
             df = _load_history_from_s3()
@@ -93,88 +120,90 @@ def build_chroma_index(df: pd.DataFrame = None):
         if df.empty:
             return None, 0
 
-        model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-        client = chromadb.Client()
-
-        try:
-            client.delete_collection("velib")
-        except Exception:
-            pass
-
-        collection = client.create_collection("velib")
-
-        texts = []
-        ids = []
-        metadatas = []
-
-        for i, row in df.iterrows():
-            text = _row_to_text(row)
-            if not text:
-                continue
-            doc_id = hashlib.md5(
-                f"{row.get('snapshot_id','')}{row.get('name','')}".encode()
-            ).hexdigest()
-            texts.append(text)
-            ids.append(doc_id)
-            metadatas.append({
-                "station": str(row.get("name", "")),
-                "hour": int(row.get("hour", 0)),
-                "weekday": str(row.get("weekday", "")),
-                "is_empty": bool(row.get("is_empty", False)),
-                "is_full": bool(row.get("is_full", False)),
-                "numbikesavailable": int(row.get("numbikesavailable", 0)),
-            })
-
-        if not texts:
-            return None, 0
-
-        embeddings = model.encode(texts).tolist()
-
-        batch_size = 500
-        for i in range(0, len(texts), batch_size):
-            collection.add(
-                documents=texts[i:i+batch_size],
-                embeddings=embeddings[i:i+batch_size],
-                ids=ids[i:i+batch_size],
-                metadatas=metadatas[i:i+batch_size],
+        # Crée la collection si elle n'existe pas
+        if not _collection_exists(client):
+            client.create_collection(
+                collection_name=COLLECTION_NAME,
+                vectors_config=VectorParams(
+                    size=384,
+                    distance=Distance.COSINE,
+                ),
             )
 
-        return collection, len(texts)
+        existing_count = _collection_count(client)
+
+        # Encode et indexe les documents
+        model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+
+        texts = []
+        payloads = []
+        for _, row in df.iterrows():
+            text = _row_to_text(row)
+            if text:
+                texts.append(text)
+                payloads.append({
+                    "station": str(row.get("name", "")),
+                    "hour": int(row.get("hour", 0)),
+                    "weekday": str(row.get("weekday", "")),
+                    "is_empty": bool(row.get("is_empty", False)),
+                    "snapshot_id": str(row.get("snapshot_id", "")),
+                })
+
+        if not texts:
+            return client, existing_count
+
+        embeddings = model.encode(texts, show_progress_bar=False)
+
+        points = [
+            PointStruct(
+                id=str(uuid.uuid4()),
+                vector=embedding.tolist(),
+                payload={**payload, "text": text},
+            )
+            for text, embedding, payload in zip(texts, embeddings, payloads)
+        ]
+
+        batch_size = 100
+        for i in range(0, len(points), batch_size):
+            client.upsert(
+                collection_name=COLLECTION_NAME,
+                points=points[i:i+batch_size],
+            )
+
+        total = _collection_count(client)
+        return client, total
 
     except Exception as e:
         return None, 0
 
 
-def semantic_search(query: str, collection, n_results: int = 5) -> list:
-    """
-    Recherche sémantique dans ChromaDB.
-    Retourne les documents les plus pertinents.
-    """
-    if collection is None:
+def semantic_search(query: str, client, n_results: int = 8) -> list:
+    """Recherche sémantique dans Qdrant."""
+    if client is None:
         return []
     try:
         from sentence_transformers import SentenceTransformer
         model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-        query_embedding = model.encode([query]).tolist()
-        results = collection.query(
-            query_embeddings=query_embedding,
-            n_results=n_results,
+        query_embedding = model.encode([query])[0].tolist()
+
+        results = client.search(
+            collection_name=COLLECTION_NAME,
+            query_vector=query_embedding,
+            limit=n_results,
         )
-        return results.get("documents", [[]])[0]
+        return [r.payload.get("text", "") for r in results]
     except Exception:
         return []
 
 
-def ask_with_chroma(question: str, collection) -> str:
-    """
-    Répond à une question en utilisant ChromaDB + Groq.
-    """
+def ask_with_chroma(question: str, client) -> str:
+    """Répond à une question avec Qdrant + Groq."""
     import requests as req
     groq_key = os.environ.get("GROQ_API_KEY", "")
     if not groq_key:
         return "Cle Groq non configuree."
 
-    docs = semantic_search(question, collection, n_results=8)
+    docs = semantic_search(question, client, n_results=8)
     if not docs:
         return "Aucune donnee pertinente trouvee dans l'historique."
 
@@ -188,7 +217,7 @@ Donnees historiques pertinentes :
 
 Question : {question}
 
-Reponds directement sans introduction. Si les donnees ne permettent pas de repondre precisement, dis-le.
+Reponds directement sans introduction.
 """
     try:
         response = req.post(

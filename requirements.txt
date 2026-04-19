@@ -11,4 +11,4 @@ llama-index
 llama-index-llms-groq
 llama-index-embeddings-huggingface
 sentence-transformers
-chromadb
+qdrant-client
