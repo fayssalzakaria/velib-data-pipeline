@@ -456,10 +456,9 @@ def render_semantic_search():
 
     st.caption(f"Index Qdrant : {st.session_state.qdrant_docs} documents")
 
-    with col2:
-        if st.button("Rafraichir Qdrant"):
-            del st.session_state["qdrant_client"]
-            st.rerun()
+    if st.button("Rafraichir Qdrant"):
+        del st.session_state["qdrant_client"]
+        st.rerun()
 
     query = st.text_input(
         "Recherche",
