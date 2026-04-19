@@ -186,6 +186,7 @@ def build_chroma_index(df: pd.DataFrame = None):
 
 
 def semantic_search(query: str, client, n_results: int = 8) -> list:
+    """Recherche sémantique dans Qdrant."""
     if client is None:
         return []
 
@@ -195,16 +196,20 @@ def semantic_search(query: str, client, n_results: int = 8) -> list:
         model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
         query_embedding = model.encode(query).tolist()
 
-        results = client.search(
+        result = client.query_points(
             collection_name=COLLECTION_NAME,
-            query_vector=query_embedding,
+            query=query_embedding,
             limit=n_results,
             with_payload=True,
         )
 
+        points = getattr(result, "points", None)
+        if points is None:
+            points = result if isinstance(result, list) else []
+
         docs = []
-        for r in results:
-            payload = getattr(r, "payload", {}) or {}
+        for p in points:
+            payload = getattr(p, "payload", {}) or {}
             text = payload.get("text")
             if text:
                 docs.append(text)
@@ -214,15 +219,15 @@ def semantic_search(query: str, client, n_results: int = 8) -> list:
     except Exception as e:
         return [f"DEBUG semantic_search erreur : {e}"]
 
-
 def ask_with_chroma(question: str, client) -> str:
-    """Répond à une question avec Qdrant + Groq."""
     import requests as req
+
     groq_key = os.environ.get("GROQ_API_KEY", "")
     if not groq_key:
         return "Cle Groq non configuree."
 
     docs = semantic_search(question, client, n_results=8)
+
     if not docs:
         return "Aucune donnee pertinente trouvee dans l'historique."
 
