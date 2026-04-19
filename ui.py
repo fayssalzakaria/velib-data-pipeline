@@ -443,23 +443,22 @@ def render_semantic_search():
     st.subheader("Recherche semantique")
     st.caption("Posez une question sur les patterns historiques")
 
-    if "chroma_collection" not in st.session_state:
-        with st.spinner("Construction index ChromaDB..."):
+    if "qdrant_client" not in st.session_state:
+        with st.spinner("Connexion Qdrant Cloud..."):
             from vector_store import build_chroma_index
-            collection, n = build_chroma_index()
-            st.session_state.chroma_collection = collection
-            st.session_state.chroma_docs = n
+            client, n = build_chroma_index()
+            st.session_state.qdrant_client = client
+            st.session_state.qdrant_docs = n
 
-    if st.session_state.chroma_collection is None:
-        st.info("Capturez des snapshots pour activer la recherche semantique.")
+    if st.session_state.qdrant_client is None:
+        st.info("Qdrant non configure ou pas de snapshots disponibles.")
         return
 
-    st.caption(f"Index ChromaDB : {st.session_state.chroma_docs} documents")
+    st.caption(f"Index Qdrant : {st.session_state.qdrant_docs} documents")
 
-    col1, col2 = st.columns([3, 1])
     with col2:
-        if st.button("Rafraichir ChromaDB"):
-            del st.session_state["chroma_collection"]
+        if st.button("Rafraichir Qdrant"):
+            del st.session_state["qdrant_client"]
             st.rerun()
 
     query = st.text_input(
@@ -473,10 +472,7 @@ def render_semantic_search():
 
     with st.spinner("Recherche semantique..."):
         from vector_store import ask_with_chroma
-        response = ask_with_chroma(
-            query, st.session_state.chroma_collection
-        )
-
+        response = ask_with_chroma(query, st.session_state.qdrant_client)
     st.write(response)
     st.divider()
 
