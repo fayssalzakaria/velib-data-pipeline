@@ -473,7 +473,7 @@ def render_rag_chatbot(df_filtered=None):
 
     st.divider()
 
-def render_semantic_search():
+ddef render_semantic_search():
     st.subheader("Recherche semantique")
     st.caption("Posez une question sur les patterns historiques")
 
@@ -494,7 +494,7 @@ def render_semantic_search():
         del st.session_state["qdrant_client"]
         st.rerun()
 
-    # Debug temporaire
+    # Debug 1 : nombre de points
     try:
         from vector_store import _get_qdrant_client, COLLECTION_NAME, _collection_count
         client = _get_qdrant_client()
@@ -504,7 +504,23 @@ def render_semantic_search():
         else:
             st.caption("Debug : client Qdrant None")
     except Exception as e:
-        st.caption(f"Debug erreur : {e}")
+        st.caption(f"Debug erreur count : {e}")
+
+    # Debug 2 : voir un payload réel
+    try:
+        client = st.session_state.qdrant_client
+        sample_points, _ = client.scroll(
+            collection_name=COLLECTION_NAME,
+            limit=1,
+            with_payload=True,
+            with_vectors=False,
+        )
+        if sample_points:
+            st.write("Debug sample payload :", sample_points[0].payload)
+        else:
+            st.caption("Debug : aucun point trouvé dans la collection")
+    except Exception as e:
+        st.caption(f"Debug erreur scroll : {e}")
 
     query = st.text_input(
         "Recherche",
@@ -514,6 +530,32 @@ def render_semantic_search():
 
     if not query:
         return
+
+    # Debug 3 : résultat brut de la recherche vectorielle
+    try:
+        from sentence_transformers import SentenceTransformer
+        from vector_store import COLLECTION_NAME
+
+        model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+        query_embedding = model.encode([query])[0].tolist()
+
+        raw_results = st.session_state.qdrant_client.search(
+            collection_name=COLLECTION_NAME,
+            query_vector=query_embedding,
+            limit=3,
+        )
+
+        debug_results = []
+        for r in raw_results:
+            debug_results.append({
+                "score": getattr(r, "score", None),
+                "payload": getattr(r, "payload", None),
+            })
+
+        st.write("Debug résultats bruts :", debug_results)
+
+    except Exception as e:
+        st.caption(f"Debug erreur recherche brute : {e}")
 
     with st.spinner("Recherche semantique..."):
         from vector_store import ask_with_chroma

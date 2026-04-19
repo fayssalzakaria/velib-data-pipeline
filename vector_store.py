@@ -182,22 +182,33 @@ def build_chroma_index(df: pd.DataFrame = None):
 
 
 def semantic_search(query: str, client, n_results: int = 8) -> list:
-    """Recherche sémantique dans Qdrant."""
     if client is None:
         return []
+
     try:
         from sentence_transformers import SentenceTransformer
+
         model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-        query_embedding = model.encode([query])[0].tolist()
+        query_embedding = model.encode(query).tolist()
 
         results = client.search(
             collection_name=COLLECTION_NAME,
             query_vector=query_embedding,
             limit=n_results,
+            with_payload=True,
         )
-        return [r.payload.get("text", "") for r in results]
-    except Exception:
-        return []
+
+        docs = []
+        for r in results:
+            payload = getattr(r, "payload", {}) or {}
+            text = payload.get("text")
+            if text:
+                docs.append(text)
+
+        return docs
+
+    except Exception as e:
+        return [f"DEBUG semantic_search erreur : {e}"]
 
 
 def ask_with_chroma(question: str, client) -> str:
@@ -210,6 +221,9 @@ def ask_with_chroma(question: str, client) -> str:
     docs = semantic_search(question, client, n_results=8)
     if not docs:
         return "Aucune donnee pertinente trouvee dans l'historique."
+
+    if len(docs) == 1 and docs[0].startswith("DEBUG"):
+        return docs[0]
 
     context = "\n".join(f"- {d}" for d in docs)
 
