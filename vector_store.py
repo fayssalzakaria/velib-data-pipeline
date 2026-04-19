@@ -156,7 +156,10 @@ def build_chroma_index(df: pd.DataFrame = None):
 
         points = [
             PointStruct(
-                id=str(uuid.uuid4()),
+                import hashlib
+                id=hashlib.md5(
+                    f"{payload.get('snapshot_id', '')}{payload.get('station', '')}".encode()
+                ).hexdigest(),  
                 vector=embedding.tolist(),
                 payload={**payload, "text": text},
             )
