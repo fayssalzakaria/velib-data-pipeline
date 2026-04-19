@@ -497,6 +497,18 @@ def render_semantic_search():
         del st.session_state["qdrant_client"]
         st.rerun()
 
+    # Debug temporaire
+    try:
+        from vector_store import _get_qdrant_client, COLLECTION_NAME, _collection_count
+        client = _get_qdrant_client()
+        if client:
+            count = _collection_count(client)
+            st.caption(f"Debug Qdrant : {count} points dans la collection")
+        else:
+            st.caption("Debug : client Qdrant None")
+    except Exception as e:
+        st.caption(f"Debug erreur : {e}")
+
     query = st.text_input(
         "Recherche",
         placeholder="Ex: stations vides le matin, patterns weekend...",
@@ -509,6 +521,7 @@ def render_semantic_search():
     with st.spinner("Recherche semantique..."):
         from vector_store import ask_with_chroma
         response = ask_with_chroma(query, st.session_state.qdrant_client)
+
     st.write(response)
     st.divider()
 
