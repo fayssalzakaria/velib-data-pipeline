@@ -143,14 +143,15 @@ def build_rag_index(df: pd.DataFrame = None):
 
 
 def ask_rag(question: str, query_engine) -> str:
-    """Pose une question au RAG engine."""
     if query_engine is None:
         return "Index RAG non disponible. Capturez des snapshots d'abord."
     try:
         prompt = f"""
 Tu es un expert en mobilite urbaine a Paris specialise dans le reseau Velib.
 Reponds en francais de maniere concise et utile.
-Utilise les donnees disponibles pour repondre precisement.
+Utilise UNIQUEMENT les donnees disponibles dans le contexte pour repondre.
+Si la station demandee n'est pas dans le contexte, dis-le clairement
+et ne propose pas d'autres stations.
 
 Question : {question}
 """

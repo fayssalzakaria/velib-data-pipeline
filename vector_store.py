@@ -196,29 +196,17 @@ def semantic_search(query: str, client, n_results: int = 8) -> list:
         model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
         query_embedding = model.encode(query).tolist()
 
-        result = client.query_points(
+        results = client.query_points(
             collection_name=COLLECTION_NAME,
             query=query_embedding,
             limit=n_results,
             with_payload=True,
         )
 
-        points = getattr(result, "points", None)
-        if points is None:
-            points = result if isinstance(result, list) else []
-
-        docs = []
-        for p in points:
-            payload = getattr(p, "payload", {}) or {}
-            text = payload.get("text")
-            if text:
-                docs.append(text)
-
-        return docs
+        return [r.payload.get("text", "") for r in results.points]
 
     except Exception as e:
         return [f"DEBUG semantic_search erreur : {e}"]
-
 def ask_with_chroma(question: str, client) -> str:
     import requests as req
 
