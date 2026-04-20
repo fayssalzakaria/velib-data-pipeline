@@ -480,8 +480,8 @@ def render_semantic_search():
 
     if "qdrant_client" not in st.session_state:
         with st.spinner("Connexion Qdrant Cloud..."):
-            from vector_store import build_qdrant_index
-            client, n = build_qdrant_index()
+            from vector_store import build_chroma_index
+            client, n = build_chroma_index()
             st.session_state.qdrant_client = client
             st.session_state.qdrant_docs = n
 
