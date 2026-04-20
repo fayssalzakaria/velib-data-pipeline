@@ -480,34 +480,71 @@ def render_semantic_search():
 
     if "qdrant_client" not in st.session_state:
         with st.spinner("Connexion Qdrant Cloud..."):
-            from vector_store import build_chroma_index
-            client, n = build_chroma_index()
+            from vector_store import build_qdrant_index
+            client, n = build_qdrant_index()
             st.session_state.qdrant_client = client
             st.session_state.qdrant_docs = n
 
     if st.session_state.qdrant_client is None:
-        st.info("Qdrant non configure ou pas de snapshots disponibles.")
+        st.info("Qdrant non configuré ou pas de snapshots disponibles.")
         return
 
     st.caption(f"Index Qdrant : {st.session_state.qdrant_docs} documents")
 
-    if st.button("Rafraichir Qdrant"):
+    if st.button("Rafraîchir Qdrant"):
         del st.session_state["qdrant_client"]
+        if "qdrant_docs" in st.session_state:
+            del st.session_state["qdrant_docs"]
         st.rerun()
 
     query = st.text_input(
         "Recherche",
         placeholder="Ex: stations vides le matin, patterns weekend...",
-        key="chroma_search",
+        key="qdrant_search",
     )
 
     if not query:
         return
-    with st.spinner("Recherche semantique..."):
-        from vector_store import ask_with_chroma
-        station_found = extract_station_from_query(query, st.session_state.qdrant_client)
+
+    with st.spinner("Recherche sémantique..."):
+        from vector_store import (
+            ask_with_chroma,
+            _get_qdrant_client,
+            COLLECTION_NAME,
+        )
+
+        station_found = extract_station_from_query(
+            query,
+            st.session_state.qdrant_client,
+        )
         st.caption(f"Station détectée : {station_found}")
-        response = ask_with_chroma(query, st.session_state.qdrant_client)
+
+        # DEBUG TEMPORAIRE : afficher quelques stations présentes dans Qdrant
+        try:
+            client = _get_qdrant_client()
+            points, _ = client.scroll(
+                collection_name=COLLECTION_NAME,
+                limit=10,
+                with_payload=True,
+                with_vectors=False,
+            )
+            stations = [p.payload.get("station", "") for p in points]
+            st.write("Stations dans Qdrant :", stations[:10])
+        except Exception as e:
+            st.warning(f"Impossible de lire les stations Qdrant : {e}")
+
+        # IMPORTANT : passer la station détectée à la recherche
+        if station_found:
+            response = ask_with_chroma(
+                query,
+                st.session_state.qdrant_client,
+                station_filter=station_found,
+            )
+        else:
+            response = ask_with_chroma(
+                query,
+                st.session_state.qdrant_client,
+            )
 
     st.write(response)
     st.divider()
