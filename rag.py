@@ -132,7 +132,7 @@ def build_rag_index(df: pd.DataFrame = None):
 
         index = VectorStoreIndex.from_documents(documents)
         query_engine = index.as_query_engine(
-            similarity_top_k=5,
+            similarity_top_k=10,
             response_mode="compact",
         )
 

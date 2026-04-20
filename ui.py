@@ -9,6 +9,7 @@ import streamlit as st
 from chatbot import ask_groq, build_context
 from config import API_ENDPOINT, PARIS_TIMEZONE, SOURCE_API, SOURCE_S3
 from snapshot import capture_snapshot_aws, capture_snapshot_local
+from vector_store import extract_station_from_query
 
 def render_sidebar():
     st.sidebar.title("Configuration")
@@ -504,6 +505,8 @@ def render_semantic_search():
         return
     with st.spinner("Recherche semantique..."):
         from vector_store import ask_with_chroma
+        station_found = extract_station_from_query(query, st.session_state.qdrant_client)
+        st.caption(f"Station détectée : {station_found}")
         response = ask_with_chroma(query, st.session_state.qdrant_client)
 
     st.write(response)

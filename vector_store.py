@@ -285,10 +285,8 @@ Reponds directement sans introduction.
         return f"Erreur Groq : {e}"
 
 def extract_station_from_query(query: str, client) -> str | None:
-    """Essaie de retrouver une station mentionnée dans la question."""
     if client is None:
         return None
-
     try:
         points, _ = client.scroll(
             collection_name=COLLECTION_NAME,
@@ -305,13 +303,24 @@ def extract_station_from_query(query: str, client) -> str | None:
                 stations.add(station)
 
         q = query.upper().strip()
+        q_words = set(q.split())
 
-        # Match exact ou inclusion
+        best_match = None
+        best_score = 0
+
         for station in stations:
-            if station in q or q in station:
-                return station
+            station_words = set(station.split())
+            # Nombre de mots en commun
+            common = len(q_words & station_words)
+            # Boost si la station contient une sous-chaine de la query
+            if any(word in station for word in q_words if len(word) > 3):
+                common += 2
+            if common > best_score:
+                best_score = common
+                best_match = station
 
-        return None
+        # Seuil minimum pour eviter les faux positifs
+        return best_match if best_score >= 2 else None
 
     except Exception:
         return None
