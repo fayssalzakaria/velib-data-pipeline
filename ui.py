@@ -534,17 +534,10 @@ def render_semantic_search():
             st.warning(f"Impossible de lire les stations Qdrant : {e}")
 
         # IMPORTANT : passer la station détectée à la recherche
-        if station_found:
-            response = ask_with_chroma(
-                query,
-                st.session_state.qdrant_client,
-                station_filter=station_found,
-            )
-        else:
-            response = ask_with_chroma(
-                query,
-                st.session_state.qdrant_client,
-            )
+        response = ask_with_chroma(
+            query,
+            st.session_state.qdrant_client,
+        )
 
     st.write(response)
     st.divider()
