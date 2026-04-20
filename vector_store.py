@@ -105,8 +105,12 @@ def _collection_count(client) -> int:
 def build_chroma_index(df: pd.DataFrame = None):
     try:
         from sentence_transformers import SentenceTransformer
-        from qdrant_client.models import Distance, VectorParams, PointStruct,PayloadSchemaType
-
+        from qdrant_client.models import (
+            Distance,
+            VectorParams,
+            PointStruct,
+            PayloadSchemaType,
+        )
 
         client = _get_qdrant_client()
         if client is None:
@@ -118,34 +122,30 @@ def build_chroma_index(df: pd.DataFrame = None):
         if df.empty:
             return None, 0
 
-        # Si la collection existe deja avec des points, on la reutilise
+        # Si la collection existe deja, on la supprime pour la recreer proprement
+        # avec l'index payload sur "station"
         if _collection_exists(client):
-            existing = _collection_count(client)
-            if existing > 0:
-                return client, existing
-
-            # Si elle existe mais est vide, on la supprime
             try:
                 client.delete_collection(COLLECTION_NAME)
             except Exception:
                 pass
 
-        # Cree la collection si elle n'existe pas
-        if not _collection_exists(client):
-            client.create_collection(
-                collection_name=COLLECTION_NAME,
-                vectors_config=VectorParams(
-                    size=384,
-                    distance=Distance.COSINE,
-                ),
-            )
-        
+        # Creation propre de la collection
+        client.create_collection(
+            collection_name=COLLECTION_NAME,
+            vectors_config=VectorParams(
+                size=384,
+                distance=Distance.COSINE,
+            ),
+        )
 
+        # Index de payload pour permettre le filtrage sur le nom de station
         client.create_payload_index(
             collection_name=COLLECTION_NAME,
             field_name="station",
             field_schema=PayloadSchemaType.KEYWORD,
         )
+
         model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
         texts = []
