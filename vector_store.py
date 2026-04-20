@@ -105,7 +105,8 @@ def _collection_count(client) -> int:
 def build_chroma_index(df: pd.DataFrame = None):
     try:
         from sentence_transformers import SentenceTransformer
-        from qdrant_client.models import Distance, VectorParams, PointStruct
+        from qdrant_client.models import Distance, VectorParams, PointStruct,PayloadSchemaType
+
 
         client = _get_qdrant_client()
         if client is None:
@@ -138,7 +139,13 @@ def build_chroma_index(df: pd.DataFrame = None):
                     distance=Distance.COSINE,
                 ),
             )
+        
 
+        client.create_payload_index(
+            collection_name=COLLECTION_NAME,
+            field_name="station",
+            field_schema=PayloadSchemaType.KEYWORD,
+        )
         model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
         texts = []
