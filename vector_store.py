@@ -196,17 +196,40 @@ def semantic_search(query: str, client, n_results: int = 8) -> list:
         model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
         query_embedding = model.encode(query).tolist()
 
-        results = client.query_points(
-            collection_name=COLLECTION_NAME,
-            query=query_embedding,
-            limit=n_results,
-            with_payload=True,
-        )
+        station = extract_station_from_query(query, client)
 
-        return [r.payload.get("text", "") for r in results.points]
+        if station:
+            results = client.query_points(
+                collection_name=COLLECTION_NAME,
+                query=query_embedding,
+                limit=n_results,
+                with_payload=True,
+                query_filter={
+                    "must": [
+                        {
+                            "key": "station",
+                            "match": {"value": station},
+                        }
+                    ]
+                },
+            )
+        else:
+            results = client.query_points(
+                collection_name=COLLECTION_NAME,
+                query=query_embedding,
+                limit=n_results,
+                with_payload=True,
+            )
+
+        return [
+            r.payload.get("text", "")
+            for r in results.points
+            if getattr(r, "payload", None)
+        ]
 
     except Exception as e:
         return [f"DEBUG semantic_search erreur : {e}"]
+
 def ask_with_chroma(question: str, client) -> str:
     import requests as req
 
@@ -253,3 +276,35 @@ Reponds directement sans introduction.
         return response.json()["choices"][0]["message"]["content"]
     except Exception as e:
         return f"Erreur Groq : {e}"
+
+def extract_station_from_query(query: str, client) -> str | None:
+    """Essaie de retrouver une station mentionnée dans la question."""
+    if client is None:
+        return None
+
+    try:
+        points, _ = client.scroll(
+            collection_name=COLLECTION_NAME,
+            limit=5000,
+            with_payload=True,
+            with_vectors=False,
+        )
+
+        stations = set()
+        for p in points:
+            payload = getattr(p, "payload", {}) or {}
+            station = payload.get("station")
+            if station:
+                stations.add(station)
+
+        q = query.upper().strip()
+
+        # Match exact ou inclusion
+        for station in stations:
+            if station in q or q in station:
+                return station
+
+        return None
+
+    except Exception:
+        return None
