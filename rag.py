@@ -159,3 +159,46 @@ Question : {question}
         return str(response)
     except Exception as e:
         return f"Erreur RAG : {e}"
+
+def ask_rag_with_qdrant_context(question: str, query_engine, qdrant_docs: list) -> str:
+    """
+    Si Qdrant a trouvé des docs pertinents, les injecte directement dans Groq.
+    Sinon fallback sur LlamaIndex.
+    """
+    import requests as req
+
+    groq_key = os.environ.get("GROQ_API_KEY", "")
+
+    if qdrant_docs:
+        context = "\n".join(f"- {d}" for d in qdrant_docs)
+        prompt = f"""Tu es un expert en mobilite urbaine a Paris specialise dans le reseau Velib.
+Reponds en francais de maniere concise et precise en te basant UNIQUEMENT sur les donnees suivantes.
+
+Donnees historiques :
+{context}
+
+Question : {question}
+
+Reponds directement sans introduction.
+"""
+        try:
+            response = req.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {groq_key}",
+                },
+                json={
+                    "model": "llama-3.3-70b-versatile",
+                    "messages": [{"role": "user", "content": prompt}],
+                    "max_tokens": 500,
+                    "temperature": 0.3,
+                },
+                timeout=30,
+            )
+            response.raise_for_status()
+            return response.json()["choices"][0]["message"]["content"]
+        except Exception as e:
+            return f"Erreur Groq : {e}"
+
+    return ask_rag(question, query_engine)

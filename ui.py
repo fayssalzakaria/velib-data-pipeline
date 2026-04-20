@@ -458,20 +458,26 @@ def render_rag_chatbot(df_filtered=None):
     if question:
         with st.chat_message("assistant"):
             with st.spinner("Recherche dans l'historique..."):
-                from rag import ask_rag
+                from rag import ask_rag, ask_rag_with_qdrant_context
+                from vector_store import semantic_search
 
                 qdrant_client, _ = _get_qdrant_client_cached()
                 station_found = extract_station_from_query(question, qdrant_client) if qdrant_client else None
+                qdrant_docs = []
+                if qdrant_client and station_found:
+                    qdrant_docs = semantic_search(question, qdrant_client, n_results=8)
 
                 rag_question = question
                 if station_found:
                     rag_question = (
-                        f"Reponds uniquement pour la station {station_found}. "
-                        f"Si le contexte ne contient pas cette station, dis-le clairement.\n\n"
+                        f"Reponds uniquement pour la station {station_found}.\n\n"
                         f"Question : {question}"
                     )
-
-                response = ask_rag(rag_question, st.session_state.rag_engine)
+                response = ask_rag_with_qdrant_context(
+                    rag_question,
+                    st.session_state.rag_engine,
+                    qdrant_docs,
+                )
 
             st.write(response)
             st.session_state.rag_messages.append({"role": "assistant", "content": response})
