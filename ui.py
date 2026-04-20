@@ -9,7 +9,7 @@ import streamlit as st
 from chatbot import ask_groq, build_context
 from config import API_ENDPOINT, PARIS_TIMEZONE, SOURCE_API, SOURCE_S3
 from snapshot import capture_snapshot_aws, capture_snapshot_local
-from vector_store import extract_station_from_query
+from vector_store import extract_station_from_query,build_chroma_index
 
 def render_sidebar():
     st.sidebar.title("Configuration")
@@ -226,7 +226,29 @@ def render_chatbot(df_filtered):
 
         with st.chat_message("assistant"):
             with st.spinner("Analyse en cours..."):
-                response = ask_groq(question, context)
+                from vector_store import extract_station_from_query
+
+                station_found = None
+                if (
+                    "qdrant_client" in st.session_state
+                    and st.session_state.qdrant_client is not None
+                ):
+                    station_found = extract_station_from_query(
+                        question,
+                        st.session_state.qdrant_client,
+                    )
+
+                enhanced_question = question
+                if station_found:
+                    enhanced_question = (
+                        f"Réponds uniquement pour la station {station_found}. "
+                        f"Si la station n'est pas présente dans le contexte, dis-le clairement.\n\n"
+                        f"Question utilisateur : {question}"
+                    )
+
+                st.caption(f"Station détectée : {station_found}")
+                response = ask_groq(enhanced_question, context)
+
             st.write(response)
             st.session_state.messages.append(
                 {"role": "assistant", "content": response}
@@ -451,7 +473,6 @@ def render_rag_chatbot(df_filtered=None):
     if "rag_messages" not in st.session_state:
         st.session_state.rag_messages = []
 
- 
     question = st.chat_input("Ex: Bastille est-elle souvent vide le matin ?")
 
     if question:
@@ -466,7 +487,30 @@ def render_rag_chatbot(df_filtered=None):
         with st.chat_message("assistant"):
             with st.spinner("Recherche dans l'historique..."):
                 from rag import ask_rag
-                response = ask_rag(question, st.session_state.rag_engine)
+                from vector_store import extract_station_from_query
+
+                station_found = None
+                if (
+                    "qdrant_client" in st.session_state
+                    and st.session_state.qdrant_client is not None
+                ):
+                    station_found = extract_station_from_query(
+                        question,
+                        st.session_state.qdrant_client,
+                    )
+
+                rag_question = question
+                if station_found:
+                    rag_question = (
+                        f"Réponds uniquement pour la station {station_found}. "
+                        f"Si le contexte ne contient pas cette station, dis-le clairement.\n\n"
+                        f"Question utilisateur : {question}"
+                    )
+
+                st.caption(f"Station détectée pour le RAG : {station_found}")
+
+                response = ask_rag(rag_question, st.session_state.rag_engine)
+
             st.write(response)
             st.session_state.rag_messages.append(
                 {"role": "assistant", "content": response}

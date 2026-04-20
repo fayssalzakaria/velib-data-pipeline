@@ -289,17 +289,21 @@ def extract_station_from_query(query: str, client) -> str | None:
         return None
 
     try:
+        import re
         import unicodedata
 
         def normalize(text: str) -> str:
             text = text.upper().strip()
             text = unicodedata.normalize("NFKD", text)
             text = "".join(c for c in text if not unicodedata.combining(c))
+            text = re.sub(r"[^A-Z0-9\s\-]", " ", text)
+            text = re.sub(r"\s+", " ", text).strip()
             return text
 
         stop_words = {
-            "INFORMATIONS", "INFO", "SUR", "LA", "LE", "LES", "DE", "DES",
-            "DU", "D", "UN", "UNE", "ET", "A", "AU", "AUX", "STATION"
+            "INFO", "INFORMATION", "INFORMATIONS", "SUR", "LA", "LE", "LES",
+            "DE", "DES", "DU", "D", "UN", "UNE", "ET", "A", "AU", "AUX",
+            "STATION", "DETAIL", "DETAILS", "DONNEE", "DONNEES"
         }
 
         points, _ = client.scroll(
@@ -317,10 +321,10 @@ def extract_station_from_query(query: str, client) -> str | None:
                 stations.add(station)
 
         q_norm = normalize(query)
-        q_words = {
+        q_words = [
             w for w in q_norm.split()
             if len(w) > 2 and w not in stop_words
-        }
+        ]
 
         if not q_words:
             return None
@@ -334,27 +338,31 @@ def extract_station_from_query(query: str, client) -> str | None:
 
             score = 0
 
-            # Bonus fort si le nom complet est inclus
+            # Bonus énorme si le nom complet apparaît dans la requête
             if station_norm in q_norm:
                 score += 100
 
-            # Score par mots importants en commun
-            common_words = q_words & station_words
-            score += len(common_words) * 10
+            # Mots exacts en commun
+            common_words = set(q_words) & station_words
+            score += len(common_words) * 15
 
-            # Bonus si un mot important de la query est contenu dans la station
+            # Bonus mot important présent dans la station
             for word in q_words:
                 if word in station_norm:
-                    score += 4
+                    score += 5
 
-            # Petit malus si la station contient plein de mots non demandés
-            score -= max(0, len(station_words - q_words))
+            # Bonus fort si le dernier mot distinctif matche
+            if q_words and q_words[-1] in station_norm:
+                score += 20
+
+            # Léger malus si la station est beaucoup plus longue
+            score -= max(0, len(station_words) - len(set(q_words)))
 
             if score > best_score:
                 best_score = score
                 best_match = station
 
-        return best_match if best_score >= 10 else None
+        return best_match if best_score >= 20 else None
 
     except Exception:
         return None
