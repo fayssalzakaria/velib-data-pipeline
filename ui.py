@@ -511,6 +511,7 @@ def render_semantic_search():
             ask_with_chroma,
             _get_qdrant_client,
             COLLECTION_NAME,
+            debug_station_matches,
         )
 
         station_found = extract_station_from_query(
@@ -518,6 +519,11 @@ def render_semantic_search():
             st.session_state.qdrant_client,
         )
         st.caption(f"Station détectée : {station_found}")
+
+        st.write(
+            "Top stations matchées :",
+            debug_station_matches(query, st.session_state.qdrant_client),
+        )
 
         # DEBUG TEMPORAIRE : afficher quelques stations présentes dans Qdrant
         try:
