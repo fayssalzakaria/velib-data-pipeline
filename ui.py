@@ -1,6 +1,6 @@
-from datetime import datetime
 import os
-from history import get_station_history
+from datetime import datetime
+
 import pandas as pd
 import plotly.express as px
 import pytz
@@ -8,8 +8,10 @@ import streamlit as st
 
 from chatbot import ask_groq, build_context
 from config import API_ENDPOINT, PARIS_TIMEZONE, SOURCE_API, SOURCE_S3
+from history import get_station_history, get_available_stations
 from snapshot import capture_snapshot_aws, capture_snapshot_local
-from vector_store import extract_station_from_query,build_chroma_index
+from vector_store import extract_station_from_query, build_chroma_index, ask_with_chroma
+
 
 def render_sidebar():
     st.sidebar.title("Configuration")
@@ -48,10 +50,10 @@ def render_sidebar():
 
 
 def render_source_info(source: str, df, info: str | None = None):
-    st.sidebar.success(f"{len(df)} stations chargées")
+    st.sidebar.success(f"{len(df)} stations chargees")
 
     if source == SOURCE_API:
-        st.caption("Source : opendata.paris.fr — temps réel")
+        st.caption("Source : opendata.paris.fr — temps reel")
     else:
         st.caption(f"Source : AWS S3 — {info}")
 
@@ -112,7 +114,7 @@ def render_map(df_filtered):
             color="#1D9E75",
         )
     else:
-        st.info("Coordonnées non disponibles pour ce snapshot.")
+        st.info("Coordonnees non disponibles pour ce snapshot.")
 
     st.divider()
 
@@ -133,9 +135,9 @@ def render_charts(df_filtered):
             color="ebike",
             color_continuous_scale="teal",
             labels={
-                "numbikesavailable": "Vélos",
+                "numbikesavailable": "Velos",
                 "name": "Station",
-                "ebike": "Électriques",
+                "ebike": "Electriques",
             },
         )
         fig.update_layout(yaxis={"autorange": "reversed"}, height=400)
@@ -153,7 +155,7 @@ def render_charts(df_filtered):
             orientation="h",
             color="numbikesavailable",
             color_continuous_scale="reds",
-            labels={"numbikesavailable": "Vélos", "name": "Station"},
+            labels={"numbikesavailable": "Velos", "name": "Station"},
         )
         fig2.update_layout(yaxis={"autorange": "reversed"}, height=400)
         st.plotly_chart(fig2, use_container_width=True)
@@ -161,10 +163,10 @@ def render_charts(df_filtered):
     col_a, col_b = st.columns(2)
 
     with col_a:
-        st.subheader("Types de vélos")
+        st.subheader("Types de velos")
         bike_data = pd.DataFrame(
             {
-                "Type": ["Mécaniques", "Électriques"],
+                "Type": ["Mecaniques", "Electriques"],
                 "Nombre": [
                     int(df_filtered["mechanical"].sum()),
                     int(df_filtered["ebike"].sum()),
@@ -180,10 +182,10 @@ def render_charts(df_filtered):
         st.plotly_chart(fig3, use_container_width=True)
 
     with col_b:
-        st.subheader("État des stations")
+        st.subheader("Etat des stations")
         status_data = pd.DataFrame(
             {
-                "État": ["Vides", "Pleines", "Partielles"],
+                "Etat": ["Vides", "Pleines", "Partielles"],
                 "Nombre": [
                     int(df_filtered["is_empty"].sum()),
                     int(df_filtered["is_full"].sum()),
@@ -196,7 +198,7 @@ def render_charts(df_filtered):
         fig4 = px.pie(
             status_data,
             values="Nombre",
-            names="État",
+            names="Etat",
             color_discrete_sequence=["#A32D2D", "#1D9E75", "#EF9F27"],
         )
         st.plotly_chart(fig4, use_container_width=True)
@@ -205,7 +207,7 @@ def render_charts(df_filtered):
 
 
 def render_chatbot(df_filtered):
-    st.subheader("Ask Vélib Data")
+    st.subheader("Ask Velib Data")
 
     context = build_context(df_filtered)
 
@@ -216,43 +218,15 @@ def render_chatbot(df_filtered):
         with st.chat_message(msg["role"]):
             st.write(msg["content"])
 
-    if question := st.chat_input(
-        "Ex: Quelle station a le plus de vélos électriques ?"
-    ):
+    if question := st.chat_input("Ex: Quelle station a le plus de velos electriques ?"):
         st.session_state.messages.append({"role": "user", "content": question})
-
         with st.chat_message("user"):
             st.write(question)
-
         with st.chat_message("assistant"):
             with st.spinner("Analyse en cours..."):
-                from vector_store import extract_station_from_query
-
-                station_found = None
-                if (
-                    "qdrant_client" in st.session_state
-                    and st.session_state.qdrant_client is not None
-                ):
-                    station_found = extract_station_from_query(
-                        question,
-                        st.session_state.qdrant_client,
-                    )
-
-                enhanced_question = question
-                if station_found:
-                    enhanced_question = (
-                        f"Réponds uniquement pour la station {station_found}. "
-                        f"Si la station n'est pas présente dans le contexte, dis-le clairement.\n\n"
-                        f"Question utilisateur : {question}"
-                    )
-
-                st.caption(f"Station détectée : {station_found}")
-                response = ask_groq(enhanced_question, context)
-
+                response = ask_groq(question, context)
             st.write(response)
-            st.session_state.messages.append(
-                {"role": "assistant", "content": response}
-            )
+            st.session_state.messages.append({"role": "assistant", "content": response})
 
     st.divider()
 
@@ -299,11 +273,11 @@ def render_downloads(df_filtered):
 def render_last_update():
     paris_tz = pytz.timezone(PARIS_TIMEZONE)
     now = datetime.now(paris_tz).strftime("%Y-%m-%d %H:%M")
-    st.caption(f"Dernière mise à jour : {now}")
+    st.caption(f"Derniere mise a jour : {now}")
+
+
 def render_history(df_filtered=None):
     st.subheader("Historique d'une station")
-
-    postgres_url = os.environ.get("POSTGRES_URL", "")
 
     col1, col2 = st.columns([3, 1])
 
@@ -325,13 +299,11 @@ def render_history(df_filtered=None):
     if not search:
         return
 
-    # Cherche dans le dataframe courant (API temps reel ou S3)
     if df_filtered is not None and not df_filtered.empty:
         matching = df_filtered[
             df_filtered["name"].str.contains(search.upper(), na=False)
         ]["name"].unique().tolist()
     else:
-        from history import get_available_stations
         all_stations = get_available_stations(hours)
         matching = [s for s in all_stations if search.upper() in s.upper()]
 
@@ -342,14 +314,12 @@ def render_history(df_filtered=None):
     station_name = st.selectbox("Choisir une station", sorted(matching))
 
     with st.spinner("Chargement historique..."):
-        from history import get_station_history
         df_history = get_station_history(station_name, hours)
 
     if df_history.empty:
-        st.info("Aucune donnee historique disponible. Capturez des snapshots pour alimenter l'historique.")
+        st.info("Aucune donnee historique. Capturez des snapshots pour alimenter l'historique.")
         return
 
-    import plotly.express as px
     fig = px.line(
         df_history,
         x="run_at",
@@ -366,15 +336,16 @@ def render_history(df_filtered=None):
 
     st.divider()
 
+
 def render_snapshot_button(source: str):
     st.subheader("Capturer un snapshot")
 
     postgres_url = os.environ.get("POSTGRES_URL", "")
     aws_key = os.environ.get("AWS_ACCESS_KEY_ID", "")
     pipeline_lambda = os.environ.get("PIPELINE_LAMBDA", "")
+    s3_bucket = os.environ.get("S3_BUCKET", "")
 
-    # AWS actif si credentials S3 disponibles (Aurora optionnelle)
-    s3_active = bool(aws_key and os.environ.get("S3_BUCKET", ""))
+    s3_active = bool(aws_key and s3_bucket)
     aws_active = bool(postgres_url and aws_key and pipeline_lambda)
 
     if aws_active:
@@ -388,7 +359,6 @@ def render_snapshot_button(source: str):
                 from snapshot import refresh_ai_indexes
                 refresh_ai_indexes()
                 st.rerun()
-                st.info("Index RAG et Qdrant mis a jour.")
             else:
                 st.error(message)
 
@@ -403,7 +373,6 @@ def render_snapshot_button(source: str):
                 from snapshot import refresh_ai_indexes
                 refresh_ai_indexes()
                 st.rerun()
-                st.info("Index RAG et Qdrant mis a jour.")
             else:
                 st.error(message)
 
@@ -417,11 +386,20 @@ def render_snapshot_button(source: str):
                 from snapshot import refresh_ai_indexes
                 refresh_ai_indexes()
                 st.rerun()
-                st.info("Index RAG et Qdrant mis a jour.")
             else:
                 st.error(message)
 
     st.divider()
+
+
+def _get_qdrant_client_cached():
+    if "qdrant_client" not in st.session_state:
+        with st.spinner("Connexion Qdrant Cloud..."):
+            client, n = build_chroma_index()
+            st.session_state.qdrant_client = client
+            st.session_state.qdrant_docs = n
+    return st.session_state.get("qdrant_client"), st.session_state.get("qdrant_docs", 0)
+
 
 def render_rag_chatbot(df_filtered=None):
     st.subheader("Ask Velib Data — RAG")
@@ -456,18 +434,13 @@ def render_rag_chatbot(df_filtered=None):
 
     if st.session_state.rag_engine:
         col1, col2 = st.columns([3, 1])
-
         with col1:
-            st.caption(
-                f"Index RAG : {st.session_state.rag_docs} snapshots indexes"
-            )
-
+            st.caption(f"Index RAG : {st.session_state.rag_docs} snapshots indexes")
         with col2:
             if st.button("Rafraichir index"):
-                if "rag_engine" in st.session_state:
-                    del st.session_state["rag_engine"]
-                if "rag_docs" in st.session_state:
-                    del st.session_state["rag_docs"]
+                for key in ["rag_engine", "rag_docs"]:
+                    if key in st.session_state:
+                        del st.session_state[key]
                 st.rerun()
 
     if "rag_messages" not in st.session_state:
@@ -478,68 +451,53 @@ def render_rag_chatbot(df_filtered=None):
     if question:
         st.session_state.rag_messages.append({"role": "user", "content": question})
 
-    if st.session_state.rag_messages:
-        for msg in st.session_state.rag_messages:
-            with st.chat_message(msg["role"]):
-                st.write(msg["content"])
+    for msg in st.session_state.rag_messages:
+        with st.chat_message(msg["role"]):
+            st.write(msg["content"])
 
     if question:
         with st.chat_message("assistant"):
             with st.spinner("Recherche dans l'historique..."):
                 from rag import ask_rag
-                from vector_store import extract_station_from_query
 
-                station_found = None
-                if (
-                    "qdrant_client" in st.session_state
-                    and st.session_state.qdrant_client is not None
-                ):
-                    station_found = extract_station_from_query(
-                        question,
-                        st.session_state.qdrant_client,
-                    )
+                qdrant_client, _ = _get_qdrant_client_cached()
+                station_found = extract_station_from_query(question, qdrant_client) if qdrant_client else None
 
                 rag_question = question
                 if station_found:
                     rag_question = (
-                        f"Réponds uniquement pour la station {station_found}. "
+                        f"Reponds uniquement pour la station {station_found}. "
                         f"Si le contexte ne contient pas cette station, dis-le clairement.\n\n"
-                        f"Question utilisateur : {question}"
+                        f"Question : {question}"
                     )
-
-                st.caption(f"Station détectée pour le RAG : {station_found}")
 
                 response = ask_rag(rag_question, st.session_state.rag_engine)
 
             st.write(response)
-            st.session_state.rag_messages.append(
-                {"role": "assistant", "content": response}
-            )
+            st.session_state.rag_messages.append({"role": "assistant", "content": response})
 
     st.divider()
+
 
 def render_semantic_search():
     st.subheader("Recherche semantique")
     st.caption("Posez une question sur les patterns historiques")
 
-    if "qdrant_client" not in st.session_state:
-        with st.spinner("Connexion Qdrant Cloud..."):
-            from vector_store import build_chroma_index
-            client, n = build_chroma_index()
-            st.session_state.qdrant_client = client
-            st.session_state.qdrant_docs = n
+    qdrant_client, qdrant_docs = _get_qdrant_client_cached()
 
-    if st.session_state.qdrant_client is None:
-        st.info("Qdrant non configuré ou pas de snapshots disponibles.")
+    if qdrant_client is None:
+        st.info("Qdrant non configure ou pas de snapshots disponibles.")
         return
 
-    st.caption(f"Index Qdrant : {st.session_state.qdrant_docs} documents")
-
-    if st.button("Rafraîchir Qdrant"):
-        del st.session_state["qdrant_client"]
-        if "qdrant_docs" in st.session_state:
-            del st.session_state["qdrant_docs"]
-        st.rerun()
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.caption(f"Index Qdrant : {qdrant_docs} documents")
+    with col2:
+        if st.button("Rafraichir Qdrant"):
+            for key in ["qdrant_client", "qdrant_docs"]:
+                if key in st.session_state:
+                    del st.session_state[key]
+            st.rerun()
 
     query = st.text_input(
         "Recherche",
@@ -550,47 +508,12 @@ def render_semantic_search():
     if not query:
         return
 
-    with st.spinner("Recherche sémantique..."):
-        from vector_store import (
-            ask_with_chroma,
-            _get_qdrant_client,
-            COLLECTION_NAME,
-            debug_station_matches,
-        )
-
-        station_found = extract_station_from_query(
-            query,
-            st.session_state.qdrant_client,
-        )
-        st.caption(f"Station détectée : {station_found}")
-
-        st.write(
-            "Top stations matchées :",
-            debug_station_matches(query, st.session_state.qdrant_client),
-        )
-
-        # DEBUG TEMPORAIRE : afficher quelques stations présentes dans Qdrant
-        try:
-            client = _get_qdrant_client()
-            points, _ = client.scroll(
-                collection_name=COLLECTION_NAME,
-                limit=10,
-                with_payload=True,
-                with_vectors=False,
-            )
-            stations = [p.payload.get("station", "") for p in points]
-            st.write("Stations dans Qdrant :", stations[:10])
-        except Exception as e:
-            st.warning(f"Impossible de lire les stations Qdrant : {e}")
-
-        # IMPORTANT : passer la station détectée à la recherche
-        response = ask_with_chroma(
-            query,
-            st.session_state.qdrant_client,
-        )
+    with st.spinner("Recherche semantique..."):
+        response = ask_with_chroma(query, qdrant_client)
 
     st.write(response)
     st.divider()
+
 
 def render_snapshot_manager():
     st.sidebar.divider()
@@ -641,8 +564,7 @@ def render_snapshot_manager():
                     s3.delete_object(Bucket=bucket, Key=key)
                 st.sidebar.success(f"{len(to_delete)} snapshots supprimes")
                 st.cache_data.clear()
-                for key in ["rag_engine", "rag_docs", "chroma_collection",
-                            "qdrant_client", "qdrant_docs"]:
+                for key in ["rag_engine", "rag_docs", "qdrant_client", "qdrant_docs"]:
                     if key in st.session_state:
                         del st.session_state[key]
                 st.rerun()
@@ -653,8 +575,7 @@ def render_snapshot_manager():
                     s3.delete_object(Bucket=bucket, Key=key)
                 st.sidebar.success("Tous les snapshots supprimes")
                 st.cache_data.clear()
-                for key in ["rag_engine", "rag_docs", "chroma_collection",
-                            "qdrant_client", "qdrant_docs"]:
+                for key in ["rag_engine", "rag_docs", "qdrant_client", "qdrant_docs"]:
                     if key in st.session_state:
                         del st.session_state[key]
                 st.rerun()
