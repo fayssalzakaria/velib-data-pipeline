@@ -401,9 +401,7 @@ def _get_qdrant_client_cached():
     return st.session_state.get("qdrant_client"), st.session_state.get("qdrant_docs", 0)
 
 
-def render_rag_chatbot(df_filtered=None):
-    st.subheader("Ask Velib Data — RAG")
-
+def _render_rag_content(df_filtered=None):
     has_history = False
     try:
         import boto3
@@ -446,49 +444,60 @@ def render_rag_chatbot(df_filtered=None):
     if "rag_messages" not in st.session_state:
         st.session_state.rag_messages = []
 
-    question = st.chat_input("Ex: Bastille est-elle souvent vide le matin ?")
-
-    if question:
-        st.session_state.rag_messages.append({"role": "user", "content": question})
-
     for msg in st.session_state.rag_messages:
         with st.chat_message(msg["role"]):
             st.write(msg["content"])
 
+    question = st.chat_input(
+        "Ex: Bastille est-elle souvent vide le matin ?",
+        key="rag_input",
+    )
+
     if question:
+        st.session_state.rag_messages.append({"role": "user", "content": question})
+        with st.chat_message("user"):
+            st.write(question)
         with st.chat_message("assistant"):
             with st.spinner("Recherche dans l'historique..."):
-                from rag import ask_rag, ask_rag_with_qdrant_context
+                from rag import ask_rag_with_qdrant_context
                 from vector_store import semantic_search
-
                 qdrant_client, _ = _get_qdrant_client_cached()
-                station_found = extract_station_from_query(question, qdrant_client) if qdrant_client else None
-                qdrant_docs = []
-                if qdrant_client :
-                    qdrant_docs = semantic_search(question, qdrant_client, n_results=8)
-
-                rag_question = question
-                if station_found:
-                    rag_question = (
-                        f"Reponds uniquement pour la station {station_found}.\n\n"
-                        f"Question : {question}"
-                    )
+                qdrant_docs = semantic_search(question, qdrant_client, n_results=10) if qdrant_client else []
                 response = ask_rag_with_qdrant_context(
-                    rag_question,
-                    st.session_state.rag_engine,
-                    qdrant_docs,
+                    question, st.session_state.rag_engine, qdrant_docs
                 )
-
             st.write(response)
             st.session_state.rag_messages.append({"role": "assistant", "content": response})
 
-    st.divider()
+
+def _render_agent_content(df_filtered):
+    qdrant_client, _ = _get_qdrant_client_cached()
+
+    if "agent_messages" not in st.session_state:
+        st.session_state.agent_messages = []
+
+    for msg in st.session_state.agent_messages:
+        with st.chat_message(msg["role"]):
+            st.write(msg["content"])
+
+    question = st.chat_input(
+        "Ex: Y a-t-il des anomalies sur le reseau ?",
+        key="agent_input",
+    )
+
+    if question:
+        st.session_state.agent_messages.append({"role": "user", "content": question})
+        with st.chat_message("user"):
+            st.write(question)
+        with st.chat_message("assistant"):
+            with st.spinner("Agent en cours d'analyse..."):
+                from agent import run_agent
+                response = run_agent(question, df_filtered, qdrant_client)
+            st.write(response)
+            st.session_state.agent_messages.append({"role": "assistant", "content": response})
 
 
-def render_semantic_search():
-    st.subheader("Recherche semantique")
-    st.caption("Posez une question sur les patterns historiques")
-
+def _render_semantic_content():
     qdrant_client, qdrant_docs = _get_qdrant_client_cached()
 
     if qdrant_client is None:
@@ -518,7 +527,6 @@ def render_semantic_search():
         response = ask_with_chroma(query, qdrant_client)
 
     st.write(response)
-    st.divider()
 
 
 def render_snapshot_manager():
@@ -589,38 +597,26 @@ def render_snapshot_manager():
     except Exception as e:
         st.sidebar.error(f"Erreur : {e}")
 
-def render_agent(df_filtered):
-    st.subheader("Agent IA Velib")
-    st.caption("L'agent choisit automatiquement les bons outils pour repondre")
+def render_ai_tabs(df_filtered):
+    st.subheader("Intelligence Artificielle")
 
-    qdrant_client, _ = _get_qdrant_client_cached()
+    tab1, tab2, tab3 = st.tabs([
+        "Chatbot RAG",
+        "Agent IA",
+        "Recherche semantique",
+    ])
 
-    tools_info = "get_station_info · get_network_stats · search_history · detect_anomalies"
-    st.caption(f"Tools disponibles : {tools_info}")
+    with tab1:
+        st.caption("Posez des questions sur l'historique des stations")
+        _render_rag_content(df_filtered)
 
-    if "agent_messages" not in st.session_state:
-        st.session_state.agent_messages = []
+    with tab2:
+        st.caption("L'agent choisit automatiquement les bons outils")
+        st.caption("Tools : get_station_info · get_network_stats · search_history · detect_anomalies")
+        _render_agent_content(df_filtered)
 
-    question = st.chat_input(
-        "Ex: Y a-t-il des anomalies sur le reseau ? Analyse Bastille.",
-        key="agent_input",
-    )
-
-    if question:
-        st.session_state.agent_messages.append({"role": "user", "content": question})
-
-    for msg in st.session_state.agent_messages:
-        with st.chat_message(msg["role"]):
-            st.write(msg["content"])
-
-    if question:
-        with st.chat_message("assistant"):
-            with st.spinner("Agent en cours d'analyse..."):
-                from agent import run_agent
-                response = run_agent(question, df_filtered, qdrant_client)
-            st.write(response)
-            st.session_state.agent_messages.append(
-                {"role": "assistant", "content": response}
-            )
+    with tab3:
+        st.caption("Recherche semantique sur les patterns historiques")
+        _render_semantic_content()
 
     st.divider()
