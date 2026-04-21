@@ -86,7 +86,7 @@ def _load_from_s3(station_name: str, hours: int) -> pd.DataFrame:
             df_station = df_station[df_station["run_at"] >= cutoff]
 
         return df_station.sort_values("run_at").drop_duplicates(
-            subset=["run_at", "name"]
+            subset=["snapshot_id"]  
         )
 
     except Exception:
