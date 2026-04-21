@@ -5,7 +5,6 @@ from data_loader import load_from_api, load_from_s3
 from filters import apply_filters
 
 from ui import (
-    render_chatbot,
     render_charts,
     render_downloads,
     render_last_update,
