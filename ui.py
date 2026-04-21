@@ -250,12 +250,12 @@ def render_station_detail(df_filtered):
         )
 
     with col2:
-    hours = st.selectbox(
-        "Historique",
-        [6, 12, 24, 48, 72, 168, 720],
-        index=2,
-        format_func=lambda x: f"{x}h" if x < 168 else ("7 jours" if x == 168 else "30 jours"),
-    )   
+        hours = st.selectbox(
+            "Historique",
+            [6, 12, 24, 48, 72, 168, 720],
+            index=2,
+            format_func=lambda x: f"{x}h" if x < 168 else ("7 jours" if x == 168 else "30 jours"),
+        )   
 
     if not search:
         return
