@@ -72,7 +72,6 @@ def _load_from_s3(station_name: str, hours: int) -> pd.DataFrame:
         df_all["run_at"] = pd.to_datetime(df_all["run_at"], utc=True, errors="coerce")
         df_all = df_all.dropna(subset=["run_at"])
 
-        # Filtre par station d'abord
         df_station = df_all[
             df_all["name"].str.contains(station_name.upper(), na=False)
         ].copy()
@@ -80,16 +79,18 @@ def _load_from_s3(station_name: str, hours: int) -> pd.DataFrame:
         if df_station.empty:
             return pd.DataFrame()
 
-        # Filtre par date basé sur le max de CETTE station uniquement
-        max_date = df_station["run_at"].max()
-        cutoff = max_date - pd.Timedelta(hours=hours)
-        df_station = df_station[df_station["run_at"] >= cutoff]
+        # Filtre par date seulement si hours est raisonnable
+        # Sinon retourne tout
+        if hours <= 720:
+            cutoff = pd.Timestamp.now(tz="UTC") - pd.Timedelta(hours=hours)
+            df_station = df_station[df_station["run_at"] >= cutoff]
 
-        return df_station.sort_values("run_at")
+        return df_station.sort_values("run_at").drop_duplicates(
+            subset=["run_at", "name"]
+        )
 
     except Exception:
         return pd.DataFrame()
-
 
 def get_station_history(station_name: str, hours: int = 24) -> pd.DataFrame:
     # Essaie Aurora d'abord
