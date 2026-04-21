@@ -588,3 +588,39 @@ def render_snapshot_manager():
 
     except Exception as e:
         st.sidebar.error(f"Erreur : {e}")
+
+def render_agent(df_filtered):
+    st.subheader("Agent IA Velib")
+    st.caption("L'agent choisit automatiquement les bons outils pour repondre")
+
+    qdrant_client, _ = _get_qdrant_client_cached()
+
+    tools_info = "get_station_info · get_network_stats · search_history · detect_anomalies"
+    st.caption(f"Tools disponibles : {tools_info}")
+
+    if "agent_messages" not in st.session_state:
+        st.session_state.agent_messages = []
+
+    question = st.chat_input(
+        "Ex: Y a-t-il des anomalies sur le reseau ? Analyse Bastille.",
+        key="agent_input",
+    )
+
+    if question:
+        st.session_state.agent_messages.append({"role": "user", "content": question})
+
+    for msg in st.session_state.agent_messages:
+        with st.chat_message(msg["role"]):
+            st.write(msg["content"])
+
+    if question:
+        with st.chat_message("assistant"):
+            with st.spinner("Agent en cours d'analyse..."):
+                from agent import run_agent
+                response = run_agent(question, df_filtered, qdrant_client)
+            st.write(response)
+            st.session_state.agent_messages.append(
+                {"role": "assistant", "content": response}
+            )
+
+    st.divider()

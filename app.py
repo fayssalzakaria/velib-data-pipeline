@@ -19,6 +19,7 @@ from ui import (
     render_rag_chatbot,
     render_semantic_search,
     render_snapshot_manager,
+    render_agent,
 )
 
 st.set_page_config(
@@ -61,6 +62,7 @@ render_history(df_filtered)
 render_map(df_filtered)
 render_charts(df_filtered)
 render_rag_chatbot(df_filtered)
+render_agent(df_filtered)
 render_semantic_search()
 render_downloads(df_filtered)
 render_last_update()
