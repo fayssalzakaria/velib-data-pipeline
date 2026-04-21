@@ -10,13 +10,12 @@ from ui import (
     render_last_update,
     render_map,
     render_metrics,
-    render_search,
     render_sidebar,
     render_source_info,
-    render_history,
     render_snapshot_button, 
     render_ai_tabs,
     render_snapshot_manager,
+    render_station_detail,
 )
 
 st.set_page_config(
@@ -54,8 +53,7 @@ sidebar_count.info(f"{len(df_filtered)} stations après filtres")
 render_snapshot_manager()
 render_metrics(df_filtered)
 render_snapshot_button(source)
-render_search(df_filtered)
-render_history(df_filtered)
+render_station_detail(df_filtered)
 render_map(df_filtered)
 render_charts(df_filtered)
 render_ai_tabs(df_filtered)

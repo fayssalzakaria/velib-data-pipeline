@@ -69,14 +69,24 @@ def _load_from_s3(station_name: str, hours: int) -> pd.DataFrame:
             return pd.DataFrame()
 
         df_all = pd.concat(dfs, ignore_index=True)
-        df_all["run_at"] = pd.to_datetime(df_all["run_at"], utc=True)
-        cutoff = pd.Timestamp.now(tz="UTC") - pd.Timedelta(hours=hours)
+        df_all["run_at"] = pd.to_datetime(df_all["run_at"], utc=True, errors="coerce")
+        df_all = df_all.dropna(subset=["run_at"])
 
-        return df_all[
-            df_all["name"].str.contains(station_name.upper(), na=False) &
-            (df_all["run_at"] >= cutoff)
-        ].sort_values("run_at")
-    except Exception:
+        # Filtre par station
+        df_station = df_all[
+            df_all["name"].str.contains(station_name.upper(), na=False)
+        ]
+
+        if df_station.empty:
+            return pd.DataFrame()
+
+        # Filtre par date — utilise le max de run_at comme référence
+        max_date = df_all["run_at"].max()
+        cutoff = max_date - pd.Timedelta(hours=hours)
+        
+        return df_station[df_station["run_at"] >= cutoff].sort_values("run_at")
+
+    except Exception as e:
         return pd.DataFrame()
 
 

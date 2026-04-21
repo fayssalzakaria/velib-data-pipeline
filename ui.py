@@ -67,40 +67,6 @@ def render_metrics(df_filtered):
     col5.metric("Remplissage", f"{df_filtered['bike_ratio'].mean():.1%}")
     st.divider()
 
-
-def render_search(df_filtered):
-    st.subheader("Recherche de station")
-
-    search = st.text_input(
-        "Nom de la station",
-        placeholder="Ex: Bastille, Nation, Republique...",
-    )
-
-    if not search:
-        return
-
-    results = df_filtered[df_filtered["name"].str.contains(search.upper(), na=False)]
-
-    if results.empty:
-        st.warning(f"Aucune station trouvee pour '{search}'")
-        return
-
-    for _, row in results.iterrows():
-        with st.expander(f"{row['name']}"):
-            c1, c2, c3, c4 = st.columns(4)
-            c1.metric("Velos dispo", int(row["numbikesavailable"]))
-            c2.metric("Dont electriques", int(row["ebike"]))
-            c3.metric("Bornes dispo", int(row["numdocksavailable"]))
-            c4.metric("Remplissage", f"{row['bike_ratio']:.0%}")
-
-            if row["is_empty"]:
-                st.error("Station vide")
-            elif row["is_full"]:
-                st.warning("Station pleine")
-            else:
-                st.success("Station disponible")
-
-
 def render_map(df_filtered):
     st.subheader("Carte des stations")
 
@@ -117,7 +83,6 @@ def render_map(df_filtered):
         st.info("Coordonnees non disponibles pour ce snapshot.")
 
     st.divider()
-
 
 def render_charts(df_filtered):
     col_left, col_right = st.columns(2)
@@ -205,7 +170,6 @@ def render_charts(df_filtered):
 
     st.divider()
 
-
 def render_chatbot(df_filtered):
     st.subheader("Ask Velib Data")
 
@@ -229,7 +193,6 @@ def render_chatbot(df_filtered):
             st.session_state.messages.append({"role": "assistant", "content": response})
 
     st.divider()
-
 
 def render_downloads(df_filtered):
     st.subheader("Telechargements")
@@ -269,28 +232,26 @@ def render_downloads(df_filtered):
             use_container_width=True,
         )
 
-
 def render_last_update():
     paris_tz = pytz.timezone(PARIS_TIMEZONE)
     now = datetime.now(paris_tz).strftime("%Y-%m-%d %H:%M")
     st.caption(f"Derniere mise a jour : {now}")
 
-
-def render_history(df_filtered=None):
-    st.subheader("Historique d'une station")
+def render_station_detail(df_filtered):
+    st.subheader("Recherche et historique de station")
 
     col1, col2 = st.columns([3, 1])
 
     with col1:
         search = st.text_input(
-            "Recherche station",
-            placeholder="Ex: Bastille",
-            key="history_search",
+            "Nom de la station",
+            placeholder="Ex: Bastille, Nation, Mairie de Clichy...",
+            key="station_search",
         )
 
     with col2:
         hours = st.selectbox(
-            "Periode",
+            "Historique",
             [6, 12, 24, 48],
             index=2,
             format_func=lambda x: f"{x}h",
@@ -299,26 +260,45 @@ def render_history(df_filtered=None):
     if not search:
         return
 
-    if df_filtered is not None and not df_filtered.empty:
-        matching = df_filtered[
-            df_filtered["name"].str.contains(search.upper(), na=False)
-        ]["name"].unique().tolist()
-    else:
-        all_stations = get_available_stations(hours)
-        matching = [s for s in all_stations if search.upper() in s.upper()]
+    results = df_filtered[df_filtered["name"].str.contains(search.upper(), na=False)]
 
-    if not matching:
+    if results.empty:
         st.warning(f"Aucune station trouvee pour '{search}'")
         return
 
-    station_name = st.selectbox("Choisir une station", sorted(matching))
+    # Selectbox si plusieurs stations matchent
+    station_names = sorted(results["name"].unique().tolist())
+    if len(station_names) > 1:
+        station_name = st.selectbox("Choisir une station", station_names)
+    else:
+        station_name = station_names[0]
 
-    with st.spinner("Chargement historique..."):
+    row = results[results["name"] == station_name].iloc[0]
+
+    # Données temps réel
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Velos dispo", int(row["numbikesavailable"]))
+    c2.metric("Dont electriques", int(row["ebike"]))
+    c3.metric("Bornes dispo", int(row["numdocksavailable"]))
+    c4.metric("Remplissage", f"{row['bike_ratio']:.0%}")
+
+    if row["is_empty"]:
+        st.error("Station vide en ce moment")
+    elif row["is_full"]:
+        st.warning("Station pleine en ce moment")
+    else:
+        st.success("Station disponible")
+
+    # Historique automatique
+    with st.spinner(f"Chargement historique {station_name}..."):
         df_history = get_station_history(station_name, hours)
 
     if df_history.empty:
-        st.info("Aucune donnee historique. Capturez des snapshots pour alimenter l'historique.")
+        st.info("Aucun historique disponible. Capturez des snapshots pour voir l'evolution.")
+        st.divider()
         return
+
+    st.caption(f"Evolution sur les {hours} dernieres heures — {len(df_history)} snapshots")
 
     fig = px.line(
         df_history,
@@ -331,11 +311,10 @@ def render_history(df_filtered=None):
             "mechanical": "#EF9F27",
         },
     )
-    fig.update_layout(height=350)
+    fig.update_layout(height=300, margin=dict(t=10, b=10))
     st.plotly_chart(fig, use_container_width=True)
 
     st.divider()
-
 
 def render_snapshot_button(source: str):
     st.subheader("Capturer un snapshot")
