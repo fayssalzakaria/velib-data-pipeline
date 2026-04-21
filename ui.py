@@ -464,7 +464,7 @@ def render_rag_chatbot(df_filtered=None):
                 qdrant_client, _ = _get_qdrant_client_cached()
                 station_found = extract_station_from_query(question, qdrant_client) if qdrant_client else None
                 qdrant_docs = []
-                if qdrant_client and station_found:
+                if qdrant_client :
                     qdrant_docs = semantic_search(question, qdrant_client, n_results=8)
 
                 rag_question = question
