@@ -403,30 +403,68 @@ def _render_rag_content(df_filtered=None):
         render_chatbot(df_filtered)
         return
 
-    if "rag_engine" not in st.session_state:
-        with st.spinner("Construction de l'index RAG..."):
+    if "rag_documents" not in st.session_state:
+        with st.spinner("Chargement des documents RAG..."):
             from rag import build_rag_index
-            engine, n_docs = build_rag_index()
-            st.session_state.rag_engine = engine
+            docs, n_docs = build_rag_index()
+            st.session_state.rag_documents = docs
             st.session_state.rag_docs = n_docs
 
-    if st.session_state.rag_engine:
+    if st.session_state.rag_documents:
         col1, col2 = st.columns([3, 1])
         with col1:
-            st.caption(f"Index RAG : {st.session_state.rag_docs} snapshots indexes")
+            st.caption(
+                f"Index RAG : {st.session_state.rag_docs} documents — "
+                f"HyDE + BM25 + Cosine + RRF + MMR + Reranking"
+            )
         with col2:
             if st.button("Rafraichir index"):
-                for key in ["rag_engine", "rag_docs"]:
+                for key in ["rag_documents", "rag_docs"]:
                     if key in st.session_state:
                         del st.session_state[key]
                 st.rerun()
 
     if "rag_messages" not in st.session_state:
         st.session_state.rag_messages = []
+    if "rag_traces" not in st.session_state:
+        st.session_state.rag_traces = []
 
-    for msg in st.session_state.rag_messages:
+    for i, msg in enumerate(st.session_state.rag_messages):
         with st.chat_message(msg["role"]):
             st.write(msg["content"])
+
+        if msg["role"] == "assistant" and i // 2 < len(st.session_state.rag_traces):
+            trace = st.session_state.rag_traces[i // 2]
+            if trace:
+                with st.expander("Details du pipeline RAG", expanded=False):
+                    st.caption(f"Techniques : {' → '.join(trace.get('techniques_used', []))}")
+
+                    col1, col2, col3 = st.columns(3)
+                    tokens = trace.get("tokens", {})
+                    col1.metric("Tokens total", tokens.get("total", 0))
+                    col2.metric("Prompt tokens", tokens.get("prompt", 0))
+                    col3.metric("Completion tokens", tokens.get("completion", 0))
+
+                    if trace.get("hyde_query"):
+                        with st.expander("Query HyDE expandée"):
+                            st.text(trace["hyde_query"])
+
+                    col_a, col_b = st.columns(2)
+                    with col_a:
+                        if trace.get("bm25_top5"):
+                            st.caption("Top 5 BM25 :")
+                            for s in trace["bm25_top5"]:
+                                st.caption(f"  • {s}")
+                    with col_b:
+                        if trace.get("cosine_top5"):
+                            st.caption("Top 5 Cosine :")
+                            for s in trace["cosine_top5"]:
+                                st.caption(f"  • {s}")
+
+                    if trace.get("final_docs"):
+                        st.caption("Sources finales utilisées :")
+                        for s in trace["final_docs"]:
+                            st.caption(f"  • {s}")
 
     question = st.chat_input(
         "Ex: Bastille est-elle souvent vide le matin ?",
@@ -438,18 +476,21 @@ def _render_rag_content(df_filtered=None):
         with st.chat_message("user"):
             st.write(question)
         with st.chat_message("assistant"):
-            with st.spinner("Recherche dans l'historique..."):
+            with st.spinner("Pipeline RAG en cours — HyDE + BM25 + Cosine + RRF + MMR + Reranking..."):
                 from rag import ask_rag_with_qdrant_context
                 from vector_store import semantic_search
                 qdrant_client, _ = _get_qdrant_client_cached()
                 qdrant_docs = semantic_search(question, qdrant_client, n_results=10) if qdrant_client else []
-                response = ask_rag_with_qdrant_context(
-                    question, st.session_state.rag_engine, qdrant_docs
+                response, trace = ask_rag_with_qdrant_context(
+                    question,
+                    st.session_state.get("rag_documents"),
+                    qdrant_docs,
                 )
+                st.session_state.rag_traces.append(trace)
             st.write(response)
             st.session_state.rag_messages.append({"role": "assistant", "content": response})
-
-
+        st.rerun()
+        
 def _render_agent_content(df_filtered):
     qdrant_client, _ = _get_qdrant_client_cached()
 
