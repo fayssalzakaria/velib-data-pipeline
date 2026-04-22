@@ -117,18 +117,17 @@ def _build_documents(df: pd.DataFrame) -> list[dict]:
 
 
 def _hyde_expand_query(question: str) -> str:
-    """
-    HyDE — génère une réponse hypothétique pour améliorer la recherche.
-    La réponse hypothétique est ensuite utilisée comme query d'embedding.
-    """
     try:
-        prompt = f"""Tu es un expert Velib Paris. Génère une réponse courte et factuelle
-à cette question comme si tu avais les données. Cette réponse sera utilisée
-pour rechercher des documents similaires, pas pour être affichée.
+        prompt = f"""Tu dois generer un exemple de document Velib qui pourrait repondre a cette question.
+Le document doit ressembler exactement a ce format :
+"La station NOM_STATION le JOUR a HEURESh (periode) avait X velos disponibles dont Y electriques et Z mecaniques. Elle etait ETAT avec un taux de remplissage de XX%. Il y avait N bornes libres."
+
+Genere 2-3 exemples de ce format pour repondre a la question.
+Ne invente pas de faits historiques, reste dans le format des donnees.
 
 Question : {question}
 
-Réponse hypothétique (2-3 phrases factuelles sur les vélos/stations) :"""
+Exemples de documents :"""
 
         response = requests.post(
             GROQ_URL,
@@ -139,18 +138,16 @@ Réponse hypothétique (2-3 phrases factuelles sur les vélos/stations) :"""
             json={
                 "model": "llama-3.3-70b-versatile",
                 "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 150,
-                "temperature": 0.3,
+                "max_tokens": 200,
+                "temperature": 0.1,
             },
             timeout=15,
         )
         response.raise_for_status()
         hypothetical = response.json()["choices"][0]["message"]["content"]
-        # Combine question + réponse hypothétique pour un meilleur embedding
         return f"{question}\n{hypothetical}"
     except Exception:
         return question
-
 
 def _bm25_search(query: str, documents: list[dict], top_k: int = 20) -> list[tuple[int, float]]:
     """
