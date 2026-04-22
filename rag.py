@@ -574,7 +574,15 @@ Criteres :
 
 def ask_rag_with_qdrant_context(question: str, documents, qdrant_docs: list) -> tuple[str, dict]:
     # Mots-clés indiquant une question temps réel
-    realtime_keywords = ["anomalie", "maintenant", "actuellement", "en ce moment", "disponible", "vide", "pleine"]
+    realtime_keywords = [
+        "anomalie",
+        "maintenant",
+        "actuellement",
+        "en ce moment",
+        "disponible",
+        "vide",
+        "pleine",
+    ]
     is_realtime = any(kw in question.lower() for kw in realtime_keywords)
 
     # Si question temps réel ET Qdrant a des docs — utilise Qdrant directement (plus rapide)
@@ -590,13 +598,36 @@ Question : {question}"""
         try:
             response = requests.post(
                 GROQ_URL,
-                headers={"Content-Type": "application/json", "Authorization": f"Bearer {GROQ_API_KEY}"},
-                json={"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": prompt}], "max_tokens": 400, "temperature": 0.2},
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {GROQ_API_KEY}",
+                },
+                json={
+                    "model": "llama-3.3-70b-versatile",
+                    "messages": [{"role": "user", "content": prompt}],
+                    "max_tokens": 400,
+                    "temperature": 0.2,
+                },
                 timeout=30,
             )
             response.raise_for_status()
-            return response.json()["choices"][0]["message"]["content"], {"fast_path": True, "reason": "question temps reel"}
-        except Exception as e:
+            data = response.json()
+            answer = data["choices"][0]["message"]["content"]
+            usage = data.get("usage", {})
+
+            return answer, {
+                "fast_path": True,
+                "reason": "question temps reel",
+                "techniques_used": ["Qdrant direct"],
+                "tokens": {
+                    "prompt": usage.get("prompt_tokens", 0),
+                    "completion": usage.get("completion_tokens", 0),
+                    "total": usage.get("total_tokens", 0),
+                },
+                "relevance_score": None,
+                "relevance_explanation": "",
+            }
+        except Exception:
             pass
 
     if documents:
