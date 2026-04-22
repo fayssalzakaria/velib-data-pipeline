@@ -234,7 +234,7 @@ def _mmr_rerank(
         station = documents[idx]["metadata"].get("station", "")
         if station not in seen_stations:
             seen_stations.add(station)
-        f   used_deduped.append((idx, score))
+        fused_deduped.append((idx, score))
     fused = fused_deduped
     """
     MMR — Maximal Marginal Relevance.
