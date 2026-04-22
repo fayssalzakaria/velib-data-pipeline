@@ -382,6 +382,7 @@ def _get_qdrant_client_cached():
 
 
 def _render_rag_content(df_filtered=None):
+    st.info("Pour les questions sur l'etat actuel d'une station (anomalies, disponibilite), utilisez l'onglet Agent IA qui a acces aux donnees temps reel.")
     has_history = False
     try:
         import boto3

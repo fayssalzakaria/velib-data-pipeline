@@ -227,6 +227,15 @@ def _mmr_rerank(
     top_k: int = 8,
     lambda_param: float = 0.7,
 ) -> list[int]:
+    # Déduplique par station pour éviter les doublons
+    seen_stations = set()
+    fused_deduped = []
+    for idx, score in fused:
+        station = documents[idx]["metadata"].get("station", "")
+        if station not in seen_stations:
+            seen_stations.add(station)
+        f   used_deduped.append((idx, score))
+    fused = fused_deduped
     """
     MMR — Maximal Marginal Relevance.
     Sélectionne les documents pertinents ET diversifiés.
@@ -521,10 +530,32 @@ Question : {question}
 
 
 def ask_rag_with_qdrant_context(question: str, documents, qdrant_docs: list) -> tuple[str, dict]:
-    """
-    Si Qdrant a des docs — utilise le pipeline hybrid search.
-    Sinon fallback sur les docs Qdrant directement.
-    """
+    # Mots-clés indiquant une question temps réel
+    realtime_keywords = ["anomalie", "maintenant", "actuellement", "en ce moment", "disponible", "vide", "pleine"]
+    is_realtime = any(kw in question.lower() for kw in realtime_keywords)
+
+    # Si question temps réel ET Qdrant a des docs — utilise Qdrant directement (plus rapide)
+    if is_realtime and qdrant_docs:
+        context = "\n".join(f"- {d}" for d in qdrant_docs)
+        prompt = f"""Tu es un expert Velib Paris. Reponds en francais uniquement avec ces donnees.
+Si la station n'est pas dans les donnees, dis-le clairement.
+
+Donnees :
+{context}
+
+Question : {question}"""
+        try:
+            response = requests.post(
+                GROQ_URL,
+                headers={"Content-Type": "application/json", "Authorization": f"Bearer {GROQ_API_KEY}"},
+                json={"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": prompt}], "max_tokens": 400, "temperature": 0.2},
+                timeout=30,
+            )
+            response.raise_for_status()
+            return response.json()["choices"][0]["message"]["content"], {"fast_path": True, "reason": "question temps reel"}
+        except Exception as e:
+            pass
+
     if documents:
         return ask_rag(question, documents)
 
