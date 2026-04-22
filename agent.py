@@ -95,8 +95,30 @@ def tool_get_network_stats(df: pd.DataFrame) -> str:
     })
 
 
-def tool_search_history(query: str, qdrant_client) -> str:
-    """Recherche dans l'historique via Qdrant."""
+def tool_search_history(query: str, qdrant_client, rag_documents=None) -> str:
+    if rag_documents:
+        try:
+            from rag import hybrid_search
+            docs, trace = hybrid_search(
+                query, rag_documents, top_k=5,
+                use_hyde=True, use_mmr=True, use_rerank=True,
+            )
+            results = [d["text"] for d in docs]
+            sources = [
+                f"{d['metadata']['station']} — {d['metadata']['run_at']}"
+                for d in docs
+            ]
+            return json.dumps({
+                "resultats": results,
+                "sources": sources,
+                "techniques_utilisees": trace.get("techniques_used", []),
+                "bm25_top3": trace.get("bm25_top5", [])[:3],
+                "cosine_top3": trace.get("cosine_top5", [])[:3],
+            }, ensure_ascii=False)
+        except Exception as e:
+            pass
+
+    # Fallback Qdrant simple
     if qdrant_client is None:
         return json.dumps({"error": "Historique non disponible"})
     try:
@@ -217,8 +239,7 @@ TOOLS_SCHEMA = [
     },
 ]
 
-
-def run_agent(question: str, df: pd.DataFrame, qdrant_client=None) -> tuple[str, AgentTrace]:
+def run_agent(question: str, df: pd.DataFrame, qdrant_client=None, rag_documents=None) -> tuple[str, AgentTrace]:
     trace = AgentTrace(question=question)
 
     if not GROQ_API_KEY:
@@ -275,7 +296,12 @@ def run_agent(question: str, df: pd.DataFrame, qdrant_client=None) -> tuple[str,
             elif tool_name == "get_network_stats":
                 result = tool_get_network_stats(df)
             elif tool_name == "search_history":
-                result = tool_search_history(args.get("query", ""), qdrant_client)
+                result = tool_search_history(
+                args.get("query", ""),
+                qdrant_client,
+                rag_documents,
+            )
+            
             elif tool_name == "detect_anomalies":
                 result = tool_detect_anomalies(df)
             else:

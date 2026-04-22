@@ -490,9 +490,10 @@ def _render_rag_content(df_filtered=None):
             st.write(response)
             st.session_state.rag_messages.append({"role": "assistant", "content": response})
         st.rerun()
-        
+
 def _render_agent_content(df_filtered):
     qdrant_client, _ = _get_qdrant_client_cached()
+    rag_documents = st.session_state.get("rag_documents")
 
     if "agent_messages" not in st.session_state:
         st.session_state.agent_messages = []
@@ -503,7 +504,6 @@ def _render_agent_content(df_filtered):
         with st.chat_message(msg["role"]):
             st.write(msg["content"])
 
-        # Affiche la trace après chaque réponse assistant
         if msg["role"] == "assistant" and i // 2 < len(st.session_state.agent_traces):
             trace = st.session_state.agent_traces[i // 2]
             with st.expander("Details de l'execution", expanded=False):
@@ -515,28 +515,35 @@ def _render_agent_content(df_filtered):
                 st.caption(f"Tools utilises : {', '.join(trace.tools_called) if trace.tools_called else 'aucun'}")
 
                 if trace.tool_results:
-                    st.caption("Donnees interrogees :")
                     for tool_name, result in trace.tool_results.items():
                         with st.expander(f"Resultat : {tool_name}"):
-                            st.json(result)
+                            if tool_name == "search_history":
+                                techniques = result.get("techniques_utilisees", [])
+                                if techniques:
+                                    st.caption(f"Techniques : {' → '.join(techniques)}")
+                                sources = result.get("sources", [])
+                                if sources:
+                                    st.caption("Sources :")
+                                    for s in sources:
+                                        st.caption(f"  • {s}")
+                            else:
+                                st.json(result)
 
                 if trace.prompt_sent:
                     with st.expander("Prompt envoye au LLM"):
                         st.text(trace.prompt_sent[:2000])
 
-                # Score de pertinence
                 score = trace.relevance_score
                 color = "green" if score >= 80 else "orange" if score >= 50 else "red"
                 st.markdown(
-                    f"**Pertinence de la réponse : "
-                    f"<span style='color:{color}'>{score}/100</span>**",
+                    f"**Pertinence : <span style='color:{color}'>{score}/100</span>**",
                     unsafe_allow_html=True,
                 )
                 if trace.relevance_explanation:
                     st.caption(trace.relevance_explanation)
 
     question = st.chat_input(
-        "Ex: Y a-t-il des anomalies sur le reseau ?",
+        "Ex: Y a-t-il des anomalies ? Analyse Bastille sur l'historique.",
         key="agent_input",
     )
 
@@ -545,12 +552,16 @@ def _render_agent_content(df_filtered):
         with st.chat_message("user"):
             st.write(question)
         with st.chat_message("assistant"):
-            with st.spinner("Agent en cours d'analyse..."):
+            with st.spinner("Agent en cours — HyDE + BM25 + Cosine + RRF + MMR si historique requis..."):
                 from agent import run_agent
-                response, trace = run_agent(question, df_filtered, qdrant_client)
+                response, trace = run_agent(
+                    question, df_filtered, qdrant_client, rag_documents
+                )
                 st.session_state.agent_traces.append(trace)
             st.write(response)
-            st.session_state.agent_messages.append({"role": "assistant", "content": response})
+            st.session_state.agent_messages.append(
+                {"role": "assistant", "content": response}
+            )
         st.rerun()
 
 def _render_semantic_content():
