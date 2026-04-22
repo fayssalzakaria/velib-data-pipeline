@@ -237,52 +237,68 @@ def semantic_search(query: str, client, n_results: int = 8) -> list:
     except Exception as e:
         return [f"DEBUG semantic_search erreur : {e}"]
 
-def ask_with_chroma(question: str, client) -> str:
-    import requests as req
-
+def ask_with_chroma(question: str, client) -> tuple[str, dict]:
     groq_key = os.environ.get("GROQ_API_KEY", "")
     if not groq_key:
-        return "Cle Groq non configuree."
+        return "Cle Groq non configuree.", {}
 
     docs = semantic_search(question, client, n_results=8)
-
     if not docs:
-        return "Aucune donnee pertinente trouvee dans l'historique."
-
-    if len(docs) == 1 and docs[0].startswith("DEBUG"):
-        return docs[0]
+        return "Aucune donnee pertinente trouvee dans l'historique.", {}
 
     context = "\n".join(f"- {d}" for d in docs)
+    prompt = f"""Tu es un expert Velib Paris. Reponds en francais uniquement avec ces donnees.
 
-    prompt = f"""Tu es un expert en mobilite urbaine a Paris specialise dans le reseau Velib.
-Reponds en francais de maniere concise et precise en te basant sur les donnees suivantes.
-
-Donnees historiques pertinentes :
+Donnees :
 {context}
 
 Question : {question}
 
-Reponds directement sans introduction.
-"""
+Reponds directement sans introduction."""
+
     try:
-        response = req.post(
+        response = requests.post(
             "https://api.groq.com/openai/v1/chat/completions",
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {groq_key}",
-            },
-            json={
-                "model": "llama-3.3-70b-versatile",
-                "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 500,
-                "temperature": 0.3,
-            },
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {groq_key}"},
+            json={"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": prompt}], "max_tokens": 500, "temperature": 0.3},
             timeout=30,
         )
         response.raise_for_status()
-        return response.json()["choices"][0]["message"]["content"]
+        answer = response.json()["choices"][0]["message"]["content"]
+        usage = response.json().get("usage", {})
+
+        # Verification pertinence
+        score, explanation = _verify_relevance_semantic(question, answer, context[:500])
+
+        return answer, {
+            "tokens": usage.get("total_tokens", 0),
+            "relevance_score": score,
+            "relevance_explanation": explanation,
+        }
     except Exception as e:
-        return f"Erreur Groq : {e}"
+        return f"Erreur Groq : {e}", {}
+
+
+def _verify_relevance_semantic(question: str, answer: str, context: str) -> tuple[int, str]:
+    groq_key = os.environ.get("GROQ_API_KEY", "")
+    prompt = f"""Evalue la pertinence de cette reponse RAG.
+Question : {question}
+Donnees : {context}
+Reponse : {answer[:300]}
+Reponds UNIQUEMENT : {{"score": <0-100>, "explication": "<1 phrase>"}}"""
+    try:
+        response = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {groq_key}"},
+            json={"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": prompt}], "max_tokens": 100, "temperature": 0.1},
+            timeout=15,
+        )
+        response.raise_for_status()
+        content = response.json()["choices"][0]["message"]["content"].strip().replace("```json","").replace("```","")
+        data = json.loads(content)
+        return int(data.get("score", 0)), data.get("explication", "")
+    except Exception:
+        return 0, "Evaluation indisponible"
 
 def extract_station_from_query(query: str, client) -> str | None:
     if client is None:

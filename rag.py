@@ -148,7 +148,7 @@ Exemples de documents :"""
         return f"{question}\n{hypothetical}"
     except Exception:
         return question
-        
+
 def _bm25_search(query: str, documents: list[dict], top_k: int = 20) -> list[tuple[int, float]]:
     """
     BM25 — recherche lexicale sur les documents.
@@ -469,7 +469,10 @@ def ask_rag(question: str, documents) -> tuple[str, dict]:
     context_parts = []
     for i, doc in enumerate(final_docs):
         meta = doc["metadata"]
-        citation = f"[Source {i+1}: {meta['station']} — {meta['run_at']} — snapshot {meta['snapshot_id']}]"
+        citation = (
+            f"[Source {i+1}: {meta['station']} — {meta['run_at']} — "
+            f"snapshot {meta['snapshot_id']}]"
+        )
         context_parts.append(f"{citation}\n{doc['text']}")
 
     context = "\n\n".join(context_parts)
@@ -520,10 +523,53 @@ Question : {question}
             for d in final_docs
         ]
 
+        # Verification pertinence
+        sources_str = "\n".join([
+            f"- {d['metadata']['station']} ({d['metadata']['run_at']}): {d['text'][:200]}"
+            for d in final_docs
+        ])
+        relevance_score, relevance_explanation = _verify_relevance(
+            question, answer, sources_str
+        )
+
+        search_trace["relevance_score"] = relevance_score
+        search_trace["relevance_explanation"] = relevance_explanation
+
         return answer, search_trace
 
     except Exception as e:
         return f"Erreur Groq : {e}", search_trace
+def _verify_relevance(question: str, answer: str, context: str) -> tuple[int, str]:
+    prompt = f"""Tu es un evaluateur de qualite pour un systeme RAG Velib.
+Evalue la pertinence de la reponse par rapport a la question et aux donnees.
+
+Question : {question}
+Donnees utilisees : {context[:500]}
+Reponse generee : {answer[:300]}
+
+Reponds UNIQUEMENT avec ce JSON :
+{{"score": <0-100>, "explication": "<1 phrase>"}}
+
+Criteres :
+- 90-100 : reponse precise, basee sur les donnees, sans hallucination
+- 70-89 : reponse correcte mais incomplete
+- 50-69 : partiellement correcte
+- 0-49 : incorrecte ou hallucinee"""
+
+    try:
+        response = requests.post(
+            GROQ_URL,
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {GROQ_API_KEY}"},
+            json={"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": prompt}], "max_tokens": 150, "temperature": 0.1},
+            timeout=15,
+        )
+        response.raise_for_status()
+        content = response.json()["choices"][0]["message"]["content"].strip()
+        content = content.replace("```json", "").replace("```", "").strip()
+        data = json.loads(content)
+        return int(data.get("score", 0)), data.get("explication", "")
+    except Exception as e:
+        return 0, f"Erreur evaluation : {e}"
 
 
 def ask_rag_with_qdrant_context(question: str, documents, qdrant_docs: list) -> tuple[str, dict]:

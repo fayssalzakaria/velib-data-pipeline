@@ -489,6 +489,13 @@ def _render_rag_content(df_filtered=None):
                 )
                 st.session_state.rag_traces.append(trace)
             st.write(response)
+            if trace and trace.get("relevance_score") is not None:
+                score = trace["relevance_score"]
+                color = "green" if score >= 80 else "orange" if score >= 50 else "red"
+                st.markdown(
+                    f"**Pertinence : <span style='color:{color}'>{score}/100</span>** — {trace.get('relevance_explanation','')}",
+                    unsafe_allow_html=True,
+                )
             st.session_state.rag_messages.append({"role": "assistant", "content": response})
         st.rerun()
 
@@ -592,9 +599,18 @@ def _render_semantic_content():
         return
 
     with st.spinner("Recherche semantique..."):
-        response = ask_with_chroma(query, qdrant_client)
+        response, sem_trace = ask_with_chroma(query, qdrant_client)
 
     st.write(response)
+
+    if sem_trace.get("relevance_score") is not None:
+        score = sem_trace["relevance_score"]
+        color = "green" if score >= 80 else "orange" if score >= 50 else "red"
+        st.caption(f"Tokens : {sem_trace.get('tokens', 0)}")
+        st.markdown(
+            f"**Pertinence : <span style='color:{color}'>{score}/100</span>** — {sem_trace.get('relevance_explanation','')}",
+            unsafe_allow_html=True,
+        )
 
 
 def render_snapshot_manager():
