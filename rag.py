@@ -148,7 +148,7 @@ Exemples de documents :"""
         return f"{question}\n{hypothetical}"
     except Exception:
         return question
-
+        
 def _bm25_search(query: str, documents: list[dict], top_k: int = 20) -> list[tuple[int, float]]:
     """
     BM25 — recherche lexicale sur les documents.
