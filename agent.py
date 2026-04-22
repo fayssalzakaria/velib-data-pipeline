@@ -108,7 +108,6 @@ def tool_search_history(query: str, qdrant_client) -> str:
 
 
 def tool_detect_anomalies(df: pd.DataFrame) -> str:
-    """Détecte les stations avec comportement inhabituel."""
     if df is None or df.empty:
         return json.dumps({"error": "Données non disponibles"})
 
@@ -123,7 +122,7 @@ def tool_detect_anomalies(df: pd.DataFrame) -> str:
             anomalies.append({
                 "type": "stations_vides_heure_pointe",
                 "heure": heure,
-                "stations": vides[:5],
+                "stations": vides,  # toutes les stations
                 "count": len(vides),
             })
 
@@ -132,11 +131,20 @@ def tool_detect_anomalies(df: pd.DataFrame) -> str:
     if not presque_pleines.empty:
         anomalies.append({
             "type": "stations_presque_pleines",
-            "stations": presque_pleines["name"].tolist()[:5],
+            "stations": presque_pleines["name"].tolist(),  # toutes
             "count": len(presque_pleines),
         })
 
-    # Déséquilibre vélos électriques/mécaniques
+    # Stations vides
+    vides = df[df["is_empty"]]
+    if not vides.empty:
+        anomalies.append({
+            "type": "stations_vides",
+            "stations": vides["name"].tolist(),
+            "count": len(vides),
+        })
+
+    # Déséquilibre vélos électriques
     total_ebike = int(df["ebike"].sum())
     total_mechanical = int(df["mechanical"].sum())
     total = total_ebike + total_mechanical
@@ -149,9 +157,11 @@ def tool_detect_anomalies(df: pd.DataFrame) -> str:
         })
 
     return json.dumps({
+        "source": "temps_reel",
         "heure_analyse": f"{heure}h",
+        "total_stations": len(df),
         "anomalies": anomalies if anomalies else ["Aucune anomalie detectee"],
-    })
+    }, ensure_ascii=False)
 
 
 TOOLS_SCHEMA = [
@@ -215,15 +225,19 @@ def run_agent(question: str, df: pd.DataFrame, qdrant_client=None) -> tuple[str,
         return "Cle Groq non configuree.", trace
 
     messages = [
-        {
-            "role": "system",
-            "content": (
-                "Tu es un agent expert en mobilite urbaine specialise dans le reseau Velib Paris. "
-                "Tu utilises les tools disponibles pour repondre precisement aux questions. "
-                "Reponds toujours en francais de maniere concise et utile. "
-                "Utilise plusieurs tools si necessaire pour donner une reponse complete."
-            ),
-        },
+    {
+    "role": "system",
+    "content": (
+        "Tu es un agent expert en mobilite urbaine specialise dans le reseau Velib Paris. "
+        "Tu utilises les tools disponibles pour repondre precisement aux questions. "
+        "Reponds toujours en francais de maniere concise et utile. "
+        "IMPORTANT : pour les questions sur les anomalies et l'etat actuel du reseau, "
+        "utilise detect_anomalies et get_network_stats qui analysent les donnees temps reel. "
+        "Pour les questions sur l'historique et les tendances, utilise search_history. "
+        "Quand tu listes des stations, cite-les TOUTES sans truncation. "
+        "Utilise plusieurs tools si necessaire pour donner une reponse complete."
+        ),
+    },
         {"role": "user", "content": question},
     ]
 
