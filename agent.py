@@ -9,6 +9,22 @@ import pandas as pd
 import requests
 import pytz
 from datetime import datetime
+from dataclasses import dataclass, field
+from typing import Any
+
+@dataclass
+class AgentTrace:
+    question: str = ""
+    tools_called: list = field(default_factory=list)
+    tool_results: dict = field(default_factory=dict)
+    prompt_sent: str = ""
+    raw_response: str = ""
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    total_tokens: int = 0
+    relevance_score: int = 0
+    relevance_explanation: str = ""
+    final_answer: str = ""
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
@@ -192,13 +208,11 @@ TOOLS_SCHEMA = [
 ]
 
 
-def run_agent(question: str, df: pd.DataFrame, qdrant_client=None) -> str:
-    """
-    Agent LangChain-style avec tool calling Groq.
-    Choisit automatiquement le bon tool selon la question.
-    """
+def run_agent(question: str, df: pd.DataFrame, qdrant_client=None) -> tuple[str, AgentTrace]:
+    trace = AgentTrace(question=question)
+
     if not GROQ_API_KEY:
-        return "Cle Groq non configuree."
+        return "Cle Groq non configuree.", trace
 
     messages = [
         {
@@ -214,20 +228,29 @@ def run_agent(question: str, df: pd.DataFrame, qdrant_client=None) -> str:
     ]
 
     try:
-        # Premier appel — l'agent choisit ses tools
         response = _call_groq(messages, tools=TOOLS_SCHEMA)
         choice = response["choices"][0]
         message = choice["message"]
 
-        # Pas de tool call — réponse directe
-        if not message.get("tool_calls"):
-            return message.get("content", "Aucune reponse generee.")
+        # Tokens premier appel
+        usage = response.get("usage", {})
+        trace.prompt_tokens += usage.get("prompt_tokens", 0)
+        trace.completion_tokens += usage.get("completion_tokens", 0)
 
-        # Exécute les tools appelés
+        if not message.get("tool_calls"):
+            answer = message.get("content", "Aucune reponse.")
+            trace.final_answer = answer
+            trace.raw_response = answer
+            trace.total_tokens = trace.prompt_tokens + trace.completion_tokens
+            return answer, trace
+
         messages.append(message)
+        all_tool_data = []
 
         for tool_call in message["tool_calls"]:
             tool_name = tool_call["function"]["name"]
+            trace.tools_called.append(tool_name)
+
             try:
                 args = json.loads(tool_call["function"]["arguments"])
             except Exception:
@@ -244,15 +267,95 @@ def run_agent(question: str, df: pd.DataFrame, qdrant_client=None) -> str:
             else:
                 result = json.dumps({"error": f"Tool {tool_name} inconnu"})
 
+            trace.tool_results[tool_name] = json.loads(result)
+            all_tool_data.append(f"[{tool_name}] {result}")
+
             messages.append({
                 "role": "tool",
                 "tool_call_id": tool_call["id"],
                 "content": result,
             })
 
-        # Deuxième appel — génère la réponse finale avec les résultats des tools
+        # Prompt final reconstruit
+        trace.prompt_sent = "\n".join([
+            f"[{m['role'].upper()}] {m.get('content', '') or ''}"
+            for m in messages
+            if m.get("content")
+        ])
+
         final_response = _call_groq(messages)
-        return final_response["choices"][0]["message"].get("content", "Aucune reponse.")
+        answer = final_response["choices"][0]["message"].get("content", "Aucune reponse.")
+
+        # Tokens second appel
+        usage2 = final_response.get("usage", {})
+        trace.prompt_tokens += usage2.get("prompt_tokens", 0)
+        trace.completion_tokens += usage2.get("completion_tokens", 0)
+        trace.total_tokens = trace.prompt_tokens + trace.completion_tokens
+        trace.raw_response = answer
+        trace.final_answer = answer
+
+        # Vérification pertinence
+        tool_data_str = "\n".join(all_tool_data)
+        score, explanation = _verify_relevance(question, answer, tool_data_str)
+        trace.relevance_score = score
+        trace.relevance_explanation = explanation
+
+        return answer, trace
 
     except Exception as e:
-        return f"Erreur agent : {e}"
+        error_msg = f"Erreur agent : {e}"
+        trace.final_answer = error_msg
+        return error_msg, trace
+
+def _verify_relevance(question: str, answer: str, tool_data: str) -> tuple[int, str]:
+    """
+    Vérifie la pertinence de la réponse par rapport aux données réelles.
+    Retourne (score 0-100, explication).
+    """
+    prompt = f"""Tu es un évaluateur de qualité pour un système IA Velib.
+Evalue la pertinence de la réponse par rapport à la question et aux données.
+
+Question : {question}
+
+Données utilisées :
+{tool_data}
+
+Réponse générée :
+{answer}
+
+Réponds UNIQUEMENT avec un JSON valide :
+{{
+  "score": <entier entre 0 et 100>,
+  "explication": "<1-2 phrases expliquant le score>"
+}}
+
+Critères :
+- 90-100 : réponse précise, basée sur les données, sans hallucination
+- 70-89 : réponse correcte mais incomplète
+- 50-69 : réponse partiellement correcte
+- 0-49 : réponse incorrecte ou hallucinée
+"""
+    try:
+        response = requests.post(
+            GROQ_URL,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {GROQ_API_KEY}",
+            },
+            json={
+                "model": "llama-3.3-70b-versatile",
+                "messages": [{"role": "user", "content": prompt}],
+                "max_tokens": 200,
+                "temperature": 0.1,
+            },
+            timeout=30,
+        )
+        response.raise_for_status()
+        content = response.json()["choices"][0]["message"]["content"]
+        content = content.strip()
+        if "```" in content:
+            content = content.split("```")[1].replace("json", "").strip()
+        data = json.loads(content)
+        return int(data.get("score", 0)), data.get("explication", "")
+    except Exception as e:
+        return 0, f"Erreur évaluation : {e}"

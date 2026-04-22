@@ -455,10 +455,44 @@ def _render_agent_content(df_filtered):
 
     if "agent_messages" not in st.session_state:
         st.session_state.agent_messages = []
+    if "agent_traces" not in st.session_state:
+        st.session_state.agent_traces = []
 
-    for msg in st.session_state.agent_messages:
+    for i, msg in enumerate(st.session_state.agent_messages):
         with st.chat_message(msg["role"]):
             st.write(msg["content"])
+
+        # Affiche la trace après chaque réponse assistant
+        if msg["role"] == "assistant" and i // 2 < len(st.session_state.agent_traces):
+            trace = st.session_state.agent_traces[i // 2]
+            with st.expander("Details de l'execution", expanded=False):
+                col1, col2, col3 = st.columns(3)
+                col1.metric("Tokens total", trace.total_tokens)
+                col2.metric("Prompt tokens", trace.prompt_tokens)
+                col3.metric("Completion tokens", trace.completion_tokens)
+
+                st.caption(f"Tools utilises : {', '.join(trace.tools_called) if trace.tools_called else 'aucun'}")
+
+                if trace.tool_results:
+                    st.caption("Donnees interrogees :")
+                    for tool_name, result in trace.tool_results.items():
+                        with st.expander(f"Resultat : {tool_name}"):
+                            st.json(result)
+
+                if trace.prompt_sent:
+                    with st.expander("Prompt envoye au LLM"):
+                        st.text(trace.prompt_sent[:2000])
+
+                # Score de pertinence
+                score = trace.relevance_score
+                color = "green" if score >= 80 else "orange" if score >= 50 else "red"
+                st.markdown(
+                    f"**Pertinence de la réponse : "
+                    f"<span style='color:{color}'>{score}/100</span>**",
+                    unsafe_allow_html=True,
+                )
+                if trace.relevance_explanation:
+                    st.caption(trace.relevance_explanation)
 
     question = st.chat_input(
         "Ex: Y a-t-il des anomalies sur le reseau ?",
@@ -472,10 +506,11 @@ def _render_agent_content(df_filtered):
         with st.chat_message("assistant"):
             with st.spinner("Agent en cours d'analyse..."):
                 from agent import run_agent
-                response = run_agent(question, df_filtered, qdrant_client)
+                response, trace = run_agent(question, df_filtered, qdrant_client)
+                st.session_state.agent_traces.append(trace)
             st.write(response)
             st.session_state.agent_messages.append({"role": "assistant", "content": response})
-
+        st.rerun()
 
 def _render_semantic_content():
     qdrant_client, qdrant_docs = _get_qdrant_client_cached()
