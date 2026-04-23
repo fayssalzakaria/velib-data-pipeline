@@ -103,51 +103,43 @@ def _collection_count(client) -> int:
 
 
 def build_chroma_index(df: pd.DataFrame = None):
+    """
+    Connexion rapide a Qdrant — reindexe seulement si collection vide ou absente.
+    """
     try:
         from sentence_transformers import SentenceTransformer
-        from qdrant_client.models import (
-            Distance,
-            VectorParams,
-            PointStruct,
-            PayloadSchemaType,
-        )
+        from qdrant_client.models import Distance, VectorParams, PointStruct, PayloadSchemaType
 
         client = _get_qdrant_client()
         if client is None:
             return None, 0
 
+        # Si collection existe et a des points — retourne immediatement
+        if _collection_exists(client):
+            count = _collection_count(client)
+            if count > 0:
+                return client, count
+
+        # Collection vide ou absente — charge les donnees et indexe
         if df is None or df.empty:
             df = _load_history_from_s3()
 
         if df.empty:
-            return None, 0
+            return client, 0
 
-        # Si la collection existe deja, on la supprime pour la recreer proprement
-        # avec l'index payload sur "station"
-        if _collection_exists(client):
-            try:
-                client.delete_collection(COLLECTION_NAME)
-            except Exception:
-                pass
-
-        # Creation propre de la collection
-        client.create_collection(
-            collection_name=COLLECTION_NAME,
-            vectors_config=VectorParams(
-                size=384,
-                distance=Distance.COSINE,
-            ),
-        )
-
-        # Index de payload pour permettre le filtrage sur le nom de station
-        client.create_payload_index(
-            collection_name=COLLECTION_NAME,
-            field_name="station",
-            field_schema=PayloadSchemaType.KEYWORD,
-        )
+        # Cree la collection
+        if not _collection_exists(client):
+            client.create_collection(
+                collection_name=COLLECTION_NAME,
+                vectors_config=VectorParams(size=384, distance=Distance.COSINE),
+            )
+            client.create_payload_index(
+                collection_name=COLLECTION_NAME,
+                field_name="station",
+                field_schema=PayloadSchemaType.KEYWORD,
+            )
 
         model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-
         texts = []
         payloads = []
 
@@ -171,7 +163,7 @@ def build_chroma_index(df: pd.DataFrame = None):
         points = [
             PointStruct(
                 id=hashlib.md5(
-                    f"{p.get('snapshot_id', '')}{p.get('station', '')}".encode()
+                    f"{p.get('snapshot_id','')}{p.get('station','')}".encode()
                 ).hexdigest(),
                 vector=embedding.tolist(),
                 payload={**p, "text": text},
@@ -183,7 +175,7 @@ def build_chroma_index(df: pd.DataFrame = None):
         for i in range(0, len(points), batch_size):
             client.upsert(
                 collection_name=COLLECTION_NAME,
-                points=points[i:i + batch_size],
+                points=points[i:i+batch_size],
             )
 
         return client, _collection_count(client)
