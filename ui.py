@@ -650,6 +650,19 @@ def render_snapshot_manager():
             key="snapshot_action",
         )
 
+        def _clear_ai_state():
+            try:
+                from vector_store import _get_qdrant_client, COLLECTION_NAME
+                client = _get_qdrant_client()
+                if client:
+                    client.delete_collection(COLLECTION_NAME)
+            except Exception:
+                pass
+            st.cache_data.clear()
+            for key in ["rag_engine", "rag_docs", "rag_documents", "qdrant_client", "qdrant_docs"]:
+                if key in st.session_state:
+                    del st.session_state[key]
+
         if action == "Supprimer les plus anciens":
             n = st.sidebar.number_input(
                 "Garder les N derniers",
@@ -662,10 +675,7 @@ def render_snapshot_manager():
                 for key in to_delete:
                     s3.delete_object(Bucket=bucket, Key=key)
                 st.sidebar.success(f"{len(to_delete)} snapshots supprimes")
-                st.cache_data.clear()
-                for key in ["rag_engine", "rag_docs", "qdrant_client", "qdrant_docs"]:
-                    if key in st.session_state:
-                        del st.session_state[key]
+                _clear_ai_state()
                 st.rerun()
 
         elif action == "Tout supprimer":
@@ -673,10 +683,7 @@ def render_snapshot_manager():
                 for key in keys:
                     s3.delete_object(Bucket=bucket, Key=key)
                 st.sidebar.success("Tous les snapshots supprimes")
-                st.cache_data.clear()
-                for key in ["rag_engine", "rag_docs", "qdrant_client", "qdrant_docs"]:
-                    if key in st.session_state:
-                        del st.session_state[key]
+                _clear_ai_state()
                 st.rerun()
 
     except Exception as e:
