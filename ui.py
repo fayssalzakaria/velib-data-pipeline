@@ -414,8 +414,9 @@ def _render_rag_content(df_filtered=None):
     if st.session_state.rag_documents:
         col1, col2 = st.columns([3, 1])
         with col1:
+            rag_docs = st.session_state.get("rag_docs", 0)
             st.caption(
-                f"Index RAG : {st.session_state.rag_docs} documents — "
+                f"Index RAG : {rag_docs} documents — "
                 f"HyDE + BM25 + Cosine + RRF + MMR + Reranking"
             )
         with col2:
