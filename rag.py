@@ -171,31 +171,27 @@ def _bm25_search(query: str, documents: list[dict], top_k: int = 20) -> list[tup
         return []
 
 
-def _cosine_search(query_expanded: str, documents: list[dict], top_k: int = 20) -> list[tuple[int, float]]:
-    """
-    Recherche par similarité cosine avec sentence-transformers.
-    Retourne liste de (index, score).
-    """
+def _cosine_search(query_expanded, documents, top_k=20):
     try:
         from sentence_transformers import SentenceTransformer
-
         model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-        corpus_texts = [doc["text"] for doc in documents]
-        corpus_embeddings = model.encode(corpus_texts, show_progress_bar=False)
         query_embedding = model.encode([query_expanded], show_progress_bar=False)[0]
 
-        # Similarité cosine
-        norms_corpus = np.linalg.norm(corpus_embeddings, axis=1)
+        # Utilise les embeddings precalcules si disponibles
+        if documents and "embedding" in documents[0]:
+            corpus_embeddings = np.array([d["embedding"] for d in documents])
+        else:
+            corpus_texts = [doc["text"] for doc in documents]
+            corpus_embeddings = model.encode(corpus_texts, show_progress_bar=False)
+
+        norms = np.linalg.norm(corpus_embeddings, axis=1)
         norm_query = np.linalg.norm(query_embedding)
-        similarities = np.dot(corpus_embeddings, query_embedding) / (
-            norms_corpus * norm_query + 1e-10
-        )
+        similarities = np.dot(corpus_embeddings, query_embedding) / (norms * norm_query + 1e-10)
 
         ranked = sorted(enumerate(similarities), key=lambda x: x[1], reverse=True)
         return ranked[:top_k]
     except Exception:
         return []
-
 
 def _reciprocal_rank_fusion(
     bm25_results: list[tuple[int, float]],
@@ -354,7 +350,7 @@ def hybrid_search(
     top_k: int = 8,
     use_hyde: bool = True,
     use_mmr: bool = True,
-    use_rerank: bool = True,
+    use_rerank: bool = False,
 ) -> tuple[list[dict], dict]:
     """
     Pipeline complet :
@@ -373,6 +369,24 @@ def hybrid_search(
 
     if not documents:
         return [], trace
+    # Fast path — cherche le nom de station directement dans les documents
+    question_upper = question.upper()
+    station_docs = []
+    for doc in documents:
+        station = doc["metadata"].get("station", "")
+        if station and station in question_upper:
+            station_docs.append(doc)
+
+    if station_docs:
+        # Station trouvee par nom exact — trie par date et retourne
+        station_docs = sorted(
+            station_docs,
+            key=lambda d: d["metadata"].get("run_at", ""),
+            reverse=True
+        )[:top_k]
+        trace["techniques_used"] = ["Nom exact"]
+        trace["final_docs"] = [f"{d['metadata']['station']} ({d['metadata']['run_at']})" for d in station_docs]
+        return station_docs, trace
 
     # Étape 1 — HyDE
     if use_hyde and GROQ_API_KEY:
@@ -437,19 +451,27 @@ def hybrid_search(
 
 
 def build_rag_index(df: pd.DataFrame = None):
-    """
-    Construit l'index en mémoire.
-    Retourne (documents, nb_documents) — on stocke les docs bruts pour hybrid search.
-    """
     if df is None or df.empty:
         df = _load_history_df()
-
     if df.empty:
         return None, 0
 
     documents = _build_documents(df)
-    return documents, len(documents)
+    if not documents:
+        return None, 0
 
+    # Precalcule les embeddings une seule fois
+    try:
+        from sentence_transformers import SentenceTransformer
+        model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+        texts = [d["text"] for d in documents]
+        embeddings = model.encode(texts, show_progress_bar=False)
+        for i, doc in enumerate(documents):
+            doc["embedding"] = embeddings[i]
+    except Exception:
+        pass
+
+    return documents, len(documents)
 
 def ask_rag(question: str, documents) -> tuple[str, dict]:
     """
