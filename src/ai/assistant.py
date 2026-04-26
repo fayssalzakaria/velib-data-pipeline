@@ -13,8 +13,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 import pandas as pd
-
-from llm_client import call_llm_text
+from llm_client import call_llm_text, verify_relevance
 from src.ai.prompts import FINAL_SYNTHESIS_PROMPT
 from src.ai.router import classify_question
 from src.ai.tools import (
@@ -37,6 +36,8 @@ class AssistantTrace:
     tools_used: list[str] = field(default_factory=list)
     tool_results: dict[str, Any] = field(default_factory=dict)
     tokens: dict[str, int] = field(default_factory=dict)
+    relevance_score: int | None = None
+    relevance_explanation: str = ""
     final_answer: str = ""
 
 
@@ -159,9 +160,29 @@ def run_unified_assistant(
                 "trace": rag_trace,
             }
 
-            # Si le RAG donne déjà une réponse bien formée, on la retourne directement.
+            # Si le RAG donne déjà une réponse bien formée, on la retourne directement,
+            # mais on récupère ou recalcule aussi la pertinence.
             trace.tool_results = tool_outputs
             trace.final_answer = answer
+
+            if isinstance(rag_trace, dict):
+                trace.tokens = rag_trace.get("tokens", {})
+                trace.relevance_score = rag_trace.get("relevance_score")
+                trace.relevance_explanation = rag_trace.get("relevance_explanation", "")
+
+            if trace.relevance_score is None:
+                rag_context = tool_result_to_text(tool_outputs["search_history_rag"])
+
+                score, explanation = _evaluate_unified_answer(
+                    question=question,
+                    answer=answer,
+                    tool_results_text=rag_context,
+                    intent=intent,
+                )
+
+                trace.relevance_score = score
+                trace.relevance_explanation = explanation
+
             return answer, trace
 
         elif intent == "semantic":
@@ -209,9 +230,51 @@ def run_unified_assistant(
         trace.tokens = tokens
         trace.final_answer = answer
 
+        score, explanation = _evaluate_unified_answer(
+            question=question,
+            answer=answer,
+            tool_results_text=tool_results_text,
+            intent=intent,
+        )
+
+        trace.relevance_score = score
+        trace.relevance_explanation = explanation
+
         return answer, trace
+
+    except Exception as e:
+        trace.final_answer = f"Erreur assistant unifie : {e}"
+        return trace.final_answer, trace
+
+
+
 
     except Exception as e:
         error = f"Erreur assistant IA : {e}"
         trace.final_answer = error
         return error, trace
+        
+def _evaluate_unified_answer(
+    question: str,
+    answer: str,
+    tool_results_text: str,
+    intent: str,
+) -> tuple[int, str]:
+    """
+    Évalue la pertinence de la réponse finale de l'assistant unifié
+    par rapport aux résultats des outils utilisés.
+    """
+    context = f"""
+Intention détectée :
+{intent}
+
+Résultats des outils :
+{tool_results_text}
+"""
+
+    return verify_relevance(
+        question=question,
+        answer=answer,
+        context=context,
+        evaluator_name="assistant IA unifié Vélib",
+    )

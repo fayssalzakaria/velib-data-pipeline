@@ -699,6 +699,7 @@ def _render_unified_assistant_content(df_filtered):
         try:
             with st.spinner("Chargement de l'index RAG historique..."):
                 from src.ai.rag import build_rag_index
+
                 docs, n_docs = build_rag_index()
                 st.session_state.rag_documents = docs
                 st.session_state.rag_docs = n_docs
@@ -718,6 +719,7 @@ def _render_unified_assistant_content(df_filtered):
 
         if msg["role"] == "assistant":
             trace_index = i // 2
+
             if trace_index < len(st.session_state.unified_traces):
                 trace = st.session_state.unified_traces[trace_index]
 
@@ -737,6 +739,23 @@ def _render_unified_assistant_content(df_filtered):
                         c1.metric("Tokens total", trace.tokens.get("total", 0))
                         c2.metric("Prompt", trace.tokens.get("prompt", 0))
                         c3.metric("Completion", trace.tokens.get("completion", 0))
+
+                    if trace.relevance_score is not None:
+                        color = (
+                            "green"
+                            if trace.relevance_score >= 80
+                            else "orange"
+                            if trace.relevance_score >= 50
+                            else "red"
+                        )
+
+                        st.markdown(
+                            f"**Pertinence : <span style='color:{color}'>{trace.relevance_score}/100</span>**",
+                            unsafe_allow_html=True,
+                        )
+
+                        if trace.relevance_explanation:
+                            st.caption(trace.relevance_explanation)
 
                     if trace.tool_results:
                         for tool_name, result in trace.tool_results.items():
