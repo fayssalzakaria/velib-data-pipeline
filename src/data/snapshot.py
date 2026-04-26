@@ -70,7 +70,7 @@ def _fetch_velib_snapshot() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def capture_snapshot_local() -> tuple[bool, str]:
+def capture_snapshot_s3() -> tuple[bool, str]:
     """Capture un snapshot et le sauvegarde dans S3."""
     try:
         import boto3
@@ -151,7 +151,7 @@ def refresh_ai_indexes(df: pd.DataFrame = None):
 
     # Vide la collection Qdrant pour forcer re-indexation complète
     try:
-        from vector_store import _get_qdrant_client, COLLECTION_NAME
+        from src.ai.vector_store import _get_qdrant_client, COLLECTION_NAME
         client = _get_qdrant_client()
         if client:
             try:

@@ -1,10 +1,10 @@
 import streamlit as st
 
 from config import SOURCE_API
-from data_loader import load_from_api, load_from_s3
-from filters import apply_filters
+from src.data.data_loader import load_from_api, load_from_s3
+from src.data.filters import apply_filters
 
-from ui import (
+from src.ui.ui import (
     render_charts,
     render_downloads,
     render_last_update,
@@ -12,7 +12,7 @@ from ui import (
     render_metrics,
     render_sidebar,
     render_source_info,
-    render_snapshot_button, 
+    render_snapshot_button,
     render_ai_tabs,
     render_snapshot_manager,
     render_station_detail,

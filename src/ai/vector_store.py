@@ -8,7 +8,8 @@ import uuid
 import pandas as pd
 import pytz
 import hashlib
-
+import json
+from llm_client import call_llm_text, verify_relevance
 PARIS_TZ = pytz.timezone("Europe/Paris")
 S3_BUCKET = os.environ.get("S3_BUCKET", "velib-pipeline-fz-prod-data")
 QDRANT_URL = os.environ.get("QDRANT_URL", "")
@@ -102,7 +103,7 @@ def _collection_count(client) -> int:
         return 0
 
 
-def build_chroma_index(df: pd.DataFrame = None):
+def build_qdrant_index(df: pd.DataFrame = None):
     """
     Connexion rapide a Qdrant — reindexe seulement si collection vide ou absente.
     """
@@ -229,7 +230,7 @@ def semantic_search(query: str, client, n_results: int = 8) -> list:
     except Exception as e:
         return [f"DEBUG semantic_search erreur : {e}"]
 
-def ask_with_chroma(question: str, client) -> tuple[str, dict]:
+def ask_with_qdrant(question: str, client) -> tuple[str, dict]:
     groq_key = os.environ.get("GROQ_API_KEY", "")
     if not groq_key:
         return "Cle Groq non configuree.", {}
@@ -249,21 +250,18 @@ Question : {question}
 Reponds directement sans introduction."""
 
     try:
-        response = requests.post(
-            "https://api.groq.com/openai/v1/chat/completions",
-            headers={"Content-Type": "application/json", "Authorization": f"Bearer {groq_key}"},
-            json={"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": prompt}], "max_tokens": 500, "temperature": 0.3},
+        answer, tokens = call_llm_text(
+            prompt,
+            max_tokens=500,
+            temperature=0.3,
             timeout=30,
         )
-        response.raise_for_status()
-        answer = response.json()["choices"][0]["message"]["content"]
-        usage = response.json().get("usage", {})
 
         # Verification pertinence
         score, explanation = _verify_relevance_semantic(question, answer, context[:500])
 
         return answer, {
-            "tokens": usage.get("total_tokens", 0),
+            "tokens": tokens.get("total_tokens", 0),
             "relevance_score": score,
             "relevance_explanation": explanation,
         }
@@ -272,25 +270,12 @@ Reponds directement sans introduction."""
 
 
 def _verify_relevance_semantic(question: str, answer: str, context: str) -> tuple[int, str]:
-    groq_key = os.environ.get("GROQ_API_KEY", "")
-    prompt = f"""Evalue la pertinence de cette reponse RAG.
-Question : {question}
-Donnees : {context}
-Reponse : {answer[:300]}
-Reponds UNIQUEMENT : {{"score": <0-100>, "explication": "<1 phrase>"}}"""
-    try:
-        response = requests.post(
-            "https://api.groq.com/openai/v1/chat/completions",
-            headers={"Content-Type": "application/json", "Authorization": f"Bearer {groq_key}"},
-            json={"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": prompt}], "max_tokens": 100, "temperature": 0.1},
-            timeout=15,
-        )
-        response.raise_for_status()
-        content = response.json()["choices"][0]["message"]["content"].strip().replace("```json","").replace("```","")
-        data = json.loads(content)
-        return int(data.get("score", 0)), data.get("explication", "")
-    except Exception:
-        return 0, "Evaluation indisponible"
+    return verify_relevance(
+        question=question,
+        answer=answer,
+        context=context,
+        evaluator_name="recherche sémantique Vélib",
+    )
 
 def extract_station_from_query(query: str, client) -> str | None:
     if client is None:

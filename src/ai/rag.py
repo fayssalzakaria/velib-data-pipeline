@@ -7,7 +7,7 @@ import json
 import math
 import numpy as np
 import pandas as pd
-import requests
+from llm_client import call_llm_text, call_llm_json, verify_relevance
 import pytz
 from datetime import datetime
 
@@ -129,23 +129,15 @@ Question : {question}
 
 Exemples de documents :"""
 
-        response = requests.post(
-            GROQ_URL,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {GROQ_API_KEY}",
-            },
-            json={
-                "model": "llama-3.3-70b-versatile",
-                "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 200,
-                "temperature": 0.1,
-            },
+        answer, _ = call_llm_text(
+            prompt,
+            max_tokens=200,
+            temperature=0.1,
             timeout=15,
         )
-        response.raise_for_status()
-        hypothetical = response.json()["choices"][0]["message"]["content"]
-        return f"{question}\n{hypothetical}"
+
+        return f"{question}\n{answer}"
+
     except Exception:
         return question
 
@@ -222,13 +214,13 @@ def _mmr_rerank(
 ) -> list[int]:
     # Déduplique par station pour éviter les doublons
     seen_stations = set()
-    fused_deduped = []
-    for idx, score in fused:
+    candidates_deduped = []
+    for idx, score in candidates:
         station = documents[idx]["metadata"].get("station", "")
         if station not in seen_stations:
             seen_stations.add(station)
-        fused_deduped.append((idx, score))
-    fused = fused_deduped
+            candidates_deduped.append((idx, score))
+    candidates = candidates_deduped
     """
     MMR — Maximal Marginal Relevance.
     Sélectionne les documents pertinents ET diversifiés.
@@ -320,29 +312,20 @@ Documents :
 
 Classe les {len(candidates)} documents du plus au moins pertinent."""
 
-        response = requests.post(
-            GROQ_URL,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {GROQ_API_KEY}",
-            },
-            json={
-                "model": "llama-3.3-70b-versatile",
-                "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 100,
-                "temperature": 0.1,
-            },
+        data, _ = call_llm_json(
+            prompt,
+            max_tokens=100,
+            temperature=0.1,
             timeout=15,
         )
-        response.raise_for_status()
-        content = response.json()["choices"][0]["message"]["content"]
-        content = content.strip().replace("```json", "").replace("```", "")
-        order = json.loads(content)["ordre"]
+
+        order = data.get("ordre", [])
         reranked = [candidates[i - 1] for i in order if 0 < i <= len(candidates)]
+
         return reranked[:top_k]
+
     except Exception:
         return candidates[:top_k]
-
 
 def hybrid_search(
     question: str,
@@ -515,31 +498,15 @@ Question : {question}
 """
 
     try:
-        response = requests.post(
-            GROQ_URL,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {GROQ_API_KEY}",
-            },
-            json={
-                "model": "llama-3.3-70b-versatile",
-                "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 600,
-                "temperature": 0.2,
-            },
+        answer, tokens = call_llm_text(
+            prompt,
+            max_tokens=600,
+            temperature=0.2,
             timeout=30,
         )
-        response.raise_for_status()
-        data = response.json()
-        answer = data["choices"][0]["message"]["content"]
 
-        # Tokens
-        usage = data.get("usage", {})
-        search_trace["tokens"] = {
-            "prompt": usage.get("prompt_tokens", 0),
-            "completion": usage.get("completion_tokens", 0),
-            "total": usage.get("total_tokens", 0),
-        }
+        search_trace["tokens"] = tokens
+
         search_trace["sources_used"] = [
             f"{d['metadata']['station']} — {d['metadata']['run_at']}"
             for d in final_docs
@@ -550,8 +517,12 @@ Question : {question}
             f"- {d['metadata']['station']} ({d['metadata']['run_at']}): {d['text'][:200]}"
             for d in final_docs
         ])
-        relevance_score, relevance_explanation = _verify_relevance(
-            question, answer, sources_str
+
+        relevance_score, relevance_explanation = verify_relevance(
+            question=question,
+            answer=answer,
+            context=sources_str,
+            evaluator_name="système RAG Vélib",
         )
 
         search_trace["relevance_score"] = relevance_score
@@ -560,38 +531,7 @@ Question : {question}
         return answer, search_trace
 
     except Exception as e:
-        return f"Erreur Groq : {e}", search_trace
-def _verify_relevance(question: str, answer: str, context: str) -> tuple[int, str]:
-    prompt = f"""Tu es un evaluateur de qualite pour un systeme RAG Velib.
-Evalue la pertinence de la reponse par rapport a la question et aux donnees.
-
-Question : {question}
-Donnees utilisees : {context[:500]}
-Reponse generee : {answer[:300]}
-
-Reponds UNIQUEMENT avec ce JSON :
-{{"score": <0-100>, "explication": "<1 phrase>"}}
-
-Criteres :
-- 90-100 : reponse precise, basee sur les donnees, sans hallucination
-- 70-89 : reponse correcte mais incomplete
-- 50-69 : partiellement correcte
-- 0-49 : incorrecte ou hallucinee"""
-
-    try:
-        response = requests.post(
-            GROQ_URL,
-            headers={"Content-Type": "application/json", "Authorization": f"Bearer {GROQ_API_KEY}"},
-            json={"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": prompt}], "max_tokens": 150, "temperature": 0.1},
-            timeout=15,
-        )
-        response.raise_for_status()
-        content = response.json()["choices"][0]["message"]["content"].strip()
-        content = content.replace("```json", "").replace("```", "").strip()
-        data = json.loads(content)
-        return int(data.get("score", 0)), data.get("explication", "")
-    except Exception as e:
-        return 0, f"Erreur evaluation : {e}"
+        return f"Erreur LLM : {e}", search_trace
 
 
 def ask_rag_with_qdrant_context(question: str, documents, qdrant_docs: list) -> tuple[str, dict]:
@@ -618,34 +558,18 @@ Donnees :
 
 Question : {question}"""
         try:
-            response = requests.post(
-                GROQ_URL,
-                headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {GROQ_API_KEY}",
-                },
-                json={
-                    "model": "llama-3.3-70b-versatile",
-                    "messages": [{"role": "user", "content": prompt}],
-                    "max_tokens": 400,
-                    "temperature": 0.2,
-                },
+            answer, tokens = call_llm_text(
+                prompt,
+                max_tokens=400,
+                temperature=0.2,
                 timeout=30,
             )
-            response.raise_for_status()
-            data = response.json()
-            answer = data["choices"][0]["message"]["content"]
-            usage = data.get("usage", {})
 
             return answer, {
                 "fast_path": True,
                 "reason": "question temps reel",
                 "techniques_used": ["Qdrant direct"],
-                "tokens": {
-                    "prompt": usage.get("prompt_tokens", 0),
-                    "completion": usage.get("completion_tokens", 0),
-                    "total": usage.get("total_tokens", 0),
-                },
+                "tokens": tokens,
                 "relevance_score": None,
                 "relevance_explanation": "",
             }
@@ -665,23 +589,18 @@ Donnees :
 
 Question : {question}"""
         try:
-            response = requests.post(
-                GROQ_URL,
-                headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {GROQ_API_KEY}",
-                },
-                json={
-                    "model": "llama-3.3-70b-versatile",
-                    "messages": [{"role": "user", "content": prompt}],
-                    "max_tokens": 500,
-                    "temperature": 0.2,
-                },
+            answer, tokens = call_llm_text(
+                prompt,
+                max_tokens=500,
+                temperature=0.2,
                 timeout=30,
             )
-            response.raise_for_status()
-            return response.json()["choices"][0]["message"]["content"], {}
+
+            return answer, {
+                "tokens": tokens,
+            }
+
         except Exception as e:
-            return f"Erreur Groq : {e}", {}
+            return f"Erreur LLM : {e}", {}
 
     return "Aucune donnee disponible. Capturez des snapshots.", {}

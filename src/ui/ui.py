@@ -6,12 +6,11 @@ import plotly.express as px
 import pytz
 import streamlit as st
 
-from chatbot import ask_groq, build_context
 from config import API_ENDPOINT, PARIS_TIMEZONE, SOURCE_API, SOURCE_S3
-from history import get_station_history, get_available_stations
-from snapshot import capture_snapshot_aws, capture_snapshot_local
-from vector_store import extract_station_from_query, build_chroma_index, ask_with_chroma
-
+from src.ai.chatbot import ask_groq, build_context
+from src.data.history import get_station_history, get_available_stations
+from src.data.snapshot import capture_snapshot_aws, capture_snapshot_s3
+from src.ai.vector_store import extract_station_from_query, build_qdrant_index, ask_with_qdrant
 
 def render_sidebar():
     st.sidebar.title("Configuration")
@@ -212,7 +211,7 @@ def render_downloads(df_filtered):
     with col_dl2:
         if st.button("Generer rapport PDF", use_container_width=True):
             with st.spinner("Generation du rapport..."):
-                from report_generator import generate_pdf_report
+                from src.reports.report_generator import generate_pdf_report
                 pdf_bytes = generate_pdf_report(df_filtered)
             st.download_button(
                 "Telecharger le PDF",
@@ -336,7 +335,7 @@ def render_snapshot_button(source: str):
                 st.success(message)
                 st.cache_data.clear()
                 st.cache_data.clear()
-                from snapshot import refresh_ai_indexes
+                from src.data.snapshot import refresh_ai_indexes
                 refresh_ai_indexes()
                 st.rerun()
             else:
@@ -346,11 +345,11 @@ def render_snapshot_button(source: str):
         st.info("Snapshot sauvegarde dans S3.")
         if st.button("Capturer snapshot S3", type="primary"):
             with st.spinner("Capture en cours..."):
-                success, message = capture_snapshot_local()
+                success, message = capture_snapshot_s3()
             if success:
                 st.success(message)
                 st.cache_data.clear()
-                from snapshot import refresh_ai_indexes
+                from src.data.snapshot import refresh_ai_indexes
                 refresh_ai_indexes()
                 st.rerun()
             else:
@@ -360,10 +359,10 @@ def render_snapshot_button(source: str):
         st.warning("AWS non configure — snapshots non persistants.")
         if st.button("Capturer snapshot local", type="primary"):
             with st.spinner("Capture en cours..."):
-                success, message = capture_snapshot_local()
+                success, message = capture_snapshot_s3()
             if success:
                 st.success(message)
-                from snapshot import refresh_ai_indexes
+                from src.data.snapshot import refresh_ai_indexes
                 refresh_ai_indexes()
                 st.rerun()
             else:
@@ -375,7 +374,7 @@ def render_snapshot_button(source: str):
 def _get_qdrant_client_cached():
     if "qdrant_client" not in st.session_state:
         with st.spinner("Connexion Qdrant Cloud..."):
-            client, n = build_chroma_index()
+            client, n = build_qdrant_index()
             st.session_state.qdrant_client = client
             st.session_state.qdrant_docs = n
     return st.session_state.get("qdrant_client"), st.session_state.get("qdrant_docs", 0)
@@ -406,7 +405,7 @@ def _render_rag_content(df_filtered=None):
 
     if "rag_documents" not in st.session_state:
         with st.spinner("Chargement des documents RAG..."):
-            from rag import build_rag_index
+            from src.ai.rag import build_rag_index
             docs, n_docs = build_rag_index()
             st.session_state.rag_documents = docs
             st.session_state.rag_docs = n_docs
@@ -479,8 +478,8 @@ def _render_rag_content(df_filtered=None):
             st.write(question)
         with st.chat_message("assistant"):
             with st.spinner("Pipeline RAG en cours — HyDE + BM25 + Cosine + RRF + MMR + Reranking..."):
-                from rag import ask_rag_with_qdrant_context
-                from vector_store import semantic_search
+                from src.ai.rag import ask_rag_with_qdrant_context
+                from src.ai.vector_store import semantic_search
                 qdrant_client, _ = _get_qdrant_client_cached()
                 qdrant_docs = semantic_search(question, qdrant_client, n_results=10) if qdrant_client else []
                 response, trace = ask_rag_with_qdrant_context(
@@ -562,7 +561,7 @@ def _render_agent_content(df_filtered):
             st.write(question)
         with st.chat_message("assistant"):
             with st.spinner("Agent en cours — HyDE + BM25 + Cosine + RRF + MMR si historique requis..."):
-                from agent import run_agent
+                from src.ai.agent import run_agent
                 response, trace = run_agent(
                     question, df_filtered, qdrant_client, rag_documents
                 )
@@ -600,7 +599,7 @@ def _render_semantic_content():
         return
 
     with st.spinner("Recherche semantique..."):
-        response, sem_trace = ask_with_chroma(query, qdrant_client)
+        response, sem_trace = ask_with_qdrant(query, qdrant_client)
 
     st.write(response)
 
@@ -652,7 +651,7 @@ def render_snapshot_manager():
 
         def _clear_ai_state():
             try:
-                from vector_store import _get_qdrant_client, COLLECTION_NAME
+                from src.ai.vector_store import _get_qdrant_client, COLLECTION_NAME
                 client = _get_qdrant_client()
                 if client:
                     client.delete_collection(COLLECTION_NAME)

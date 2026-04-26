@@ -6,7 +6,7 @@ import os
 import io
 import json
 import pandas as pd
-import requests
+from llm_client import call_llm, verify_relevance
 import pytz
 from datetime import datetime
 from dataclasses import dataclass, field
@@ -32,27 +32,13 @@ PARIS_TZ = pytz.timezone("Europe/Paris")
 
 
 def _call_groq(messages: list, tools: list = None, max_tokens: int = 1000) -> dict:
-    payload = {
-        "model": "llama-3.3-70b-versatile",
-        "messages": messages,
-        "max_tokens": max_tokens,
-        "temperature": 0.2,
-    }
-    if tools:
-        payload["tools"] = tools
-        payload["tool_choice"] = "auto"
-
-    response = requests.post(
-        GROQ_URL,
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {GROQ_API_KEY}",
-        },
-        json=payload,
+    return call_llm(
+        messages,
+        tools=tools,
+        max_tokens=max_tokens,
+        temperature=0.2,
         timeout=30,
     )
-    response.raise_for_status()
-    return response.json()
 
 
 def tool_get_station_info(station_name: str, df: pd.DataFrame) -> str:
@@ -98,7 +84,7 @@ def tool_get_network_stats(df: pd.DataFrame) -> str:
 def tool_search_history(query: str, qdrant_client, rag_documents=None) -> str:
     if rag_documents:
         try:
-            from rag import hybrid_search
+            from src.ai.rag import hybrid_search
             docs, trace = hybrid_search(
                 query, rag_documents, top_k=5,
                 use_hyde=True, use_mmr=True, use_rerank=True,
@@ -122,7 +108,7 @@ def tool_search_history(query: str, qdrant_client, rag_documents=None) -> str:
     if qdrant_client is None:
         return json.dumps({"error": "Historique non disponible"})
     try:
-        from vector_store import semantic_search
+        from src.ai.vector_store import semantic_search
         docs = semantic_search(query, qdrant_client, n_results=5)
         return json.dumps({"resultats": docs})
     except Exception as e:
@@ -348,54 +334,9 @@ def run_agent(question: str, df: pd.DataFrame, qdrant_client=None, rag_documents
         return error_msg, trace
 
 def _verify_relevance(question: str, answer: str, tool_data: str) -> tuple[int, str]:
-    """
-    Vérifie la pertinence de la réponse par rapport aux données réelles.
-    Retourne (score 0-100, explication).
-    """
-    prompt = f"""Tu es un évaluateur de qualité pour un système IA Velib.
-Evalue la pertinence de la réponse par rapport à la question et aux données.
-
-Question : {question}
-
-Données utilisées :
-{tool_data}
-
-Réponse générée :
-{answer}
-
-Réponds UNIQUEMENT avec un JSON valide :
-{{
-  "score": <entier entre 0 et 100>,
-  "explication": "<1-2 phrases expliquant le score>"
-}}
-
-Critères :
-- 90-100 : réponse précise, basée sur les données, sans hallucination
-- 70-89 : réponse correcte mais incomplète
-- 50-69 : réponse partiellement correcte
-- 0-49 : réponse incorrecte ou hallucinée
-"""
-    try:
-        response = requests.post(
-            GROQ_URL,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {GROQ_API_KEY}",
-            },
-            json={
-                "model": "llama-3.3-70b-versatile",
-                "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 200,
-                "temperature": 0.1,
-            },
-            timeout=30,
-        )
-        response.raise_for_status()
-        content = response.json()["choices"][0]["message"]["content"]
-        content = content.strip()
-        if "```" in content:
-            content = content.split("```")[1].replace("json", "").strip()
-        data = json.loads(content)
-        return int(data.get("score", 0)), data.get("explication", "")
-    except Exception as e:
-        return 0, f"Erreur évaluation : {e}"
+    return verify_relevance(
+        question=question,
+        answer=answer,
+        context=tool_data,
+        evaluator_name="agent IA Vélib",
+    )

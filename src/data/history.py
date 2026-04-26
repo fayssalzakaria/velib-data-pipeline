@@ -43,7 +43,7 @@ def _load_from_aurora(station_name: str, hours: int) -> pd.DataFrame:
                    numdocksavailable, bike_ratio
             FROM velib_data
             WHERE name ILIKE :name
-              AND run_at >= NOW() - INTERVAL ':hours hours'
+              AND run_at >= NOW() - (:hours * INTERVAL '1 hour')
             ORDER BY run_at ASC
         """).bindparams(name=f"%{station_name.upper()}%", hours=hours)
         with engine.connect() as conn:
