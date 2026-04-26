@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-
+from src.ai.assistant import run_unified_assistant
 import pandas as pd
 import plotly.express as px
 import pytz
@@ -688,26 +688,128 @@ def render_snapshot_manager():
     except Exception as e:
         st.sidebar.error(f"Erreur : {e}")
 
+def _render_unified_assistant_content(df_filtered):
+    st.info(
+        "Assistant IA unifié : il choisit automatiquement entre temps réel, anomalies, RAG historique et recherche sémantique."
+    )
+
+    qdrant_client, _ = _get_qdrant_client_cached()
+
+    if "rag_documents" not in st.session_state:
+        try:
+            with st.spinner("Chargement de l'index RAG historique..."):
+                from src.ai.rag import build_rag_index
+                docs, n_docs = build_rag_index()
+                st.session_state.rag_documents = docs
+                st.session_state.rag_docs = n_docs
+        except Exception:
+            st.session_state.rag_documents = None
+            st.session_state.rag_docs = 0
+
+    if "unified_messages" not in st.session_state:
+        st.session_state.unified_messages = []
+
+    if "unified_traces" not in st.session_state:
+        st.session_state.unified_traces = []
+
+    for i, msg in enumerate(st.session_state.unified_messages):
+        with st.chat_message(msg["role"]):
+            st.write(msg["content"])
+
+        if msg["role"] == "assistant":
+            trace_index = i // 2
+            if trace_index < len(st.session_state.unified_traces):
+                trace = st.session_state.unified_traces[trace_index]
+
+                with st.expander("Détails assistant IA", expanded=False):
+                    col1, col2, col3 = st.columns(3)
+                    col1.metric("Intention", trace.intent)
+                    col2.metric("Confiance", f"{trace.confidence:.0%}")
+                    col3.metric("Tools", len(trace.tools_used))
+
+                    st.caption(f"Raison du routage : {trace.routing_reason}")
+
+                    if trace.tools_used:
+                        st.caption(f"Outils utilisés : {', '.join(trace.tools_used)}")
+
+                    if trace.tokens:
+                        c1, c2, c3 = st.columns(3)
+                        c1.metric("Tokens total", trace.tokens.get("total", 0))
+                        c2.metric("Prompt", trace.tokens.get("prompt", 0))
+                        c3.metric("Completion", trace.tokens.get("completion", 0))
+
+                    if trace.tool_results:
+                        for tool_name, result in trace.tool_results.items():
+                            with st.expander(f"Résultat outil : {tool_name}"):
+                                st.json(result)
+
+    question = st.chat_input(
+        "Ex: Y a-t-il des anomalies maintenant ? Bastille est-elle souvent vide le matin ?",
+        key="unified_assistant_input",
+    )
+
+    if question:
+        st.session_state.unified_messages.append(
+            {"role": "user", "content": question}
+        )
+
+        with st.chat_message("user"):
+            st.write(question)
+
+        with st.chat_message("assistant"):
+            with st.spinner("Assistant IA en cours..."):
+                from src.ai.vector_store import semantic_search
+
+                qdrant_docs = (
+                    semantic_search(question, qdrant_client, n_results=10)
+                    if qdrant_client
+                    else []
+                )
+
+                response, trace = run_unified_assistant(
+                    question,
+                    df_filtered,
+                    qdrant_client=qdrant_client,
+                    rag_documents=st.session_state.get("rag_documents"),
+                    qdrant_docs=qdrant_docs,
+                    use_llm_router=False,
+                )
+
+                st.session_state.unified_traces.append(trace)
+
+            st.write(response)
+
+            st.session_state.unified_messages.append(
+                {"role": "assistant", "content": response}
+            )
+
+        st.rerun()
+
 def render_ai_tabs(df_filtered):
     st.subheader("Intelligence Artificielle")
 
-    tab1, tab2, tab3 = st.tabs([
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "Assistant IA",
         "Chatbot RAG",
         "Agent IA",
-        "Recherche semantique",
+        "Recherche sémantique",
     ])
 
     with tab1:
+        st.caption("Assistant unifié avec routage automatique vers les bons outils")
+        _render_unified_assistant_content(df_filtered)
+
+    with tab2:
         st.caption("Posez des questions sur l'historique des stations")
         _render_rag_content(df_filtered)
 
-    with tab2:
+    with tab3:
         st.caption("L'agent choisit automatiquement les bons outils")
         st.caption("Tools : get_station_info · get_network_stats · search_history · detect_anomalies")
         _render_agent_content(df_filtered)
 
-    with tab3:
-        st.caption("Recherche semantique sur les patterns historiques")
+    with tab4:
+        st.caption("Recherche sémantique sur les patterns historiques")
         _render_semantic_content()
 
     st.divider()
