@@ -19,7 +19,7 @@ def build_context(df) -> str:
 """
 
 
-ddef ask_groq(question: str, context: str) -> str:
+def ask_groq(question: str, context: str) -> str:
     if not GROQ_API_KEY:
         return "Clé Groq non configurée dans les secrets Streamlit."
 
