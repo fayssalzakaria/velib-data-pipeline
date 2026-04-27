@@ -13,3 +13,10 @@ llama-index-embeddings-huggingface
 sentence-transformers
 qdrant-client
 reportlab
+fastapi
+uvicorn
+langchain
+langchain-core
+langchain-community
+langchain-groq
+pydantic

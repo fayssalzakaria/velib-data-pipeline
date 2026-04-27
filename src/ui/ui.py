@@ -11,7 +11,8 @@ from src.ai.chatbot import ask_groq, build_context
 from src.data.history import get_station_history, get_available_stations
 from src.data.snapshot import capture_snapshot_aws, capture_snapshot_s3
 from src.ai.vector_store import extract_station_from_query, build_qdrant_index, ask_with_qdrant
-
+from src.ai.nlp_utils import normalize_text, extract_keywords, detect_time_expression
+from src.ai.router import classify_question
 def render_sidebar():
     st.sidebar.title("Configuration")
 
@@ -730,6 +731,21 @@ def _render_unified_assistant_content(df_filtered):
                     col3.metric("Tools", len(trace.tools_used))
 
                     st.caption(f"Raison du routage : {trace.routing_reason}")
+                    from src.ai.nlp_utils import extract_keywords, detect_time_expression, normalize_text
+
+                    st.subheader("Analyse NLP")
+
+                    st.caption("Question normalisée :")
+                    st.code(normalize_text(trace.question))
+
+                    keywords = extract_keywords(trace.question)
+                    time_expressions = detect_time_expression(trace.question)
+
+                    st.caption("Mots-clés :")
+                    st.write(", ".join(keywords) if keywords else "Aucun mot-clé détecté")
+
+                    st.caption("Expressions temporelles :")
+                    st.write(", ".join(time_expressions) if time_expressions else "Aucune expression temporelle détectée")
 
                     if trace.tools_used:
                         st.caption(f"Outils utilisés : {', '.join(trace.tools_used)}")
@@ -804,11 +820,66 @@ def _render_unified_assistant_content(df_filtered):
 
         st.rerun()
 
+def _render_nlp_content():
+    st.info(
+        "Analyse NLP locale : normalisation, extraction de mots-clés, détection temporelle et routage d'intention."
+    )
+
+    question = st.text_input(
+        "Question à analyser",
+        placeholder="Ex: Bastille est-elle souvent vide le matin ?",
+        key="nlp_analysis_input",
+    )
+
+    if not question:
+        return
+
+    normalized = normalize_text(question)
+    keywords = extract_keywords(question)
+    time_expressions = detect_time_expression(question)
+    routing = classify_question(question, use_llm=False)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Texte normalisé")
+        st.code(normalized)
+
+        st.subheader("Mots-clés extraits")
+        if keywords:
+            st.write(", ".join(keywords))
+        else:
+            st.warning("Aucun mot-clé détecté.")
+
+    with col2:
+        st.subheader("Expressions temporelles")
+        if time_expressions:
+            st.write(", ".join(time_expressions))
+        else:
+            st.info("Aucune expression temporelle détectée.")
+
+        st.subheader("Intention détectée")
+        st.metric("Intent", routing.get("intent", "unknown"))
+        st.metric("Confiance", f"{routing.get('confidence', 0):.0%}")
+        st.caption(routing.get("reason", ""))
+
+    with st.expander("Résultat NLP complet"):
+        st.json(
+            {
+                "question": question,
+                "normalized": normalized,
+                "keywords": keywords,
+                "time_expressions": time_expressions,
+                "routing": routing,
+            }
+        )
+
 def render_ai_tabs(df_filtered):
     st.subheader("Intelligence Artificielle")
 
-    tab1, tab2, tab3, tab4 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "Assistant IA",
+        "Analyse NLP",
         "Chatbot RAG",
         "Agent IA",
         "Recherche sémantique",
@@ -819,15 +890,19 @@ def render_ai_tabs(df_filtered):
         _render_unified_assistant_content(df_filtered)
 
     with tab2:
+        st.caption("Analyse locale du langage naturel utilisée par le routeur")
+        _render_nlp_content()
+
+    with tab3:
         st.caption("Posez des questions sur l'historique des stations")
         _render_rag_content(df_filtered)
 
-    with tab3:
+    with tab4:
         st.caption("L'agent choisit automatiquement les bons outils")
         st.caption("Tools : get_station_info · get_network_stats · search_history · detect_anomalies")
         _render_agent_content(df_filtered)
 
-    with tab4:
+    with tab5:
         st.caption("Recherche sémantique sur les patterns historiques")
         _render_semantic_content()
 

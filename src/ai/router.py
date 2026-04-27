@@ -4,7 +4,7 @@ router.py — Routage automatique des questions utilisateur
 
 from llm_client import call_llm_json
 from src.ai.prompts import ROUTER_PROMPT
-
+from src.ai.nlp_utils import extract_keywords, detect_time_expression
 
 KEYWORDS_REALTIME = [
     "maintenant",
@@ -65,6 +65,8 @@ def classify_question_rule_based(question: str) -> dict:
     Sert de fallback rapide et économique.
     """
     q = question.lower()
+    keywords = extract_keywords(question)
+    time_expressions = detect_time_expression(question)
 
     if any(kw in q for kw in KEYWORDS_REPORT):
         return {
@@ -84,7 +86,11 @@ def classify_question_rule_based(question: str) -> dict:
         return {
             "intent": "historical",
             "confidence": 0.8,
-            "reason": "La question concerne une tendance ou un historique.",
+            "reason": (
+                "La question concerne une tendance ou un historique. "
+                f"Mots-clés NLP : {', '.join(keywords[:5])}. "
+                f"Temps détecté : {', '.join(time_expressions) if time_expressions else 'aucun'}."
+            ),
         }
 
     if any(kw in q for kw in KEYWORDS_REALTIME):
@@ -97,7 +103,7 @@ def classify_question_rule_based(question: str) -> dict:
     return {
         "intent": "general",
         "confidence": 0.5,
-        "reason": "Aucune intention spécifique détectée par règles.",
+        "reason": f"Aucune intention spécifique détectée. Mots-clés NLP : {', '.join(keywords[:5])}",
     }
 
 
