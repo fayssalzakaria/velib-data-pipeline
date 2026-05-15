@@ -1,20 +1,21 @@
 import streamlit as st
 
 from config import SOURCE_API
-from data_loader import load_from_api, load_from_s3
-from filters import apply_filters
+from src.data.data_loader import load_from_api, load_from_s3
+from src.data.filters import apply_filters
 
-from ui import (
-    render_chatbot,
+from src.ui.ui import (
     render_charts,
     render_downloads,
     render_last_update,
     render_map,
     render_metrics,
-    render_search,
     render_sidebar,
     render_source_info,
-    render_history,
+    render_snapshot_button,
+    render_ai_tabs,
+    render_snapshot_manager,
+    render_station_detail,
 )
 
 st.set_page_config(
@@ -49,12 +50,12 @@ if df is None or df.empty:
 df_filtered = apply_filters(df, filtre_type, filtre_etat, filtre_min_velos)
 
 sidebar_count.info(f"{len(df_filtered)} stations après filtres")
-
+render_snapshot_manager()
 render_metrics(df_filtered)
-render_search(df_filtered)
-render_history()
+render_snapshot_button(source)
+render_station_detail(df_filtered)
 render_map(df_filtered)
 render_charts(df_filtered)
-render_chatbot(df_filtered)
+render_ai_tabs(df_filtered)
 render_downloads(df_filtered)
 render_last_update()
