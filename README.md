@@ -242,7 +242,13 @@ Rôles principaux :
 - extraction de station depuis une question utilisateur.
 
 ---
+## Démo vidéo
 
+Une courte vidéo de démonstration présente le dashboard Streamlit, l’assistant IA unifié, le routage NLP, le RAG historique, la recherche sémantique Qdrant et la génération de rapports IA.
+
+[Voir la démo vidéo](Video_app_velib.mp4)
+
+---
 ## Architecture globale
 
 ```text
